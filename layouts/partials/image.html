@@ -1,0 +1,5 @@
+{{ if .Param "image" }}
+    <div class="image">
+        <img src="{{ .Param "image"}} " alt="{{ .Title | markdownify }}">
+    </div>
+{{ end }}
