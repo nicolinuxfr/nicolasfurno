@@ -11,7 +11,7 @@
         {{.Content}}
       </div>
       <div class="articles">
-        {{ range first 10  (where .Site.RegularPages.ByDate.Reverse "Type" "ne" "pages") }}
+        {{ range first 12  (where .Site.RegularPages.ByDate.Reverse "Type" "ne" "pages") }}
         <section class="item">
           <div>
             <a href='{{ .RelPermalink }}'>
