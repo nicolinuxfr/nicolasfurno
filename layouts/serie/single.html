@@ -20,7 +20,9 @@
         <p><a href=" {{ $metadata.homepage }}">Regarder la série</a></p>
         <h3>Metadonnées</h3>
         
-        <p><strong>Titre original</strong> : <em>{{ $metadata.original_name }}</em></p>
+        {{ if ne $metadata.name $metadata.original_name }}
+            <p><strong>Titre original</strong> : <em>{{ $metadata.original_name }}</em></p>
+        {{ end }}
 
         {{ range $metadata.origin_country }}
             {{ $code := (lower . | string) }}

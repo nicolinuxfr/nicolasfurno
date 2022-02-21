@@ -20,7 +20,9 @@
     <div class="meta">
         <h3>Metadonnées</h3>
 
-        <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
+        {{ if ne $metadata.title $metadata.original_title }}
+            <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
+        {{ end }}
 
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
 
