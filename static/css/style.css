@@ -242,7 +242,25 @@ a {
     content: ", ";
 }
 
+/* Header */
+
+.header {
+    padding: 0.5em 1em;
+    margin: 0;
+}
+
+.header ul {
+    display: inline;
+    list-style: none;
+    padding: 0;
+    margin:0;
+}
+
+
+
+
 /* Footer */
+
 .footer {
     font-family: var(--police-meta);
     font-size: 0.8em;
