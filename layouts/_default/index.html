@@ -1,18 +1,21 @@
 {{ define "main" }}
     <main aria-role="main">
       <header class="homepage-header">
-        <h1>{{.Title}}</h1>
-        {{ with .Params.subtitle }}
-        <span class="subtitle">{{.}}</span>
-        {{ end }}
+        <h1>{{ .Site.Title }}</h1>
       </header>
       <div class="homepage-content">
         <!-- Note that the content for index.html, as a sort of list page, will pull from content/_index.md -->
         {{.Content}}
       </div>
-      <div>
-        {{ range first 10 .Site.RegularPages }}
-            {{ .Render "summary"}}
+      <div class="articles">
+        {{ range first 12  (where .Site.RegularPages.ByDate.Reverse "Type" "ne" "pages") }}
+        <section class="item">
+          <div>
+            <a href='{{ .RelPermalink }}'>
+            <img src="{{ .RelPermalink }}/{{ .Param "image" }}" alt="{{ .Title | markdownify }}">
+        </a>
+          </div>
+        </section>
         {{ end }}
       </div>
     </main>
