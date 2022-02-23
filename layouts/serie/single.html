@@ -24,12 +24,15 @@
             <p><strong>Titre original</strong> : <em>{{ $metadata.original_name }}</em></p>
         {{ end }}
 
-        {{ range $metadata.origin_country }}
-            {{ $code := (lower . | string) }}
-            {{ range where $countries ".alpha2" $code }}
-                <p><strong>Nationalité</strong> : {{ .name }}</p>
+        <ul>
+            <li>{{if gt (len $metadata.origin_country ) 1}}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
+            {{ range $metadata.origin_country }}
+                {{ $code := (lower . | string) }}
+                {{ range where $countries ".alpha2" $code }}
+                    <li>{{ .name }}</li>
+                {{ end }}
             {{ end }}
-        {{ end }}
+        </ul>
 
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.first_air_date }}</p> 
 

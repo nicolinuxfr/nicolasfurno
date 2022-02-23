@@ -25,13 +25,16 @@
         {{ end }}
 
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
-
-        {{ range $metadata.production_countries }}
-            {{ $code := (lower .iso_3166_1 | string) }}
-            {{ range where $countries ".alpha2" $code }}
-                <p><strong>Nationalité</strong> : {{ .name }}</p>
+        
+        <ul>
+            <li>{{ if gt (len $metadata.production_countries ) 1 }}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
+            {{ range $metadata.production_countries }}
+                {{ $code := (lower .iso_3166_1 | string) }}
+                {{ range where $countries ".alpha2" $code }}
+                    <li>{{ .name }}</li>
+                {{ end }}
             {{ end }}
-        {{ end }}
+        </ul>
 
         <ul>
             <li><strong>Genres :</strong></li>
