@@ -8,7 +8,7 @@
         {{.Content}}
       </div>
       <div class="articles">
-        {{ range first 12  (where .Site.RegularPages.ByDate.Reverse "Type" "ne" "pages") }}
+        {{ range (.Paginate  (where .Site.RegularPages "Type" "ne" "pages") ).Pages }}
         <section class="item">
           <div>
             <a href='{{ .RelPermalink }}'>
@@ -18,5 +18,7 @@
         </section>
         {{ end }}
       </div>
+      
+        {{ template "_internal/pagination.html" . }}
     </main>
 {{ end }}

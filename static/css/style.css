@@ -96,7 +96,6 @@ h1 {
     font-size: 4vw;
 }
 
-
 @media (min-width: 800px) {
 
     .articles {
@@ -124,6 +123,52 @@ h1 {
 @media (min-width: 1800px) {
     .articles {
         grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.pagination {
+    text-align: center;
+    font-family: var(--police-meta);
+    font-weight: 300;
+    margin: 2em;
+}
+
+.pagination ul {
+    list-style: none;
+}
+
+.pagination li {
+    display: inline;
+    text-align: center;
+}
+
+.pagination a {
+    color: var(--texte-sombre);
+    border-radius: 0.3em;
+    margin: 0 0.2em;
+    padding: 0.5em;
+    background-color: var(--couleur-texte);
+}
+
+.pagination a:hover{
+    font-weight: 900;
+}
+
+.pagination .disabled {
+    display: none;
+}
+
+.pagination .active a {
+    font-weight: 900;
+}
+
+@media (prefers-color-scheme: dark) {
+    .pagination li {
+        background-color:var(--texte-sombre);
+    }
+
+    .pagination a {
+        color: var(--couleur-texte);
     }
 }
 
