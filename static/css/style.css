@@ -89,7 +89,7 @@ a {
 
 /* Page d'accueil */
 
-.homepage-header h1 {
+h1 {
     font-family: var(--police-titre);
     text-align: center;
     font-weight: bold;
