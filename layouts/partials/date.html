@@ -1,5 +1,5 @@
 {{ if ne .Page.Title "Mentions légales"}}
     <div class="date">
-        <p>Publié le <time datetime="{{ .PublishDate }}"> {{ .PublishDate.Format "02 janvier 2006" }}</time> {{ if ne .PublishDate .Lastmod }} (modifié le {{ .Lastmod.Format "02 janvier 2006" }}) {{ end }}</p>
+        <p>Publié le <time datetime="{{ .PublishDate }}"> {{ .PublishDate | time.Format ":date_long" }}</time> {{ if ne .PublishDate .Lastmod }} (modifié le {{ .Lastmod.Format "02 january 2006" }}) {{ end }}</p>
     </div>
 {{ end }}
