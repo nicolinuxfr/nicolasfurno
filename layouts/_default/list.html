@@ -14,7 +14,7 @@
         <section class="item">
           <div>
             <a href='{{ .RelPermalink }}'>
-            <img src="{{ .RelPermalink }}/{{ .Param "image" }}" alt="{{ .Title | markdownify }}">
+            <img src="{{ .RelPermalink }}/{{ .Param "image" }}" alt="{{ .Title | markdownify }}" loading=lazy >
         </a>
           </div>
         </section>
