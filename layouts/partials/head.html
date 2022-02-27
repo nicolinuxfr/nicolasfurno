@@ -11,4 +11,9 @@
     {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | plainify |  printf "%s" }}
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }}</title>
+
+    <link rel="canonical" href="{{ .Permalink }}">
+
+    {{ partial "opengraph.html" .}}
+    {{ partial "twitter.html" .}}
 </head>
