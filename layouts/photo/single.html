@@ -1,0 +1,54 @@
+{{ define "main" }}
+
+
+
+<section id="single-photo">
+    
+    <h1 class="title">{{ .Title | markdownify }}</h1>
+
+    <div class="content">
+        {{ partial "date.html" . }}
+        
+        <div class="article">{{ .Content }}</div>
+        
+        {{ with .Resources.ByType "image" }}
+        {{ range . }}
+            {{ $image := . }}
+            {{ $image500 := $image.Resize "500x q80" }}
+            {{ $image1000 := $image.Resize "1200x q80" }}
+            {{ $image1500 := $image.Resize "1500x q80" }}
+            
+            <div class="image">
+                <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
+                    src="{{ $image.RelPermalink }}"
+                    alt="{{ .Title | markdownify }}"
+                    loading=lazy
+                    width="{{ $image.Width }}"
+                    height="{{ $image.Height }}"
+                >
+            </div>
+        {{ end }}
+        {{ end }}
+
+    {{ if .Params.image }}
+        {{ $image := .Resources.GetMatch .Params.image }}
+        <div class="meta">
+            <h3>Metadonnées</h3>
+            {{ with $image.Exif }}
+                <p><strong>Date de prise</strong> : {{ .Date | time.Format ":date_long" }}</p>
+                {{ with .Tags.Model }}
+                    <p><strong>Appareil photo</strong> :  {{ . }}</p>
+                {{ end }}
+                <p><a href="https://www.google.com/maps/@?api=1&map_action=map&basemap=satellite&zoom=18&center={{ .Lat }},{{ .Long }}"><strong>Voir l’emplacement</strong></a></p>
+            {{ end }}
+        </div>
+
+    {{ end }}
+        
+    
+
+
+    </div>
+</section>
+
+{{ end }}
