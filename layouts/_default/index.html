@@ -10,11 +10,9 @@
       <div class="articles">
         {{ range (.Paginate  (where .Site.RegularPages "Type" "ne" "pages") ).Pages }}
         <section class="item">
-          <div>
             <a href='{{ .RelPermalink }}'>
-            <img src="{{ .RelPermalink }}/{{ .Param "image" }}" alt="{{ .Title | markdownify }}" loading=lazy>
+              {{ partial "image.html" . }}
         </a>
-          </div>
         </section>
         {{ end }}
       </div>
