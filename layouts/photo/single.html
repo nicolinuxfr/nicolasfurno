@@ -14,9 +14,9 @@
         {{ with .Resources.ByType "image" }}
         {{ range . }}
             {{ $image := . }}
-            {{ $image500 := $image.Resize "500x q80" }}
-            {{ $image1000 := $image.Resize "1200x q80" }}
-            {{ $image1500 := $image.Resize "1500x q80" }}
+            {{ $image500 := $image.Resize "500x q75 MitchellNetravali" }}
+            {{ $image1000 := $image.Resize "1200x q75 MitchellNetravali" }}
+            {{ $image1500 := $image.Resize "1500x q75 MitchellNetravali" }}
             
             <div class="image">
                 <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
