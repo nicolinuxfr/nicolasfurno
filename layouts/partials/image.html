@@ -1,7 +1,7 @@
 {{ if .Params.image }}
     {{ $image := .Resources.GetMatch .Params.image }}
     {{ $image500 := $image.Resize "500x q70 MitchellNetravali" }}
-    {{ $image1000 := $image.Resize "1200x q70 MitchellNetravali" }}
+    {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
     {{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
 
     <div class="image">
