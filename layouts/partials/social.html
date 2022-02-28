@@ -1,12 +1,20 @@
-<meta property="og:title" content="{{ .Title | markdownify }}" />
-<meta name="twitter:title" content="{{ .Title | markdownify }}"/>
-
-<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}" />
-<meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end -}}"/>
-
+<meta property="og:locale" content="fr_FR">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
 <meta property="og:url" content="{{ .Permalink }}" />
 {{- with .Site.Params.title }}<meta property="og:site_name" content="{{ . }}" />{{ end }}
+
+{{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | plainify |  printf "%s" }}
+{{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
+
+<meta property="og:title" content="{{ $title }}" />
+<meta name="twitter:title" content="{{ $title }}"/>
+
+{{ $description := .Summary }}
+{{ if .IsHome }}{{ $description = .Site.Params.description }}{{ end }}
+
+<meta name="description" content="{{ $description }}">
+<meta property="og:description" content="{{ $description }}" />
+<meta name="twitter:description" content="{{ $description }}"/>
 
 {{- if .IsPage }}
 {{- $iso8601 := "2006-01-02T15:04:05-07:00" -}}
