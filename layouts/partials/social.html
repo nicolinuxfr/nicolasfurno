@@ -24,7 +24,7 @@
 {{- end -}}
 
 {{ if .Params.image }}
-  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:card" content="summary_large_image"/>
     {{ with .Resources.GetMatch .Params.image -}}
       {{- $image := . -}}
       {{- $image = $image.Resize "1000x q70 MitchellNetravali" -}}
