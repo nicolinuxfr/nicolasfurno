@@ -8,7 +8,7 @@
     --vert-hover: #63aa01;
     --couleur-texte: rgba(0, 0, 0, 0.7);
     --fond-sombre: #0f1d09;
-    --texte-sombre: rgba(255, 255, 255, 0.8);
+    --texte-sombre: rgb(217, 238, 217);
 }
 
 /* Global */
@@ -23,8 +23,9 @@ html, body {
 }
 
 @media (prefers-color-scheme: dark){
-    html {
+    html, body {
         background-color: var(--fond-sombre);
+        color: var(--texte-sombre);
     }
 }
 
@@ -36,7 +37,7 @@ img {
 
 a {
     text-decoration: none;
-    color: var(--couleur-texte)
+    color: var(--couleur-texte);
 }
 
 a:hover {
@@ -46,6 +47,10 @@ a:hover {
 
 
 @media (prefers-color-scheme: dark) {
+    a {
+        color: var(--texte-sombre);
+    }
+
     a:hover {
         color: var(--vert-hover);
     }
@@ -351,13 +356,3 @@ h1 {
     text-align: center;
     padding: 1em;
 }
-
-@media (prefers-color-scheme: dark){
-	body, a, article .post-content, article .post-content h3, article .post-content a, .single .post-title, .home article header .post-title{
-		color: rgba(255, 255, 255, 0.78);
-	}
-
-	.bigfoot-footnote__content{
-		background:  #24292e !important;
-	}
- }
