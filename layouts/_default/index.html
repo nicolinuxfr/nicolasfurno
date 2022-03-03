@@ -9,8 +9,8 @@
         {{ range (.Paginate  (where .Site.RegularPages "Type" "ne" "pages") ).Pages }}
         <section class="item">
             <a href='{{ .RelPermalink }}'>
-              {{ partial "image.html" . }}
-        </a>
+              {{ partial "image-list.html" . }}
+            </a>
         </section>
         {{ end }}
       </div>

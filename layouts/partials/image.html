@@ -1,12 +1,16 @@
 {{ if .Params.image }}
     {{ $image := .Resources.GetMatch .Params.image }}
-    {{ $image500 := $image.Resize "500x q70 MitchellNetravali" }}
-    {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
-    {{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
+	{{ $width := $image.Width }}
+	{{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
+	{{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
+	{{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}
 
     <div class="image">
-        <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
-            src="{{ $image.RelPermalink }}"
+        <img src="{{ $image.RelPermalink }}"
+			srcset="{{ if gt $image.Width 1000 }} {{ $image1000.RelPermalink }} 1000w,{{ end }},
+				{{ if gt $image.Width 1500 }} {{ $image1500.RelPermalink }} 1500w,{{ end }}
+				{{ if gt $image.Width 2000 }} {{ $image2000.RelPermalink }} 2000w,{{ end }}
+				{{ $image.RelPermalink }} {{ $image.Width }}w"
             alt="{{ .Title | markdownify }}"
             loading=lazy
             width="{{ $image.Width }}"
