@@ -1,6 +1,9 @@
 <link rel="preload" href="/css/style.css" as="style">
 <link rel="preload" href="/fonts/PlayfairDisplay.woff2" as="font" crossOrigin="anonymous">
-<link rel="preload" href="/fonts/EBGaramond.woff2" as="font" crossOrigin="anonymous">
+
+{{ if .IsPage }}
+    <link rel="preload" href="/fonts/EBGaramond.woff2" as="font" crossOrigin="anonymous">
+{{ end }}
 
 {{ if .IsHome }}
     {{ range first 3 (where .Site.RegularPages "Type" "ne" "pages")  }}
