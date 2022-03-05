@@ -1,0 +1,45 @@
+<script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"></script>
+
+<style>
+#map {
+    width: 100%;
+    height: 600px;
+}
+</style>
+
+<body>
+<div id="map"></div>
+
+{{ $token := getenv "HUGO_MAPKIT" }}
+
+<script>
+    const tokenID = "{{ $token }}";
+    
+    mapkit.init({
+        authorizationCallback: function(done) {
+            done(tokenID);
+        },
+        language:"fr",
+        mapType: "Hybrid"
+    });
+ 
+    var region = new mapkit.CoordinateRegion(
+        new mapkit.Coordinate({{ .Lat }}, {{ .Long }}),
+        new mapkit.CoordinateSpan(0.030, 0.030)
+    );
+
+
+
+var map = new mapkit.Map("map", {
+    region: region,
+    mapType: mapkit.Map.MapTypes.Hybrid
+});
+
+var MarkerAnnotation = mapkit.MarkerAnnotation;
+
+var photo = new mapkit.Coordinate({{ .Lat }}, {{ .Long }})
+var photoAnnotation = new MarkerAnnotation(photo, { color: "#487b00"});
+
+map.showItems([photoAnnotation]);
+
+</script>

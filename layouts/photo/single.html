@@ -1,7 +1,5 @@
 {{ define "main" }}
 
-
-
 <section id="single-photo">
     
     <h1 class="title">{{ .Title | markdownify }}</h1>
@@ -39,14 +37,12 @@
                 {{ with .Tags.Model }}
                     <p><strong>Appareil photo</strong> :  {{ . }}</p>
                 {{ end }}
-                <p><a href="https://www.google.com/maps/@?api=1&map_action=map&basemap=satellite&zoom=18&center={{ .Lat }},{{ .Long }}"><strong>Voir l’emplacement</strong></a></p>
+                <p><strong>Emplacement</strong> :</p>
+                {{ partial "maps.html" . }}
             {{ end }}
         </div>
 
     {{ end }}
-        
-    
-
 
     </div>
 </section>
