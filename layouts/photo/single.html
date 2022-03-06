@@ -42,8 +42,16 @@
             {{ end }}
         </div>
 
-    {{ end }}
+        {{ $data := newScratch }}
+        {{ with .Resources.ByType "image" }}
+        {{ range . }}
+            {{ with $image.Exif }}
+                {{ $data.SetInMap ( string .Lat ) .Long }}
+            {{ end }}
+        {{ end }}
+        {{ end }}
 
+    {{ end }}
     </div>
 </section>
 
