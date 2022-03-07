@@ -1,0 +1,65 @@
+<script src="/js/fuse.min.js"></script>
+
+<div class="recherche">
+    <form id="search" role="search" aria-haspopup="listbox" aria-labelledby="search-label" onsubmit="return false">
+        <input id="search-input" type="search" list="search-results" placeholder="Chercher" aria-label="Recherche" autocomplete="off" spellcheck="false" ></input>
+        <ul id="search-results" role="listbox"></ul>
+    </form>
+</div>
+
+<script>
+    var search_form = document.getElementById('search'); // search form
+    var search_input = document.getElementById('search-input'); // input box for search
+    var search_submit = document.getElementById('search-submit'); // form submit button
+    var search_results = document.getElementById('search-results'); // targets the <ul>
+    var resultsAvailable = false; 
+    var fuse; // holds our search engine
+   
+    fetch_JSON('/index.json', function(data){
+        var options = { // fuse.js options; check fuse.js website for details
+            shouldSort: true,
+            location: 0,
+            distance: 100,
+            threshold: 0.4,
+            minMatchCharLength: 2,
+            keys: ["title","section"]
+        };
+        fuse = new Fuse(data, options); // build the index from the json file
+        
+        search_input.addEventListener('keyup', function(e) { // execute search as each character is typed
+            search_exec(this.value);
+        });
+    });
+  
+    function fetch_JSON(path, callback) {
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+      if (httpRequest.readyState === 4) {
+        if (httpRequest.status === 200) {
+          var data = JSON.parse(httpRequest.responseText);
+            if (callback) callback(data);
+        }
+      }
+    };
+    httpRequest.open('GET', path);
+    httpRequest.send();
+  }
+  
+    function search_exec(term) {
+      let results = fuse.search(term); // the actual query being run using fuse.js
+      let search_items = ''; // our results bucket
+    
+      if (results.length === 0) { // no results based on what was typed into the input box
+        results_available = false;
+        search_items = '';
+      } else { // build our html
+        for (let item in results) { 
+          search_items = search_items +
+    `<li><a href="${results[item].item.permalink}">${results[item].item.title}</span></a></li>`;
+        }
+      results_available = true;
+    }
+  
+    search_results.innerHTML = search_items;
+  }
+</script>

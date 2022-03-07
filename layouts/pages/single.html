@@ -4,6 +4,9 @@
   <div class="content">
     <h1 class="title">{{ .Title | markdownify }}</h1>
     <div class="article">{{ .Content }}</div>
+    {{ if eq .Title "Recherche" }}
+      {{ partial "search.html" .}}
+    {{ end }}
   </div>
 
 </section>
