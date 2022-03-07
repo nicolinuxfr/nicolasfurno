@@ -1,0 +1,5 @@
+{{- $.Scratch.Add "index" slice -}}
+{{- range (where .Site.RegularPages "Type" "ne" "pages") -}}
+    {{- $.Scratch.Add "index" (dict "title" ( .Title | markdownify) "section" ( (site.GetPage .Section ).Title ) "permalink" .Permalink ) -}}
+{{- end -}}
+{{- $.Scratch.Get "index" | jsonify -}}
