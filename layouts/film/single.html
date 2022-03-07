@@ -21,11 +21,11 @@
         <h3>Metadonnées</h3>
 
         {{ if ne $metadata.title $metadata.original_title }}
-            <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
+            <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
         {{ end }}
 
         <ul>
-            <li>{{if gt (len (where $cast.crew ".job" "Director") ) 1}}<strong>Réalisateurs</strong>{{else}}<strong>Réalisateur</strong>{{end}} :</li>
+            <li>{{if gt (len (where $cast.crew ".job" "Director") ) 1}}<strong>Réalisateurs</strong>{{else}}<strong>Réalisateur</strong>{{end}} : </li>
             {{ range where $cast.crew ".job" "Director" }}
                 <li><a href="https://www.themoviedb.org/person/{{ string .id  }}">{{ .name }}</a></li>
             {{ end }}
@@ -34,7 +34,7 @@
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
 
         <ul>
-            <li>{{ if gt (len $metadata.production_countries ) 1 }}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
+            <li>{{ if gt (len $metadata.production_countries ) 1 }}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} : </li>
             {{ range $metadata.production_countries }}
                 {{ $code := (lower .iso_3166_1 | string) }}
                 {{ range where $countries ".alpha2" $code }}
@@ -44,14 +44,14 @@
         </ul>
 
         <ul>
-            <li><strong>Acteurs</strong> :</li>
+            <li><strong>Acteurs</strong> : </li>
             {{ range first 8 $cast.cast }}
                 <li><a href="https://www.themoviedb.org/person/{{ string .id  }}">{{ .name }}</a></li>
             {{ end }}
         </ul>
 
         <ul>
-            <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} :</li>
+            <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} : </li>
             {{ range $metadata.genres }}
             <li>{{.name}}</li>
             {{ end }}

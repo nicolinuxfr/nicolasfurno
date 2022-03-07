@@ -35,9 +35,9 @@
             {{ with $image.Exif }}
                 <p><strong>Date de prise</strong> : {{ .Date | time.Format ":date_long" }}</p>
                 {{ with .Tags.Model }}
-                    <p><strong>Appareil photo</strong> :  {{ . }}</p>
+                    <p><strong>Appareil photo</strong> : {{ . }}</p>
                 {{ end }}
-                <p><strong>Emplacement</strong> :</p>
+                <p><strong>Emplacement</strong> : </p>
                 {{ partial "maps.html" . }}
             {{ end }}
         </div>
