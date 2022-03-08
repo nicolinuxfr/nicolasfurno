@@ -19,10 +19,14 @@
         var options = { // fuse.js options; check fuse.js website for details
             shouldSort: true,
             location: 0,
-            distance: 100,
+            distance: 10000,
             threshold: 0.4,
             minMatchCharLength: 2,
-            keys: ["title","section"]
+            keys: [ 
+              { name: "title", weight: 8 },
+              { name: "content", weight: 4 },
+              { name: "section", weight: 10 }
+          ]
         };
         fuse = new Fuse(data, options); // build the index from the json file
         search_input.focus();
