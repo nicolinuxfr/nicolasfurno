@@ -1,9 +1,10 @@
 {{- $.Scratch.Add "index" slice -}}
 {{- range (where .Site.RegularPages "Type" "ne" "pages") -}}
-    {{ $contenu := replace (.Content | plainify) ", " " " }}
-    {{ $contenu = replace $contenu "’" " " }}
-    {{ $contenu = replace $contenu "." " " }}
-    {{ $contenu := split (lower $contenu ) " " | complement .Site.Data.stopwords }}
+    {{ $contenu := (lower .Content ) }}
+    {{ range .Site.Data.ponctuations }}
+        {{ $contenu = replace $contenu . " " }}
+    {{ end }}
+    {{ $contenu := split ($contenu | plainify) " " | complement .Site.Data.stopwords | uniq }}
     {{- $.Scratch.Add "index" (dict "title" ( .Title | markdownify) "section" ( (site.GetPage .Section ).Title ) "permalink" .Permalink "content" $contenu ) -}}
 {{- end -}}
 {{- $.Scratch.Get "index" | jsonify -}}
