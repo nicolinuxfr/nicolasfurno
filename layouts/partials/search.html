@@ -25,7 +25,8 @@
             keys: ["title","section"]
         };
         fuse = new Fuse(data, options); // build the index from the json file
-        
+        search_input.focus();
+
         search_input.addEventListener('keyup', function(e) { // execute search as each character is typed
             search_exec(this.value);
         });
