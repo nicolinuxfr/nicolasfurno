@@ -38,12 +38,23 @@
                     <p><strong>Appareil photo</strong> : {{ . }}</p>
                 {{ end }}
                 <p><strong>Emplacement</strong> : </p>
-                {{ partial "maps.html" . }}
+               
             {{ end }}
         </div>
 
-    {{ end }}
+        {{- $.Scratch.Add "photos" slice -}}
+        {{ with .Resources.ByType "image" }}
+        {{ range . }}
+            {{ with .Exif }}
+                {{- $.Scratch.Add "photos" (dict "long" .Long "lat" .Lat ) -}}
+            {{ end }}
+        {{- end -}}
+        {{- end -}}
+        {{- $photos := $.Scratch.Get "photos" -}}
+        
+        {{ partial "maps.html" $photos }}
 
+    {{ end }}
     </div>
 </section>
 

@@ -14,7 +14,8 @@
 
 <script>
     const tokenID = "{{ $token }}";
-    
+    const coordonnees = {{ . }};
+
     mapkit.init({
         authorizationCallback: function(done) {
             done(tokenID);
@@ -22,24 +23,22 @@
         language:"fr",
         mapType: "Hybrid"
     });
- 
+
     var region = new mapkit.CoordinateRegion(
-        new mapkit.Coordinate({{ .Lat }}, {{ .Long }}),
-        new mapkit.CoordinateSpan(0.030, 0.030)
+        new mapkit.Coordinate(coordonnees[0].lat, coordonnees[0].long),
+        new mapkit.CoordinateSpan(0.010, 0.010)
     );
 
+    var map = new mapkit.Map("map", {
+        region: region,
+        mapType: mapkit.Map.MapTypes.Hybrid
+    });
 
-
-var map = new mapkit.Map("map", {
-    region: region,
-    mapType: mapkit.Map.MapTypes.Hybrid
-});
+    coordonnees.forEach((location) => {
+        let marker = new mapkit.MarkerAnnotation(new mapkit.Coordinate(location.lat, location.long));
+        map.addAnnotation(marker);
+    });
 
 var MarkerAnnotation = mapkit.MarkerAnnotation;
-
-var photo = new mapkit.Coordinate({{ .Lat }}, {{ .Long }})
-var photoAnnotation = new MarkerAnnotation(photo, { color: "#487b00"});
-
-map.showItems([photoAnnotation]);
 
 </script>
