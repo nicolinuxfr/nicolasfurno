@@ -5,7 +5,9 @@
     <h1 class="title">{{ .Title | markdownify }}</h1>
     <div class="article">{{ .Content }}</div>
     {{ if eq .Title "Recherche" }}
-      {{ partial "search.html" .}}
+      {{ partial "search.html" . }}
+    {{ else if eq .Title "Archives" }}
+      {{ partial "archives.html" . }}
     {{ end }}
   </div>
 

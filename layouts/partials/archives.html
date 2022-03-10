@@ -1,0 +1,9 @@
+<h2>Catégories</h2>
+
+<ul>
+    {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
+    {{ range sort $sections "Title" }}
+    {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}
+    <li><a href="{{ .Permalink }}">{{ .Title }}</a> ({{ $compteur }}) </li>
+    {{ end }}
+</ul>
