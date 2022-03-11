@@ -25,7 +25,7 @@
     });
 
     var region = new mapkit.CoordinateRegion(
-        new mapkit.Coordinate(coordonnees[0].lat, coordonnees[0].long),
+        new mapkit.Coordinate(coordonnees[coordonnees.length / 2 | 0].lat, coordonnees[coordonnees.length / 2 | 0].long),
         new mapkit.CoordinateSpan(0.010, 0.010)
     );
 
@@ -35,10 +35,14 @@
     });
 
     coordonnees.forEach((location) => {
-        let marker = new mapkit.MarkerAnnotation(new mapkit.Coordinate(location.lat, location.long));
+        var coordinate = new mapkit.Coordinate(location.lat, location.long);
+        var pinOptions = {
+            glyphImage: { 1: "/img/pin.png", 2: "/img/pin@2x.png" },
+            selectedGlyphImage: { 1: "/img/icon-192.png", 2: "/img/icon-512.png"},
+            color: "#487b00"
+        };
+        let marker = new mapkit.MarkerAnnotation(coordinate, pinOptions);
         map.addAnnotation(marker);
     });
-
-var MarkerAnnotation = mapkit.MarkerAnnotation;
 
 </script>
