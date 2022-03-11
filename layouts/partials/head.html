@@ -1,6 +1,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#487b00" />
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     {{ if .IsPage }}
         <link rel="stylesheet" type="text/css" href="/css/littlefoot.css">
@@ -9,6 +10,10 @@
     <link rel="icon" href="/img/favicon.ico" sizes="any">
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/img/manifest.webmanifest">
+    <link rel="icon" href="/img/pin.png" sizes="40x40">
+    <link rel="icon" href="/img/icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/img/icon-192.png">
+    <meta name="msapplication-TileImage" content="/img/icon-192.png">
 
     {{ range .AlternativeOutputFormats -}}
         {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
