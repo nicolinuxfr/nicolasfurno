@@ -1,5 +1,3 @@
-<h2>Catégories</h2>
-
 <ul>
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
     {{ range sort $sections "Title" }}
