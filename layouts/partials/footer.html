@@ -1,5 +1,5 @@
 <div class="footer">
-{{ if (and .IsPage (where .Site.RegularPages "Type" "ne" "pages") ) }}
+{{ if (and .IsPage (ne .Type "pages") ) }}
     <p> Dernière modification le <a href="https://github.com/nicolinuxfr/nicolasfurno.fr/commit/{{ .GitInfo.Hash }}" target="_blank">{{ .Lastmod | time.Format ":date_short" }} à {{ .Lastmod | time.Format ":time_short" }}</a> | <a href="mailto:nicolasfurno@gmail.com?subject=Au sujet de {{ .Title | markdownify | plainify }}">Contacter l’auteur</a> |
         <a href="https://github.com/nicolinuxfr/nicolasfurno.fr/edit/main/content/{{ .File.Path }}" target="_blank">Proposer une amélioration</a></p>
 {{ end }}
