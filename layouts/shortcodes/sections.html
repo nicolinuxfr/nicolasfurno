@@ -1,7 +1,7 @@
-<ul>
+<ul class="archives">
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
     {{ range sort $sections "Title" }}
     {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}
-    <li><a href="{{ .Permalink }}">{{ .Title }}</a> ({{ $compteur }}) </li>
+    <li><a href="{{ .Permalink }}">{{ .Title }} ({{ $compteur }})</a></li>
     {{ end }}
 </ul>
