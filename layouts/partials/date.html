@@ -1,3 +1,5 @@
 <div class="date">
-    <p>Publié le <time datetime="{{ .PublishDate }}"> {{ .PublishDate | time.Format ":date_long" }}</time> {{ if lt (.PublishDate.AddDate 0 0 15) .Lastmod }} (modifié le {{ .Lastmod | time.Format ":date_long" }}) {{ end }}</p>
+    {{ $jour := (.PublishDate | time.Format ":date_long") }}
+    {{ $heure := (.PublishDate | time.Format ":time_short") }}
+    <p>Publié le <time datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}"> {{ $jour }}</time></p>
 </div>
