@@ -8,4 +8,8 @@
 
 </section>
 
+{{ if (or (eq .Title "Recherche") ( in .File "menu")) }}
+  {{ partial "back.html" . }}
+{{ end }}
+
 {{ end }}
