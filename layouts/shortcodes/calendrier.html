@@ -1,11 +1,16 @@
-{{ range (where .Site.RegularPages "Type" "ne" "pages").GroupByDate "January 2006" }}
-<h3>{{ .Key }}</h3>
-<ul>
-    {{ range .Pages }}
-    <li>
-    <a href="{{ .Permalink }}">{{ .Title | markdownify }}</a>
-    <div class="meta">{{ .Date.Format "Mon, Jan 2, 2006" }}</div>
-    </li>
+{{ $mois := .Site.Data.mois }}
+{{ range (where .Site.RegularPages "Type" "ne" "pages").GroupByDate "2006" }}
+<h3>{{ .Key }} ({{ len .Pages }})</h3>
+    {{ range .Pages.GroupByDate "1"}}  
+        <h4>{{ index $mois 0 .Key }} ({{ len .Pages }})</h4>
+        <ul class="archives calendrier">
+            {{ range .Pages }}
+                <li>
+                    <a href="{{ .Permalink }}">{{ .Title | markdownify }}</a>
+                    <time class="date" datetime="{{ .PublishDate }}">{{ .Date | time.Format ":date_long" }}</time>
+                    <time class="date court" datetime="{{ .PublishDate }}">{{ .Date | time.Format ":date_short" }}</time>
+                </li>
+            {{ end }}
+        </ul>
     {{ end }}
-</ul>
 {{ end }}

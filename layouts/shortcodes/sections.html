@@ -1,4 +1,4 @@
-<ul class="archives">
+<ul class="archives sections">
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
     {{ range sort $sections "Title" }}
     {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}

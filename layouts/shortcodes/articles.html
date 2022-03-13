@@ -1,4 +1,4 @@
-<ul class="archives">
+<ul class="archives article">
 {{ range (where .Site.RegularPages "Type" "ne" "pages").ByTitle  }}
     <li><a href='{{ .RelPermalink }}'>{{ .Title | markdownify }}</a></li>
 {{ end }}
