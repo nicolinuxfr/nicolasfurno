@@ -12,7 +12,7 @@
 				{{ if gt $image.Width 2000 }} {{ $image2000.RelPermalink }} 2000w,{{ end }}
 				{{ $image.RelPermalink }} {{ $image.Width }}w"
             alt="{{ .Title | markdownify }}"
-            loading=lazy
+            loading="lazy"
             width="{{ $image.Width }}"
             height="{{ $image.Height }}"
         >
