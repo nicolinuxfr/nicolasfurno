@@ -17,10 +17,12 @@
         
     <div class="meta">
         <h3>Metadonnées</h3>
-        <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
-        <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
-        {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
-        <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
+        <div class="col">
+            <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
+            <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
+            {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
+            <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
+        </div>
     </div>
     {{ end }}
 

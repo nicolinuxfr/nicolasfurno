@@ -1,0 +1,38 @@
+{{ define "main" }}
+
+<section id="single">
+
+    {{ partial "image.html" . }}
+
+    <div class="content">
+        <h1 class="title">{{ .Title | markdownify }}</h1>
+        {{ partial "date.html" . }}
+        
+        <div class="article">{{ .Content }}</div>
+
+    {{ if $.Param "id" }}
+        {{ $id := $.Param "id" }}
+        {{ $metadata := getJSON "https://www.googleapis.com/books/v1/volumes/" $id }}
+        {{ $countries := .Site.Data.countries }}
+        
+    <div class="meta ">
+        <h3>Metadonnées</h3>
+        <div class="col">
+            <ul>
+                <li>{{ if gt (len $metadata.volumeInfo.authors ) 1 }}<strong>Auteurs</strong>{{else}}<strong>Auteur</strong>{{end}} : </li>
+                {{ range $metadata.volumeInfo.authors }}
+                    <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+            <p><strong>Éditeur</strong> : {{ $metadata.volumeInfo.publisher }}</p>
+            <p><strong>Année</strong> : {{ time.Format "2006" $metadata.volumeInfo.publishedDate }}</p>
+            {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
+            <p><strong>Pages</strong> : {{ $metadata.volumeInfo.pageCount }}</p>
+        </div>
+    </div>
+    {{ end }}
+
+</div>
+</section>
+
+{{ end }}
