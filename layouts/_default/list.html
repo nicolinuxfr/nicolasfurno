@@ -10,7 +10,7 @@
 
     <!-- Ranges through content/posts/*.md -->
     <div class="articles">
-        {{ range .Pages }}
+        {{ range (.Paginate .Pages).Pages }}
         <section class="item">
           <div>
             <a href='{{ .RelPermalink }}'>
@@ -20,5 +20,7 @@
         </section>
         {{ end }}
     </div>
+
+    {{ template "_internal/pagination.html" . }}
 </main>
 {{ end }}
