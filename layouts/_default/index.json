@@ -7,6 +7,6 @@
     {{ $contenu = replaceRE "(<sup.*sup>)" "" $contenu }}
     {{ $contenu = replaceRE "\n" "" ($contenu | plainify) }}
     {{ $contenu := split $contenu " " | complement .Site.Data.stopwords | uniq }}
-    {{- $.Scratch.Add "index" (dict "title" ( .Title | markdownify | htmlUnescape | plainify) "section" ( (site.GetPage .Section ).Title ) "permalink" .Permalink "content" $contenu ) -}}
+    {{- $.Scratch.Add "index" (dict "title" ( .Title | markdownify ) "section" ( (site.GetPage .Section ).Title ) "permalink" .Permalink "content" $contenu ) -}}
 {{- end -}}
 {{- $.Scratch.Get "index" | jsonify -}}
