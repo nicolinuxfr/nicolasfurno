@@ -20,7 +20,7 @@
         {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
     {{ end -}}
     
-    {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | plainify |  printf "%s" }}
+    {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | htmlUnescape | plainify |  printf "%s" }}
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }}</title>
 
