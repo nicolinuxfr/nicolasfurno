@@ -9,6 +9,7 @@
         
         <div class="article">{{ .Content }}</div>
         
+        {{ $lenses := .Site.Data.lenses }}
         {{ with .Resources.ByType "image" }}
         {{ range . }}
             {{ $image := . }}
@@ -16,7 +17,7 @@
             {{ $image1000 := $image.Resize "1000x q75 MitchellNetravali" }}
             {{ $image1500 := $image.Resize "1500x q75 MitchellNetravali" }}
             
-            <div class="image">
+            <div class="image album">
                 <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
                     src="{{ $image.RelPermalink }}"
                     alt="{{ .Title | markdownify }}"
@@ -24,6 +25,14 @@
                     width="{{ $image.Width }}"
                     height="{{ $image.Height }}"
                 >
+          
+                {{ with .Exif.Tags }}
+                    <ul class="meta-photos">
+                        <li>{{ .Model }} ({{ index $lenses 0 (string .FocalLength) }})</li>
+                        <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
+                        <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
+                    </ul>
+                {{ end }}
             </div>
         {{ end }}
         {{ end }}
@@ -31,17 +40,8 @@
     {{ if .Params.image }}
         {{ $image := .Resources.GetMatch .Params.image }}
         <div class="meta">
-            <h3>Metadonnées</h3>
-            {{ with $image.Exif }}
-                <p><strong>Date de prise</strong> : {{ .Date | time.Format ":date_long" }}</p>
-                {{ with .Tags.Model }}
-                    <p><strong>Appareil photo</strong> : {{ . }}</p>
-                {{ end }}
-                <p><strong>Emplacement</strong> : </p>
-               
-            {{ end }}
+            <h3>Emplacement</h3>
         </div>
-
         {{- $.Scratch.Add "photos" slice -}}
         {{ with .Resources.ByType "image" }}
         {{ range . }}
