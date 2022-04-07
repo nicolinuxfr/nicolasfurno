@@ -6,10 +6,12 @@
         <h4>{{ index $mois 0 .Key }} ({{ len .Pages }})</h4>
         <ul class="archives calendrier">
             {{ range .Pages }}
+            {{ $jour := (.PublishDate | time.Format ":date_long") }}
+            {{ $heure := (.PublishDate | time.Format ":time_short") }}
                 <li>
                     <a href="{{ .Permalink }}"> <span class="catemoji">{{ index $emojis 0 .Section }}</span> {{ .Title | markdownify }}</a>
-                    <time class="date" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ .Date | time.Format ":date_long" }}</time>
-                    <time class="date court" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ .Date | time.Format ":date_short" }}</time>
+                    <time class="date" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ $jour }}</time>
+                    <time class="date court" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ .PublishDate | time.Format ":date_short" }}</time>
                 </li>
             {{ end }}
         </ul>
