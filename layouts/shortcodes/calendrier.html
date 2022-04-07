@@ -1,4 +1,5 @@
 {{ $mois := .Site.Data.mois }}
+{{ $emojis := .Site.Data.catemoji }}
 {{ range (where .Site.RegularPages "Type" "ne" "pages").GroupByDate "2006" }}
 <h3>{{ .Key }} ({{ len .Pages }})</h3>
     {{ range .Pages.GroupByDate "1"}}  
@@ -6,9 +7,7 @@
         <ul class="archives calendrier">
             {{ range .Pages }}
                 <li>
-                    <a href="{{ .Permalink }}">{{ .Title | markdownify }}</a>
-                    <time class="date" datetime="{{ .PublishDate }}">{{ .Date | time.Format ":date_long" }}</time>
-                    <time class="date court" datetime="{{ .PublishDate }}">{{ .Date | time.Format ":date_short" }}</time>
+                    <a href="{{ .Permalink }}"> <span class="catemoji">{{ index $emojis 0 .Section }}</span> {{ .Title | markdownify }}</a>
                     <time class="date" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ .Date | time.Format ":date_long" }}</time>
                     <time class="date court" datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}">{{ .Date | time.Format ":date_short" }}</time>
                 </li>
