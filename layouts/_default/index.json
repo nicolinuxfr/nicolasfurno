@@ -1,3 +1,4 @@
+{{ $emojis := .Site.Data.catemoji }}
 {{- $.Scratch.Add "index" slice -}}
 {{- range (where .Site.RegularPages "Type" "ne" "pages") -}}
     {{ $contenu := (lower .Content ) }}
@@ -6,7 +7,8 @@
     {{ end }}
     {{ $contenu = replaceRE "(<sup.*sup>)" "" $contenu }}
     {{ $contenu = replaceRE "\n" "" ($contenu | plainify) }}
-    {{ $contenu := split $contenu " " | complement .Site.Data.stopwords | uniq }}
-    {{- $.Scratch.Add "index" (dict "title" ( .Title | markdownify ) "section" ( (site.GetPage .Section ).Title ) "permalink" .Permalink "content" $contenu ) -}}
+    {{ $contenu = split $contenu " " | complement .Site.Data.stopwords | uniq }}
+    {{ $title := printf "%s" ( .Title | markdownify ) | printf "%s%s" " " | printf "%s%s" (index $emojis 0 .Section) | printf "%s" }}
+    {{- $.Scratch.Add "index" (dict "title" $title "section" (site.GetPage .Section).Title "permalink" .Permalink "content" $contenu ) -}}
 {{- end -}}
 {{- $.Scratch.Get "index" | jsonify -}}
