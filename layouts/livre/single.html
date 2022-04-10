@@ -25,7 +25,7 @@
                 {{ end }}
             </ul>
             <p><strong>Éditeur</strong> : {{ $metadata.volumeInfo.publisher }}</p>
-            <p><strong>Année</strong> : {{ time.Format "2006" $metadata.volumeInfo.publishedDate }}</p>
+            <p><strong>Année</strong> : {{ if eq (len $metadata.volumeInfo.publishedDate) 4 }} {{ $metadata.volumeInfo.publishedDate }} {{ else }} {{ time.Format "2006" $metadata.volumeInfo.publishedDate }} {{ end }}</p>
             {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
             <p><strong>Pages</strong> : {{ $metadata.volumeInfo.pageCount }}</p>
         </div>
