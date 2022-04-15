@@ -6,7 +6,7 @@
 
     <div class="content">
         <h1 class="title">{{ .Title | markdownify }}</h1>
-        {{ partial "date.html" . }}
+        {{ partial "meta-top.html" . }}
         
         <div class="article">{{ .Content }}</div>
 
@@ -61,7 +61,7 @@
             {{ end }}
 
             <p><strong>Liens</strong> : <a href="{{ $metadata.website }}">Site officiel</a> | <a href="https://store.steampowered.com/app/{{ $id}}" target="_blank">Acheter ({{ div $metadata.price_overview.final 100 }} €)</a> | <a href="{{ $metadata.metacritic.url }}" target="_blank">Critiques ({{ $metadata.metacritic.score }})</a></p>
-    </div>
+        </div>
     {{ end }}
 
 </div>

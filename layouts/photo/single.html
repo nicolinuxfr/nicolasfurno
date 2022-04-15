@@ -3,9 +3,8 @@
 <section id="single-photo">
     
     <h1 class="title">{{ .Title | markdownify }}</h1>
-
     <div class="content">
-        {{ partial "date.html" . }}
+        {{ partial "meta-top.html" . }}
         
         <div class="article">{{ .Content }}</div>
         
@@ -41,7 +40,6 @@
         {{ $image := .Resources.GetMatch .Params.image }}
         <div class="meta">
             <h3>Emplacement</h3>
-        </div>
         {{- $.Scratch.Add "photos" slice -}}
         {{ with .Resources.ByType "image" }}
         {{ range . }}
@@ -53,7 +51,8 @@
         {{- $photos := $.Scratch.Get "photos" -}}
         
         {{ partial "maps.html" $photos }}
-
+        {{ partial "section.html" . }}
+    </div>
     {{ end }}
     </div>
 </section>

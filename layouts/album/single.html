@@ -6,27 +6,27 @@
 
     <div class="content">
         <h1 class="title">{{ .Title | markdownify }}</h1>
-        {{ partial "date.html" . }}
+        {{ partial "meta-top.html" . }}
         
         <div class="article">{{ .Content }}</div>
 
-    {{ if $.Param "id" }}
-        {{ $id := $.Param "id" }}
-        {{ $metadata := index (( getJSON "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=" $id).results ) 0 }}
-        {{ $countries := .Site.Data.countries }}
-        
-    <div class="meta">
-        <h3>Informations</h3>
-        <div class="col">
-            <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
-            <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
-            {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
-            <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
-        </div>
-    </div>
-    {{ end }}
+        {{ if $.Param "id" }}
+            {{ $id := $.Param "id" }}
+            {{ $metadata := index (( getJSON "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=" $id).results ) 0 }}
+            {{ $countries := .Site.Data.countries }}
+            
+            <div class="meta">
+                <h3>Informations</h3>
+                <div class="col">
+                    <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
+                    <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
+                    {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
+                    <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
+                </div>
+            </div> 
+        {{ end }}
 
-</div>
+    </div>
 </section>
 
 {{ end }}

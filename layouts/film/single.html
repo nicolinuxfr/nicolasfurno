@@ -6,7 +6,7 @@
 
     <div class="content">
         <h1 class="title">{{ .Title | markdownify }}</h1>
-        {{ partial "date.html" . }}
+        {{ partial "meta-top.html" . }}
         
         <div class="article">{{ .Content }}</div>
 
@@ -56,7 +56,6 @@
                 <li>{{.name}}</li>
             {{ end }}
         </ul>
-
     </div>
     {{ end }}
 

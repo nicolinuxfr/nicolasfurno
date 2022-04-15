@@ -1,5 +1,0 @@
-<div class="date">
-    {{ $jour := (.PublishDate | time.Format ":date_long") }}
-    {{ $heure := (.PublishDate | time.Format ":time_short") }}
-    <p>Publié le <time datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}"> {{ $jour }}</time></p>
-</div>

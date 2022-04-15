@@ -1,0 +1,4 @@
+{{ $emojis := .Site.Data.catemoji }}
+{{ $section := printf "%s" (index $emojis 0 .Section ) | printf "%s%s" " " | printf "%s%s" (site.GetPage .Section).Title | printf "%s" }}
+
+<div class="section"><a href="/{{ .Section }}">{{ $section }}</a></div>
