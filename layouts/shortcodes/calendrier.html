@@ -1,9 +1,9 @@
 {{ $mois := .Site.Data.mois }}
 {{ $emojis := .Site.Data.catemoji }}
 {{ range (where .Site.RegularPages "Type" "ne" "pages").GroupByDate "2006" }}
-<h3>{{ .Key }} ({{ len .Pages }})</h3>
+<h3>{{ .Key }} <span class="compteur">({{ len .Pages }})</span></h3>
     {{ range .Pages.GroupByDate "1"}}  
-        <h4>{{ index $mois 0 .Key }} ({{ len .Pages }})</h4>
+        <h4>{{ index $mois 0 .Key }} <span class="compteur">({{ len .Pages }})</span></h4>
         <ul class="archives calendrier">
             {{ range .Pages }}
             {{ $jour := (.PublishDate | time.Format ":date_long") }}

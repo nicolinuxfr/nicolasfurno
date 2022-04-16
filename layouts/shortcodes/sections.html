@@ -4,6 +4,6 @@
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
     {{ range sort $sections "Title" }}
     {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}
-    <li><a href="{{ .Permalink }}"><span class="catemoji">{{ (index $emojis 0 .Section) }}</span> {{ .Title }} ({{ $compteur }})</a></li>
+    <li><a href="{{ .Permalink }}"><span class="catemoji">{{ (index $emojis 0 .Section) }}</span> {{ .Title }} <span class="compteur">({{ $compteur }})</span></a></li>
     {{ end }}
 </ul>
