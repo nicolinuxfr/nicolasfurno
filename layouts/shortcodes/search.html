@@ -14,6 +14,10 @@
     var search_results = document.getElementById('search-results'); // targets the <ul>
     var resultsAvailable = false; 
     var fuse; // holds our search engine
+
+    // Récupération des paramètres de recherche dans l'URL
+    let params = (new URL(document.location)).searchParams;
+    var searchURL = params.get('s');
    
     fetch_JSON('/index.json', function(data){
         var options = { // fuse.js options; check fuse.js website for details
@@ -28,7 +32,11 @@
               { name: "section", weight: 10 }
           ]
         };
-        fuse = new Fuse(data, options); // build the index from the json file
+        fuse = new Fuse(data, options);
+        if (searchURL) {
+          search_input.value = searchURL;
+          search_exec(searchURL);
+        }
         search_input.focus();
 
         search_input.addEventListener('keyup', function(e) { // execute search as each character is typed
@@ -68,3 +76,4 @@
     search_results.innerHTML = search_items;
   }
 </script>
+
