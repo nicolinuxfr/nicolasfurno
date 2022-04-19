@@ -1,5 +1,5 @@
-{{ if .Params.image }}
-    {{ $image := .Resources.GetMatch .Params.image }}
+{{ with partial "GetImage.html" . }}
+    {{ $image := . }}
     {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
     {{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
     {{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}

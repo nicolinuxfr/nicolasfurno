@@ -7,8 +7,10 @@
 
 {{ if .IsHome }}
     {{ range first 3 (where .Site.RegularPages "Type" "ne" "pages")  }}
-        {{ $image := .Resources.GetMatch .Params.image }}
-        {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
-        <link rel="preload" href="{{ $image1000.RelPermalink }}" as="image">
+        {{ with partial "GetImage.html" . }}
+            {{ $image := . }}
+            {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
+                <link rel="preload" href="{{ $image1000.RelPermalink }}" as="image">
+        {{ end }}
     {{ end }}
 {{ end }}

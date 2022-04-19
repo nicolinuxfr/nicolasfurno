@@ -25,9 +25,9 @@
 
 {{ if .Params.image }}
   <meta name="twitter:card" content="summary_large_image"/>
-    {{ with .Resources.GetMatch .Params.image -}}
-      {{- $image := . -}}
-      {{- $image = $image.Resize "1000x q70 MitchellNetravali" -}}
+    {{ with partial "GetImage.html" . }}
+      {{ $image := . }}
+      {{ $image = $image.Resize "1000x q70 MitchellNetravali" }}
       <meta name="twitter:image" content="{{ $image.Permalink }}"/>
       <meta property="og:image" content="{{ $image.Permalink }}"/>
     {{ end }}

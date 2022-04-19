@@ -1,0 +1,10 @@
+{{ $image := newScratch }}
+{{ if .Params.image }}
+    {{ $image.Set "image" (.Resources.GetMatch .Params.image) }}
+{{ else }}
+    {{ range first 1 (.Resources.ByType "image") }}
+        {{ $image.Set "image" . }}
+    {{ end }}
+{{ end }}
+
+{{ return $image.Get "image" }}

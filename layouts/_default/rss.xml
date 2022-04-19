@@ -23,10 +23,12 @@
         <guid>{{ .Permalink }}</guid>
         <description>
         {{ printf "<![CDATA[" | safeHTML }}
-        <img src="{{.Permalink}}{{ .Param "image"}}">
+        {{ with partial "GetImage.html" . }}
+            {{ $image := . }}
+            <img src="{{ .Permalink }}">
+        {{ end }}
         {{- printf "%s" .Content | safeHTML }}
         {{- printf "]]>" | safeHTML }}
-
         </description>
           
 </item>
