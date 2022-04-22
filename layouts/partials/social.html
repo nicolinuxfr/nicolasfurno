@@ -23,7 +23,7 @@
 {{ with .Lastmod }}<meta property="article:modified_time" {{ .Format $iso8601 | printf "content=%q" | safeHTMLAttr }} />{{ end }}
 {{- end -}}
 
-{{ if .Params.image }}
+{{ if .IsPage }}
   <meta name="twitter:card" content="summary_large_image"/>
     {{ with partial "GetImage.html" . }}
       {{ $image := . }}
