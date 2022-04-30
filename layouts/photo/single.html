@@ -27,7 +27,11 @@
           
                 {{ with .Exif.Tags }}
                     <ul class="meta-photos">
-                        <li>{{ .Model }} ({{ index $lenses 0 (string .FocalLength) }})</li>
+                        {{ $modele := .Model }}
+                        {{ if eq .Model nil }}
+                            {{ $modele = "iPhone 13 Pro" }}
+                        {{ end }}
+                        <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLength) }})</li>
                         <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
                         <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
                     </ul>
