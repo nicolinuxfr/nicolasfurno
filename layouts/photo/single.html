@@ -1,8 +1,9 @@
 {{ define "main" }}
+{{ $titre := .Title | markdownify }}
 
 <section id="single-photo">
     
-    <h1 class="title">{{ .Title | markdownify }}</h1>
+    <h1 class="title">{{ $titre }}</h1>
     <div class="content">
         {{ partial "meta-top.html" . }}
 
@@ -19,7 +20,7 @@
             <div class="image album">
                 <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
                     src="{{ $image.RelPermalink }}"
-                    alt="{{ .Title | markdownify }}"
+                    alt="{{ $titre }}"
                     loading=lazy
                     width="{{ $image.Width }}"
                     height="{{ $image.Height }}"

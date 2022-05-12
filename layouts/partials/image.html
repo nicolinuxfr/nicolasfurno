@@ -1,3 +1,4 @@
+{{ $titre := .Title | markdownify }}
 {{ with partial "GetImage.html" . }}
     {{ $image := . }}
 	{{ $width := $image.Width }}
@@ -11,7 +12,7 @@
 				{{ if gt $image.Width 1500 }} {{ $image1500.RelPermalink }} 1500w,{{ end }}
 				{{ if gt $image.Width 2000 }} {{ $image2000.RelPermalink }} 2000w,{{ end }}
 				{{ $image.RelPermalink }} {{ $image.Width }}w"
-            alt="{{ .Title | markdownify }}"
+            alt="{{ $titre }}"
             loading="lazy"
             width="{{ $image.Width }}"
             height="{{ $image.Height }}"

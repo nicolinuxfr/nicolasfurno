@@ -1,3 +1,4 @@
+{{ $titre := .Title | markdownify }}
 {{ with partial "GetImage.html" . }}
     {{ $image := . }}
     {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
@@ -14,7 +15,7 @@
                     (min-width: 1200px) 33vw,
                     (min-width: 800px) 50vw,
                     100vw"
-            alt="{{ .Title | markdownify }}"
+            alt="{{ $titre }}"
             loading="lazy"
             width="{{ $image.Width }}"
             height="{{ $image.Height }}"
