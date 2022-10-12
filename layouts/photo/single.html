@@ -1,64 +1,66 @@
 {{ define "main" }}
 {{ $titre := .Title | markdownify }}
 
-<section id="single-photo">
-    
-    <h1 class="title">{{ $titre }}</h1>
-    <div class="content">
-        {{ partial "meta-top.html" . }}
-
-        <div class="article">{{ .Content }}</div>
+<main aria-role="main" data-pagefind-body>
+    <section id="single-photo">
         
-        {{ $lenses := .Site.Data.lenses }}
-        {{ with .Resources.ByType "image" }}
-        {{ range . }}
-            {{ $image := . }}
-            {{ $image500 := $image.Resize "500x q75 MitchellNetravali" }}
-            {{ $image1000 := $image.Resize "1000x q75 MitchellNetravali" }}
-            {{ $image1500 := $image.Resize "1500x q75 MitchellNetravali" }}
+        <h1 class="title">{{ $titre }}</h1>
+        <div class="content">
+            {{ partial "meta-top.html" . }}
+
+            <div class="article">{{ .Content }}</div>
             
-            <div class="image album">
-                <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
-                    src="{{ $image.RelPermalink }}"
-                    alt="{{ $titre }}"
-                    loading=lazy
-                    width="{{ $image.Width }}"
-                    height="{{ $image.Height }}"
-                >
-          
-                {{ with .Exif.Tags }}
-                    <ul class="meta-photos">
-                        {{ $modele := .Model }}
-                        {{ if eq .Model nil }}
-                            {{ $modele = "iPhone 13 Pro" }}
-                        {{ end }}
-                        <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLength) }})</li>
-                        <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
-                        <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
-                    </ul>
-                {{ end }}
-            </div>
-        {{ end }}
-        {{ end }}
-
-    {{ if .Params.image }}
-        {{ $image := .Resources.GetMatch .Params.image }}
-        <div class="meta">
-            <h3>Emplacement</h3>
-        {{- $.Scratch.Add "photos" slice -}}
-        {{ with .Resources.ByType "image" }}
-        {{ range . }}
-            {{ with .Exif }}
-                {{- $.Scratch.Add "photos" (dict "long" .Long "lat" .Lat ) -}}
+            {{ $lenses := .Site.Data.lenses }}
+            {{ with .Resources.ByType "image" }}
+            {{ range . }}
+                {{ $image := . }}
+                {{ $image500 := $image.Resize "500x q75 MitchellNetravali" }}
+                {{ $image1000 := $image.Resize "1000x q75 MitchellNetravali" }}
+                {{ $image1500 := $image.Resize "1500x q75 MitchellNetravali" }}
+                
+                <div class="image album">
+                    <img srcset="{{ $image500.RelPermalink }} 500w, {{ $image1000.RelPermalink }} 1000w, {{ $image1500.RelPermalink }} 1500w"
+                        src="{{ $image.RelPermalink }}"
+                        alt="{{ $titre }}"
+                        loading=lazy
+                        width="{{ $image.Width }}"
+                        height="{{ $image.Height }}"
+                    >
+            
+                    {{ with .Exif.Tags }}
+                        <ul class="meta-photos">
+                            {{ $modele := .Model }}
+                            {{ if eq .Model nil }}
+                                {{ $modele = "iPhone 13 Pro" }}
+                            {{ end }}
+                            <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLength) }})</li>
+                            <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
+                            <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
+                        </ul>
+                    {{ end }}
+                </div>
             {{ end }}
-        {{- end -}}
-        {{- end -}}
-        {{- $photos := $.Scratch.Get "photos" -}}
-        
-        {{ partial "maps.html" $photos }}
-    </div>
-    {{ end }}
-    </div>
-</section>
+            {{ end }}
 
+        {{ if .Params.image }}
+            {{ $image := .Resources.GetMatch .Params.image }}
+            <div class="meta">
+                <h3>Emplacement</h3>
+            {{- $.Scratch.Add "photos" slice -}}
+            {{ with .Resources.ByType "image" }}
+            {{ range . }}
+                {{ with .Exif }}
+                    {{- $.Scratch.Add "photos" (dict "long" .Long "lat" .Lat ) -}}
+                {{ end }}
+            {{- end -}}
+            {{- end -}}
+            {{- $photos := $.Scratch.Get "photos" -}}
+            
+            {{ partial "maps.html" $photos }}
+        </div>
+        {{ end }}
+        </div>
+    </section>
+
+</main>
 {{ end }}

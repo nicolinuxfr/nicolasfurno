@@ -7,11 +7,11 @@
 	{{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}
 
     <div class="image">
-        <img src="{{ $image.RelPermalink }}"
-			srcset="{{ if gt $image.Width 1000 }} {{ $image1000.RelPermalink }} 1000w,{{ end }},
-				{{ if gt $image.Width 1500 }} {{ $image1500.RelPermalink }} 1500w,{{ end }}
-				{{ if gt $image.Width 2000 }} {{ $image2000.RelPermalink }} 2000w,{{ end }}
-				{{ $image.RelPermalink }} {{ $image.Width }}w"
+        <img data-pagefind-meta="image[src]" src="{{ $image.Permalink }}"
+			srcset="{{ if gt $image.Width 1000 }} {{ $image1000.Permalink }} 1000w,{{ end }},
+				{{ if gt $image.Width 1500 }} {{ $image1500.Permalink }} 1500w,{{ end }}
+				{{ if gt $image.Width 2000 }} {{ $image2000.Permalink }} 2000w,{{ end }}
+				{{ $image.Permalink }} {{ $image.Width }}w"
             alt="{{ $titre }}"
             loading="lazy"
             width="{{ $image.Width }}"
