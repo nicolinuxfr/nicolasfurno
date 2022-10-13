@@ -1,88 +1,14 @@
-<script src="/js/fuse.min.js"></script>
-
-<div class="recherche">
-    <form id="search" role="search" aria-haspopup="listbox" aria-labelledby="search-label" onsubmit="return false">
-        <input id="search-input" type="search" list="search-results" placeholder="Chercher" aria-label="Recherche" autocomplete="off" spellcheck="false" ></input>
-        <ul id="search-results" role="listbox"></ul>
-    </form>
-</div>
-
-<link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
 <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+      new PagefindUI({ 
+        element: "#search", 
+        showImages: false
+      });
+      document.querySelector('.pagefind-ui__search-input').focus();
+    });
+</script>
+
 <div id="search"></div>
-<script>
-    window.addEventListener('DOMContentLoaded', (event) => {
-        new PagefindUI({ element: "#search" });
-    });
-</script>
-
-<script>
-    var search_form = document.getElementById('search'); // search form
-    var search_input = document.getElementById('search-input'); // input box for search
-    var search_submit = document.getElementById('search-submit'); // form submit button
-    var search_results = document.getElementById('search-results'); // targets the <ul>
-    var resultsAvailable = false; 
-    var fuse; // holds our search engine
-
-    // Récupération des paramètres de recherche dans l'URL
-    let params = (new URL(document.location)).searchParams;
-    var searchURL = params.get('s');
-   
-    fetch_JSON('/index.json', function(data){
-        var options = { // fuse.js options; check fuse.js website for details
-            shouldSort: true,
-            location: 0,
-            distance: 10000,
-            threshold: 0.2,
-            minMatchCharLength: 2,
-            keys: [ 
-              { name: "title", weight: 8 },
-              { name: "content", weight: 4 },
-              { name: "section", weight: 10 }
-          ]
-        };
-        fuse = new Fuse(data, options);
-        if (searchURL) {
-          search_input.value = searchURL;
-          search_exec(searchURL);
-        }
-        search_input.focus();
-
-        search_input.addEventListener('keyup', function(e) { // execute search as each character is typed
-            search_exec(this.value);
-        });
-    });
-  
-    function fetch_JSON(path, callback) {
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.onreadystatechange = function() {
-      if (httpRequest.readyState === 4) {
-        if (httpRequest.status === 200) {
-          var data = JSON.parse(httpRequest.responseText);
-            if (callback) callback(data);
-        }
-      }
-    };
-    httpRequest.open('GET', path);
-    httpRequest.send();
-  }
-  
-    function search_exec(term) {
-      let results = fuse.search(term); // the actual query being run using fuse.js
-      let search_items = ''; // our results bucket
-    
-      if (results.length === 0) { // no results based on what was typed into the input box
-        results_available = false;
-        search_items = '';
-      } else { // build our html
-        for (let item in results) { 
-          search_items = search_items +
-    `<li><a href="${results[item].item.permalink}">${results[item].item.title}</span></a></li>`;
-        }
-      results_available = true;
-    }
-  
-    search_results.innerHTML = search_items;
-  }
-</script>
 

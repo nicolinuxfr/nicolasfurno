@@ -482,23 +482,33 @@ h1 {
 
 /* Recherche */
 
-#search-input {
+.pagefind-ui__search-input {
     font-family: var(--police-texte);
     font-size: 1.5em;
-    width: 100%;
     text-align: center;
     margin:1em auto;
     font-weight: 600;
     border-color: var(--vert);
     border-style:solid;
     padding: 0.1em;
+    width: 100%;
+}
+
+.pagefind-ui__message {
+    font-family: var(--police-meta);
+    font-size: 0.5em;
+    text-align: center;
 }
 
 input:focus::placeholder {
     color: transparent;
 }
 
-#search-results {
+.pagefind-ui__result-excerpt {
+    display:none;
+}
+
+.pagefind-ui__results {
     text-align: center;
     list-style: none;
     font-family: var(--police-titre);
@@ -507,15 +517,15 @@ input:focus::placeholder {
     padding: 0;
 }
 
-#search-results li {
+.pagefind-ui__results li {
     margin: 0.5em 0;
 }
 
-#search-results em {
+.pagefind-ui__results em {
     font-weight: 900;
 }
 
-#search-results a {
+.pagefind-ui__results a {
     text-decoration: none;
 }
 
@@ -525,6 +535,8 @@ input:focus::placeholder {
         margin:0.5em auto;
     }
 }
+
+
 
 /* Archives */
 
