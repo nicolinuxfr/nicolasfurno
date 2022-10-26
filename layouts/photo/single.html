@@ -34,7 +34,9 @@
                         {{ end }}
                         <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLength) }})</li>
                         <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
-                        <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
+                        {{ if ne .DateTime nil }}
+                            <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
+                        {{ end }}
                     </ul>
                 {{ end }}
             </div>
