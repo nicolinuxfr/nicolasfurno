@@ -4,7 +4,9 @@
   window.addEventListener('DOMContentLoaded', (event) => {
       new PagefindUI({ 
         element: "#search", 
-        showImages: false
+        showImages: false,
+        showEmptyFilters: false,
+        resetStyles: false
       });
       document.querySelector('.pagefind-ui__search-input').focus();
     });

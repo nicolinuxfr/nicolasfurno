@@ -4,11 +4,11 @@
 <main aria-role="main" data-pagefind-body>
     <section id="single-photo">
         
-        <h1 class="title">{{ $titre }}</h1>
+        <h1 class="title" data-pagefind-sort="weight[data-weight]" data-weight="10">{{ $titre }}</h1>
         <div class="content">
             {{ partial "meta-top.html" . }}
 
-            <div class="article">{{ .Content }}</div>
+            <div data-pagefind-sort="weight[data-weight]" data-weight="5" class="article">{{ .Content }}</div>
             
             {{ $lenses := .Site.Data.lenses }}
             {{ with .Resources.ByType "image" }}

@@ -2,10 +2,10 @@
 {{ $section := printf "%s" (index $emojis 0 .Section ) | printf "%s%s" " " | printf "%s%s" (site.GetPage .Section).Title | printf "%s" }}
 
 <div class="meta-top">
-    <div class="section">
+    <div class="section" data-pagefind-filter="section">
         <a href="/{{ .Section }}">{{ $section }}</a>
     </div>
-    <div class="date">
+    <div class="date" >
         {{ $jour := (.PublishDate | time.Format ":date_long") }}
         {{ $heure := (.PublishDate | time.Format ":time_short") }}
         Publié le <time datetime="{{ .PublishDate }}" title="{{ $jour }} à {{ $heure }}"> {{ $jour }}</time>

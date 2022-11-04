@@ -5,7 +5,7 @@
         {{ partial "image.html" . }}
 
         <div class="content">
-            <h1 class="title">{{ .Title | markdownify }}</h1>
+            <h1 class="title" data-pagefind-sort="weight[data-weight]" data-weight="10">{{ .Title | markdownify }}</h1>
             {{ partial "meta-top.html" . }}
             
             <div class="article">{{ .Content }}</div>
