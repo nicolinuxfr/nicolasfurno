@@ -13,8 +13,8 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "tmdb" }}
-            {{ $id := $.Param "tmdb" }}
+        {{ else if $.Param "id" }}
+            {{ $id := $.Param "id" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
             {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "?api_key=" $tmdb "&language=fr-FR" }}
             {{ $infos.Set "meta" $data }}
@@ -23,8 +23,8 @@
         {{ if .Resources.GetMatch "cast.json" }}
             {{ $data := .Resources.GetMatch "cast.json" | unmarshal }}
             {{ $infos.Set "cast" $data }}
-        {{ else if $.Param "tmdb" }}
-            {{ $id := $.Param "tmdb" }}
+        {{ else if $.Param "id" }}
+            {{ $id := $.Param "id" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
             {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "/aggregate_credits?api_key=" $tmdb "&language=fr-FR" }}
             {{ $infos.Set "cast" $data }}

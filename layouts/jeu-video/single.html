@@ -13,7 +13,7 @@
         {{ $infos := newScratch }}
         
         {{ if $.Param "id" }}
-            {{ $id := $.Param "id" }}
+            {{ $id := string ($.Param "id") }}
             {{ $infos.Set "id" $id }}
             {{ if .Resources.GetMatch "meta.json" }}
                 {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
