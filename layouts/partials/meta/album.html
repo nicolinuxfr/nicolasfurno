@@ -1,0 +1,15 @@
+{{ $metadata := .Get "meta" }}
+{{ $countries := .Get "countries" }}
+{{ $pays := .Get "pays" }}
+
+<div class="meta">
+    <h3>Informations</h3>
+    <div class="col">
+        <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
+        <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
+        {{ if gt (len $pays) 0 }}
+            <p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" $pays }} {{ .name }} {{ end }}</p>
+        {{ end }}
+        <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
+    </div>
+</div> 

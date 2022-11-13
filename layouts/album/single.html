@@ -10,20 +10,28 @@
         
         <div class="article">{{ .Content }}</div>
 
-        {{ if $.Param "id" }}
+        {{ $infos := newScratch }}
+        {{ if .Resources.GetMatch "meta.json" }}
+            {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
+            {{ $infos.Set "meta" $data }}
+        {{ else if $.Param "id" }}
             {{ $id := $.Param "id" }}
-            {{ $metadata := index (( getJSON "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=" $id).results ) 0 }}
-            {{ $countries := .Site.Data.countries }}
-            
-            <div class="meta">
-                <h3>Informations</h3>
-                <div class="col">
-                    <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
-                    <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
-                    {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
-                    <p><strong>Genre</strong> : {{ $metadata.primaryGenreName }}</p>
-                </div>
-            </div> 
+            {{ $data := index (( getJSON "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=" $id).results ) 0 }}
+            {{ $infos.Set "meta" $data }}
+        {{ end }}
+
+        {{ $infos.Set "countries" .Site.Data.countries }}
+
+        {{ if .Params.pays }}
+            {{ $infos.Set "pays" .Params.pays }}
+        {{ else }}
+            {{ $infos.Set "pays" "" }}
+        {{ end }}
+
+        {{ with $infos.Get "meta" }}
+            {{ if gt (len .) 0 }}
+                {{ partial "meta/album.html" $infos }}
+            {{ end }}
         {{ end }}
 
     </div>

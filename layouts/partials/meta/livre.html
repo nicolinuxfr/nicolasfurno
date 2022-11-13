@@ -1,0 +1,21 @@
+{{ $metadata := .Get "meta" }}
+{{ $countries := .Get "countries" }}
+{{ $pays := .Get "pays" }}
+
+<div class="meta ">
+    <h3>Informations</h3>
+    <div class="col">
+        <ul>
+            <li>{{ if gt (len $metadata.authors ) 1 }}<strong>Auteurs</strong>{{else}}<strong>Auteur</strong>{{end}} : </li>
+            {{ range $metadata.authors }}
+                <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+        <p><strong>Éditeur</strong> : {{ $metadata.publisher }}</p>
+        <p><strong>Année</strong> : {{ if eq (len $metadata.publishedDate) 4 }} {{ $metadata.publishedDate }} {{ else }} {{ time.Format "2006" $metadata.publishedDate }} {{ end }}</p>
+        {{ if gt (len $pays) 0 }}
+            <p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" $pays }} {{ .name }} {{ end }} 
+        {{ end }}
+        <p><strong>Pages</strong> : {{ $metadata.pageCount }}</p>
+    </div>
+</div>

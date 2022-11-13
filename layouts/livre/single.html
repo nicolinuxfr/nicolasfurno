@@ -10,27 +10,29 @@
         
         <div class="article">{{ .Content }}</div>
 
-    {{ if $.Param "id" }}
-        {{ $id := $.Param "id" }}
-        {{ $metadata := getJSON "https://www.googleapis.com/books/v1/volumes/" $id }}
-        {{ $countries := .Site.Data.countries }}
-        
-    <div class="meta ">
-        <h3>Informations</h3>
-        <div class="col">
-            <ul>
-                <li>{{ if gt (len $metadata.volumeInfo.authors ) 1 }}<strong>Auteurs</strong>{{else}}<strong>Auteur</strong>{{end}} : </li>
-                {{ range $metadata.volumeInfo.authors }}
-                    <li>{{ . }}</li>
-                {{ end }}
-            </ul>
-            <p><strong>Éditeur</strong> : {{ $metadata.volumeInfo.publisher }}</p>
-            <p><strong>Année</strong> : {{ if eq (len $metadata.volumeInfo.publishedDate) 4 }} {{ $metadata.volumeInfo.publishedDate }} {{ else }} {{ time.Format "2006" $metadata.volumeInfo.publishedDate }} {{ end }}</p>
-            {{ with .Params.pays }}<p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" . }} {{ .name }} {{ end }} {{ end }}
-            <p><strong>Pages</strong> : {{ $metadata.volumeInfo.pageCount }}</p>
-        </div>
-    </div>
-    {{ end }}
+        {{ $infos := newScratch }}
+        {{ if .Resources.GetMatch "meta.json" }}
+            {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
+            {{ $infos.Set "meta" $data }}
+        {{ else if $.Param "id" }}
+            {{ $id := $.Param "id" }}
+            {{ $data := getJSON "https://www.googleapis.com/books/v1/volumes/" $id }}
+            {{ $infos.Set "meta" ($data).volumeInfo }}
+        {{ end }}
+
+        {{ $infos.Set "countries" .Site.Data.countries }}
+
+        {{ if .Params.pays }}
+            {{ $infos.Set "pays" .Params.pays }}
+        {{ else }}
+            {{ $infos.Set "pays" "" }}
+        {{ end }}
+
+        {{ with $infos.Get "meta" }}
+            {{ if gt (len .) 0 }}
+                {{ partial "meta/livre.html" $infos }}
+            {{ end }}
+        {{ end }}
 
 </div>
 </section>
