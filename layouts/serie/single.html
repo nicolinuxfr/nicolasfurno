@@ -8,59 +8,35 @@
         {{ partial "meta-top.html" . }}
         
         <div class="article">{{ .Content }}</div>
-    
-    {{ if $.Param "tmdb" }}
-        {{ $id := $.Param "tmdb" }}
-        {{ $tmdb := getenv "HUGO_TMDB" }}
-        {{ $metadata := getJSON "https://api.themoviedb.org/3/tv/" $id "?api_key=" $tmdb "&language=fr-FR" }}
-        {{ $cast := getJSON "https://api.themoviedb.org/3/tv/" $id "/aggregate_credits?api_key=" $tmdb "&language=fr-FR" }}
-        {{ $countries := .Site.Data.countries }}
 
-    <div class="meta">
-        <h3>Informations</h3>
-        
-        {{ if ne $metadata.name $metadata.original_name }}
-            <p><strong>Titre original</strong> :<em>{{ $metadata.original_name }}</em></p>
+        {{ $infos := newScratch }}
+        {{ if .Resources.GetMatch "meta.json" }}
+            {{ $data := getJSON (.Resources.GetMatch "meta.json").Permalink }}
+            {{ $infos.Set "meta" $data }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
+            {{ $tmdb := getenv "HUGO_TMDB" }}
+            {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $infos.Set "meta" $data }}
         {{ end }}
 
-        <ul>
-            <li><strong>Créateurs</strong> :</li>
-            {{ range $metadata.networks }}
-                <li><a href="https://www.themoviedb.org/network/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
-            {{ end }}
-            {{ range $metadata.created_by }}
-                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
-            {{ end }}
-        </ul>
-
-        <p><strong>Année</strong> : {{ time.Format "2006" $metadata.first_air_date }}</p> 
-
-        <ul>
-            <li>{{if gt (len $metadata.origin_country ) 1}}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
-            {{ range $metadata.origin_country }}
-                {{ $code := (lower . | string) }}
-                {{ range where $countries ".alpha2" $code }}
-                    <li>{{ .name }}</li>
-                {{ end }}
-            {{ end }}
-        </ul>
-
-        <ul>
-            <li><strong>Acteurs</strong> :</li>
-            {{ range first 10 $cast.cast }}
-                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
-            {{ end }}
-        </ul>
-
-        <ul>
-            <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} :</li>
-        {{ range $metadata.genres }}
-            <li>{{.name}}</li>
+        {{ if .Resources.GetMatch "cast.json" }}
+            {{ $data := getJSON (.Resources.GetMatch "cast.json").Permalink }}
+            {{ $infos.Set "cast" $data }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
+            {{ $tmdb := getenv "HUGO_TMDB" }}
+            {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "/aggregate_credits?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $infos.Set "cast" $data }}
         {{ end }}
-        </ul>
-        
-    </div>
-    {{ end }}
+
+        {{ $infos.Set "countries" .Site.Data.countries }}
+
+        {{ with $infos.Get "meta" }}
+            {{ if gt (len .) 0 }}
+                {{ partial "meta/serie.html" $infos }}
+            {{ end }}
+        {{ end }}
 
     </div>
 </section>

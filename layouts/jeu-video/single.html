@@ -10,59 +10,26 @@
         
         <div class="article">{{ .Content }}</div>
 
-    {{ if $.Param "id" }}
-        {{ $id := $.Param "id" }}
-        {{ $metadata := (index (( getJSON "https://store.steampowered.com/api/appdetails?l=french&appids=" $id )) $id).data }}
+        {{ $infos := newScratch }}
         
-    <div class="meta">
-        <h3>Informations</h3>
-
-        <ul>
-            <li>{{if gt (len $metadata.developers ) 1}}<strong>Créateurs</strong>{{else}}<strong>Créateur</strong>{{end}} : </li>
-            {{ range $metadata.developers }}
-                <li>{{.}}</li>
-            {{ end }}
-        </ul>
-
-        <p><strong>Sortie</strong> : {{ $metadata.release_date.date }}</p>
-
-        {{  $compatibilite := slice }}
-        
-        {{ if $metadata.platforms.mac }}
-            {{ $compatibilite = $compatibilite | append "macOS" }}
-        {{ end }}
-
-        {{ if $metadata.platforms.windows }}
-            {{ $compatibilite = $compatibilite | append "Windows" }}
-        {{ end }}
-
-        {{ if $metadata.platforms.linux }}
-            {{ $compatibilite = $compatibilite | append "Linux" }}
-        {{ end }}
-
-        <ul>
-            <li><strong>Compatibilité</strong> : </li>
-            {{ range $compatibilite }}
-                <li>{{.}}</li>
-            {{ end }}
-        </ul>
-           
-            <ul>
-                <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} : </li>
-                {{ range $metadata.genres }}
-                    <li>{{.description}}</li>
-                {{ end }}
-            </ul>
-
-            {{ if in $metadata.supported_languages "Français" }}
-                <p><strong>Langue : </strong>Traduit en français</p>
+        {{ if $.Param "id" }}
+            {{ $id := $.Param "id" }}
+            {{ $infos.Set "id" $id }}
+            {{ if .Resources.GetMatch "meta.json" }}
+                {{ $data := getJSON ((.Resources.GetMatch "meta.json").Permalink) }}
+                {{ $data = (index $data $id).data }}
+                {{ $infos.Set "meta" $data }}
             {{ else }}
-                <p><strong>Langue : </strong>Uniquement en anglais</p>
+                {{ $data := (index (( getJSON "https://store.steampowered.com/api/appdetails?l=french&appids=" $id )) $id).data }}
+                {{ $infos.Set "meta" $data }}
             {{ end }}
+        {{ end }}
 
-            <p><strong>Liens</strong> : <a href="{{ $metadata.website }}">Site officiel</a> | <a href="https://store.steampowered.com/app/{{ $id}}" target="_blank">Acheter ({{ div $metadata.price_overview.final 100 }} €)</a> | <a href="{{ $metadata.metacritic.url }}" target="_blank">Critiques ({{ $metadata.metacritic.score }})</a></p>
-        </div>
-    {{ end }}
+        {{ with $infos.Get "meta" }}
+            {{ if gt (len .) 0 }}
+                {{ partial "meta/jeu-video.html" $infos }}
+            {{ end }}
+        {{ end }}
 
 </div>
 </section>

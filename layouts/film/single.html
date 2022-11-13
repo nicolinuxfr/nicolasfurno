@@ -10,55 +10,34 @@
         
         <div class="article">{{ .Content }}</div>
 
-    {{ if $.Param "tmdb" }}
-        {{ $id := $.Param "tmdb" }}
-        {{ $tmdb := getenv "HUGO_TMDB" }}
-        {{ $metadata := getJSON "https://api.themoviedb.org/3/movie/" $id "?api_key=" $tmdb "&language=fr-FR" }}
-        {{ $cast := getJSON "https://api.themoviedb.org/3/movie/" $id "/credits?api_key=" $tmdb "&language=fr-FR" }}
-        {{ $countries := .Site.Data.countries }}
-
-    <div class="meta">
-        <h3>Informations</h3>
-
-        {{ if ne $metadata.title $metadata.original_title }}
-            <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
+        {{ $infos := newScratch }}
+        {{ if .Resources.GetMatch "meta.json" }}
+            {{ $data := getJSON (.Resources.GetMatch "meta.json").Permalink }}
+            {{ $infos.Set "meta" $data }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
+            {{ $tmdb := getenv "HUGO_TMDB" }}
+            {{ $data := getJSON "https://api.themoviedb.org/3/movie/" $id "?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $infos.Set "meta" $data }}
         {{ end }}
 
-        <ul>
-            <li>{{if gt (len (where $cast.crew ".job" "Director") ) 1}}<strong>Réalisateurs</strong>{{else}}<strong>Réalisateur</strong>{{end}} : </li>
-            {{ range where $cast.crew ".job" "Director" }}
-                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+        {{ if .Resources.GetMatch "cast.json" }}
+            {{ $data := getJSON (.Resources.GetMatch "cast.json").Permalink }}
+            {{ $infos.Set "cast" $data }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
+            {{ $tmdb := getenv "HUGO_TMDB" }}
+            {{ $data := getJSON "https://api.themoviedb.org/3/movie/" $id "/credits?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $infos.Set "cast" $data }}
+        {{ end }}
+
+        {{ $infos.Set "countries" .Site.Data.countries }}
+
+        {{ with $infos.Get "meta" }}
+            {{ if gt (len .) 0 }}
+                {{ partial "meta/film.html" $infos }}
             {{ end }}
-        </ul>
-
-        <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
-
-        <ul>
-            <li>{{ if gt (len $metadata.production_countries ) 1 }}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} : </li>
-            {{ range $metadata.production_countries }}
-                {{ $code := (lower .iso_3166_1 | string) }}
-                {{ range where $countries ".alpha2" $code }}
-                    <li>{{ .name }}</li>
-                {{ end }}
-            {{ end }}
-        </ul>
-
-        <ul>
-            <li><strong>Acteurs</strong> : </li>
-            {{ range first 8 $cast.cast }}
-                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
-            {{ end }}
-        </ul>
-
-        <ul>
-            <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} : </li>
-            {{ range $metadata.genres }}
-                <li>{{.name}}</li>
-            {{ end }}
-        </ul>
-    </div>
-    {{ end }}
-
+        {{ end }}
 </div>
 </section>
 

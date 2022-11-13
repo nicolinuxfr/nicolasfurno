@@ -1,0 +1,55 @@
+{{ $id := .Get "id" }}
+{{ $metadata := .Get "meta" }}
+
+<div class="meta">
+    <h3>Informations</h3>
+
+    {{ with $metadata.developers }}
+        <ul>
+            <li>{{if gt (len . ) 1}}<strong>Créateurs</strong>{{else}}<strong>Créateur</strong>{{end}} : </li>
+            {{ range . }}
+                <li>{{.}}</li>
+            {{ end }}
+        </ul>
+    {{ end }}
+
+    <p><strong>Sortie</strong> : {{ $metadata.release_date.date }}</p>
+
+    {{  $compatibilite := slice }}
+    
+    {{ if $metadata.platforms.mac }}
+        {{ $compatibilite = $compatibilite | append "macOS" }}
+    {{ end }}
+
+    {{ if $metadata.platforms.windows }}
+        {{ $compatibilite = $compatibilite | append "Windows" }}
+    {{ end }}
+
+    {{ if $metadata.platforms.linux }}
+        {{ $compatibilite = $compatibilite | append "Linux" }}
+    {{ end }}
+
+    <ul>
+        <li><strong>Compatibilité</strong> : </li>
+        {{ range $compatibilite }}
+            <li>{{.}}</li>
+        {{ end }}
+    </ul>
+       
+    {{ with $metadata.genres }}
+        <ul>
+            <li>{{if gt (len . ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} : </li>
+            {{ range . }}
+                <li>{{ .description }}</li>
+            {{ end }}
+        </ul>
+    {{ end }}
+
+        {{ if in $metadata.supported_languages "Français" }}
+            <p><strong>Langue : </strong>Traduit en français</p>
+        {{ else }}
+            <p><strong>Langue : </strong>Uniquement en anglais</p>
+        {{ end }}
+
+        <p><strong>Liens</strong> : <a href="{{ $metadata.website }}">Site officiel</a> | <a href="https://store.steampowered.com/app/{{ $id }}" target="_blank">Acheter ( {{ div $metadata.price_overview.final 100 }} €)</a></p>
+</div>
