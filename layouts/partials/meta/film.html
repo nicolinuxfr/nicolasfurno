@@ -16,7 +16,7 @@
         {{ end }}
     </ul>
 
-    <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
+    <p><strong>Année</strong> : {{ time.Format "2006" $metadata.release_date }}</p>
 
     <ul>
         <li>{{ if gt (len $metadata.production_countries ) 1 }}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} : </li>
@@ -41,4 +41,8 @@
             <li>{{.name}}</li>
         {{ end }}
     </ul>
+
+    {{ $heures := math.Floor (div $metadata.runtime 60) }}
+    {{ $minutes := mod $metadata.runtime 60 }}
+    <p><strong>Durée</strong> : {{ $heures }}h{{ if lt $minutes 10 }}0{{ end }}{{  $minutes }}</p>
 </div>
