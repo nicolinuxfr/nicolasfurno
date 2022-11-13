@@ -16,7 +16,7 @@
             {{ $id := $.Param "id" }}
             {{ $infos.Set "id" $id }}
             {{ if .Resources.GetMatch "meta.json" }}
-                {{ $data := getJSON ((.Resources.GetMatch "meta.json").Permalink) }}
+                {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
                 {{ $data = (index $data $id).data }}
                 {{ $infos.Set "meta" $data }}
             {{ else }}

@@ -12,7 +12,7 @@
 
         {{ $infos := newScratch }}
         {{ if .Resources.GetMatch "meta.json" }}
-            {{ $data := getJSON (.Resources.GetMatch "meta.json").Permalink }}
+            {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
         {{ else if $.Param "tmdb" }}
             {{ $id := $.Param "tmdb" }}
@@ -22,7 +22,7 @@
         {{ end }}
 
         {{ if .Resources.GetMatch "cast.json" }}
-            {{ $data := getJSON (.Resources.GetMatch "cast.json").Permalink }}
+            {{ $data := .Resources.GetMatch "cast.json" | unmarshal }}
             {{ $infos.Set "cast" $data }}
         {{ else if $.Param "tmdb" }}
             {{ $id := $.Param "tmdb" }}
