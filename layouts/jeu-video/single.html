@@ -17,8 +17,7 @@
             {{ $infos.Set "id" $id }}
             {{ if .Resources.GetMatch "meta.json" }}
                 {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
-                {{ $data = (index $data $id).data }}
-                {{ $infos.Set "meta" $data }}
+                {{ $infos.Set "meta" $data.data }}
             {{ else }}
                 {{ $data := (index (( getJSON "https://store.steampowered.com/api/appdetails?l=french&appids=" $id )) $id).data }}
                 {{ $infos.Set "meta" $data }}
