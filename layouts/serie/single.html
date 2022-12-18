@@ -32,6 +32,13 @@
 
         {{ $infos.Set "countries" .Site.Data.countries }}
 
+        {{ if $.Param "saison" }}
+            {{ $saison := $.Param "saison" }}
+            {{ $infos.Set "saison" $saison }}
+        {{ else }}
+            {{ $infos.Set "saison" 0 }}
+        {{ end }}
+
         {{ with $infos.Get "meta" }}
             {{ if gt (len .) 0 }}
                 {{ partial "meta/serie.html" $infos }}

@@ -1,6 +1,7 @@
 {{ $metadata := .Get "meta" }}
 {{ $cast := .Get "cast" }}
 {{ $countries := .Get "countries" }}
+{{ $saison := .Get "saison" }}
 
 <div class="meta">
     <h3>Informations</h3>
@@ -19,7 +20,15 @@
         {{ end }}
     </ul>
 
-    <p><strong>Année</strong> : {{ time.Format "2006" $metadata.first_air_date }}</p> 
+    <p><strong>Année</strong> :     
+        {{ if gt $saison 0 }}
+            {{ range where $metadata.seasons ".season_number" $saison }}
+                {{ time.Format "2006" .air_date }}
+            {{ end }}
+        {{ else }}
+            {{ time.Format "2006" $metadata.first_air_date }}{{ if ne (time.Format "2006" $metadata.first_air_date) (time.Format "2006" $metadata.last_air_date) }} à {{ time.Format "2006" $metadata.last_air_date }}{{ end }}
+        {{ end }} 
+    </p>
 
     <ul>
         <li>{{if gt (len $metadata.origin_country ) 1}}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
@@ -31,12 +40,14 @@
         {{ end }}
     </ul>
 
-    <ul>
-        <li><strong>Acteurs</strong> :</li>
-        {{ range first 10 $cast.cast }}
-            <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
-        {{ end }}
-    </ul>
+    {{ with $cast.cast }}
+        <ul>
+            <li><strong>Acteurs</strong> :</li>
+            {{ range first 10 . }}
+                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            {{ end }}
+        </ul>
+    {{ end }}
 
     <ul>
         <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} :</li>
@@ -44,5 +55,19 @@
         <li>{{.name}}</li>
     {{ end }}
     </ul>
-    
+
+    <p><strong>Durée</strong> :
+        {{ if gt $saison 0 }}
+            {{ range where $metadata.seasons ".season_number" $saison }}
+                {{ .episode_count }}
+            {{ end }}
+        {{ else }}
+            {{ $metadata.number_of_episodes }}
+        {{ end }}épisodes 
+        {{ $duree := 0 }}
+        {{ range first 1 $metadata.episode_run_time }}{{ $duree = . }}{{ end }}
+        {{ if ne $duree 0 }}
+            de {{ $duree }} minutes
+        {{ end }}
+    </p>
 </div>
