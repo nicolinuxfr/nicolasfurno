@@ -7,7 +7,33 @@
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
         
-        <div class="article">{{ .Content }}</div>
+        {{ $saisons := where .Site.Pages "Params.id" ($.Param "id") }}
+        {{ $contenu := .Content }}
+
+        {{ if gt (len $saisons) 1 }}
+            {{ $seasonPost := $.Param "saison" }}
+            {{ $seasonLast:= 0 }}
+            {{ range first 1 $saisons }}
+                {{ $seasonLast = .Param "saison" }}
+            {{ end }}
+
+            {{ if lt $seasonPost $seasonLast }}
+                {{ $seasonNext := (add $seasonPost 1)}}
+                {{ range where $saisons "Params.saison" $seasonNext }}
+                    <div class="article">{{ $contenu }}</div>
+                    <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonNext }}</a></div>
+                {{ end }}
+            {{ else if ge $seasonPost $seasonLast }}
+                {{ $seasonPrevious := (sub $seasonPost 1)}}
+                {{ range where $saisons "Params.saison" $seasonPrevious }}
+                    <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonPrevious }}</a></div>
+                    <div class="article">{{ $contenu }}</div>
+                {{ end }}
+            {{ end }}
+        {{ else }}
+            <div class="article">{{ $contenu }}</div>
+        {{ end }}
+
 
         {{ $infos := newScratch }}
         {{ if .Resources.GetMatch "meta.json" }}
