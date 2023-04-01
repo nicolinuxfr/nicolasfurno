@@ -20,10 +20,28 @@
         {{ end }}
     </ul>
 
-    <p><strong>Année</strong> :     
+    <p><strong>Année</strong> :
         {{ if gt $saison 0 }}
-            {{ range where $metadata.seasons ".season_number" $saison }}
-                {{ time.Format "2006" .air_date }}
+            {{ if gt $saison 1 }}
+                {{ $saisonStart := delimit (first 1 $saison) "" }}
+                {{ $saisonEnd := delimit (last 1 $saison) "" }}
+                {{ $dateStart := 0 }}
+                {{ $dateEnd := 0 }}
+                {{ range where $metadata.seasons ".season_number" (int $saisonStart) }}
+                    {{ $dateStart = time.Format "2006" .air_date }}
+                {{ end }}
+                {{ range where $metadata.seasons ".season_number" (int $saisonEnd) }}
+                    {{ $dateEnd = time.Format "2006" .air_date }}
+                {{ end }}
+                {{ if ne $dateStart $dateEnd }}
+                    {{ $dateStart }} à {{ $dateEnd }}
+                {{ else }}
+                    {{ $dateStart }}
+                {{ end }}
+            {{ else }} 
+                {{ range where $metadata.seasons ".season_number" ( int (delimit (first 1 $saison) "" ) ) }}
+                    {{ time.Format "2006" .air_date }}
+                {{ end }} 
             {{ end }}
         {{ else }}
             {{ time.Format "2006" $metadata.first_air_date }}{{ if ne (time.Format "2006" $metadata.first_air_date) (time.Format "2006" $metadata.last_air_date) }} à {{ time.Format "2006" $metadata.last_air_date }}{{ end }}
@@ -57,9 +75,19 @@
     </ul>
 
     <p><strong>Durée</strong> :
-        {{ if gt $saison 0 }}
-            {{ range where $metadata.seasons ".season_number" $saison }}
-                {{ .episode_count }}
+        {{ if gt $saison 0 }} 
+            {{ if gt $saison 1 }} 
+                {{ $episodes := 0 }}
+                {{ range $saison }}
+                    {{ range where $metadata.seasons ".season_number" (int . ) }}
+                        {{ $episodes = add $episodes .episode_count }}
+                    {{ end }}
+                {{ end }}
+                {{ $episodes }}
+            {{ else }}
+                {{ range where $metadata.seasons ".season_number" ( int (delimit (first 1 $saison) "" ) ) }}
+                    {{ .episode_count }}
+                {{ end }}
             {{ end }}
         {{ else }}
             {{ $metadata.number_of_episodes }}

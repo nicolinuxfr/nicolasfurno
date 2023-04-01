@@ -11,23 +11,27 @@
         {{ $contenu := .Content }}
 
         {{ if gt (len $saisons) 1 }}
-            {{ $seasonPost := $.Param "saison" }}
+            {{ $seasonPost := int (delimit (last 1 ($.Param "saison")) "") }}
             {{ $seasonLast:= 0 }}
-            {{ range first 1 $saisons }}
-                {{ $seasonLast = .Param "saison" }}
+            {{ range last 1 $saisons.ByDate }}
+                {{ $seasonLast = int (delimit (last 1 (.Param "saison")) "") }}
             {{ end }}
 
             {{ if lt $seasonPost $seasonLast }}
                 {{ $seasonNext := (add $seasonPost 1)}}
-                {{ range where $saisons "Params.saison" $seasonNext }}
-                    <div class="article">{{ $contenu }}</div>
-                    <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonNext }}</a></div>
+                {{ range $saisons }}
+                    {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonNext }}
+                        <div class="article">{{ $contenu }}</div>
+                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonNext }}</a></div>
+                    {{ end }}
                 {{ end }}
             {{ else if ge $seasonPost $seasonLast }}
                 {{ $seasonPrevious := (sub $seasonPost 1)}}
-                {{ range where $saisons "Params.saison" $seasonPrevious }}
-                    <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonPrevious }}</a></div>
-                    <div class="article">{{ $contenu }}</div>
+                {{ range $saisons }}
+                    {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonPrevious }}
+                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonPrevious }}</a></div>
+                        <div class="article">{{ $contenu }}</div>
+                    {{ end }}
                 {{ end }}
             {{ end }}
         {{ else }}
@@ -59,8 +63,7 @@
         {{ $infos.Set "countries" .Site.Data.countries }}
 
         {{ if $.Param "saison" }}
-            {{ $saison := $.Param "saison" }}
-            {{ $infos.Set "saison" $saison }}
+            {{ $infos.Set "saison" ($.Param "saison") }}
         {{ else }}
             {{ $infos.Set "saison" 0 }}
         {{ end }}
