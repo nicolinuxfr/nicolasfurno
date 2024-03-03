@@ -9,13 +9,13 @@
         {{ partial "meta-top.html" . }}
         
         {{ if $.Params.avant }}
-            <div class="saison"><a href="{{ $.Params.avant }}">Critique du volume précédent</a></div>
+            <div class="saison"><a href="{{ $.Params.avant }}">Critique du livre précédent</a></div>
         {{ end }}
 
         <div class="article">{{ .Content }}</div>
         
         {{ if $.Params.apres }}
-            <div class="saison"><a href="{{ $.Params.apres }}">Critique du volume suivant</a></div>
+            <div class="saison"><a href="{{ $.Params.apres }}">Critique du livre suivant</a></div>
         {{ end }}
 
         {{ $infos := newScratch }}
