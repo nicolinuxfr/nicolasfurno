@@ -8,16 +8,14 @@
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
         
-        {{ if $.Param "avant" }}
-            {{ $url := $.Param "avant" }}
-            <div class="saison"><a href="{{ $url }}">Critique du film précédent</a></div>
+        {{ if $.Params.avant }}
+            <div class="saison"><a href="{{ $.Params.avant }}">Critique du film précédent</a></div>
         {{ end }}
 
         <div class="article">{{ .Content }}</div>
         
-        {{ if $.Param "après" }}
-            {{ $url := $.Param "après" }}
-            <div class="saison"><a href="{{ $url }}">Critique du film suivant</a></div>
+        {{ if $.Params.apres }}
+            <div class="saison"><a href="{{ $.Params.apres }}">Critique du film suivant</a></div>
         {{ end }}
 
         {{ $infos := newScratch }}
@@ -43,8 +41,8 @@
 
         {{ $infos.Set "countries" .Site.Data.countries }}
 
-        {{ if $.Param "saga" }}
-            {{ $infos.Set "saga" ($.Param "saga") }}
+        {{ if $.Params.saga }}
+            {{ $infos.Set "saga" $.Params.saga }}
         {{ end }}
 
         {{ with $infos.Get "meta" }}
