@@ -1,9 +1,14 @@
 {{ $metadata := .Get "meta" }}
 {{ $cast := .Get "cast" }}
 {{ $countries := .Get "countries" }}
+{{ $saga := .Get "saga" }}
 
 <div class="meta">
     <h3>Informations</h3>
+
+    {{ if $saga }}
+        <p><strong>Saga</strong> : {{ $saga }}</p>
+    {{ end }}
 
     {{ if ne $metadata.title $metadata.original_title }}
         <p><strong>Titre original</strong> : <em>{{ $metadata.original_title }}</em></p>
