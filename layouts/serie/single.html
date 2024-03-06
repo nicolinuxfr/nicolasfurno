@@ -15,7 +15,7 @@
             
             {{ $seasonPre := 0 }}
             {{ if gt $seasonPost 1 }}
-                {{ $seasonPre = (sub $seasonPost 1) }}
+                {{ $seasonPre = (sub (int (delimit (first 1 $.Params.saison) "")) 1) }}
             {{ end }}
 
             {{ $seasonLast := 0 }}
