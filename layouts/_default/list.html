@@ -10,7 +10,13 @@
             {{ end }}
         </header>
         <!-- "{{.Content}}" pulls from the markdown content of the corresponding _index.md -->
-        {{.Content}}
+        <section id="single">
+            <div class="content">
+                <div class="article">
+                    {{.Content}}
+                </div>
+            </div>
+        </section>
     </article>
 
     <!-- Ranges through content/posts/*.md -->
