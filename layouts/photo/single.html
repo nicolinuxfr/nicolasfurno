@@ -32,15 +32,8 @@
                         {{ if eq .Model nil }}
                             {{ $modele = "iPhone 13 Pro" }}
                         {{ end }}
-                        <li>{{ $modele }} ({{ index $lenses 0 (string ( lang.FormatNumberCustom 1 .FocalLength "- . ." ) ) }})</li>
-                        <li>ISO {{ .ISOSpeedRatings }} | {{ .FocalLengthIn35mmFilm }} mm | ƒ{{ .FNumber }} | 
-                        {{ if (hasPrefix .ExposureTime "1") }}
-                            {{ .ExposureTime }}
-                        {{ else }}
-                            {{ $valeurs := split .ExposureTime "/"}}
-                            {{ $resultat := div (int (index $valeurs 1)) (int (index $valeurs 0)) }}
-                            {{ print "1/" $resultat }}
-                        {{ end }}s</li>
+                        <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLength) }})</li>
+                        <li>ISO {{ .ISO }} | {{ .FocalLengthIn35mmFormat }} mm | ƒ{{ .FNumber }} | {{ .ExposureTime }} s</li>
                         {{ if ne .DateTime nil }}
                             <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
                         {{ end }}
