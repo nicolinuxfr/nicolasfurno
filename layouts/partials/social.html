@@ -7,14 +7,12 @@
 {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
 
 <meta property="og:title" content="{{ $title }}" />
-<meta name="twitter:title" content="{{ $title }}"/>
 
 {{ $description := .Summary }}
 {{ if .IsHome }}{{ $description = .Site.Params.description }}{{ end }}
 
 <meta name="description" content="{{ $description }}">
 <meta property="og:description" content="{{ $description }}" />
-<meta name="twitter:description" content="{{ $description }}"/>
 <link rel="me" href="https://mastodon.social/@nicolasf"/>
 
 {{- if .IsPage }}
@@ -25,11 +23,9 @@
 {{- end -}}
 
 {{ if .IsPage }}
-  <meta name="twitter:card" content="summary_large_image"/>
     {{ with partial "GetImage.html" . }}
       {{ $image := . }}
       {{ $image = $image.Resize "1000x q70 MitchellNetravali" }}
-      <meta name="twitter:image" content="{{ $image.Permalink }}"/>
       <meta property="og:image" content="{{ $image.Permalink }}"/>
     {{ end }}
 {{ else }}
@@ -37,10 +33,6 @@
         <meta property="og:image" content="{{ index . 0 | absURL }}"/>
     {{ end }}
 {{ end }}
-
-{{ with .Site.Social.twitter -}}
-    <meta name="twitter:site" content="@{{ . }}"/>
-{{ end -}}
 
 {{- $permalink := .Permalink }}
 {{- $siteSeries := .Site.Taxonomies.series }}
