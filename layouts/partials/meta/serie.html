@@ -78,7 +78,7 @@
         {{ if gt $saison 0 }} 
             {{ if gt $saison 1 }} 
                 {{ $episodes := 0 }}
-                {{ range $saison }}
+                {{ range  seq (int (delimit (first 1 $saison) "" )) ( int (delimit (last 1 $saison) "" )) }}
                     {{ range where $metadata.seasons ".season_number" (int . ) }}
                         {{ $episodes = add $episodes .episode_count }}
                     {{ end }}
