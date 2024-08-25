@@ -3,7 +3,9 @@
 <ul class="archives sections">
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}
     {{ range sort $sections "Title" }}
-    {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}
-    <li><a href="{{ .Permalink }}"><span class="catemoji">{{ (index $emojis 0 .Section) }}</span> {{ .Title }} <span class="compteur">({{ $compteur }})</span></a></li>
+        {{ $compteur := len (where .Site.RegularPages "Type" "eq" .Type ) }}
+        {{ if gt $compteur 1 }}
+            <li><a href="{{ .Permalink }}"><span class="catemoji">{{ (index $emojis 0 .Section) }}</span> {{ .Title }} <span class="compteur">({{ $compteur }})</span></a></li>
+        {{ end }}
     {{ end }}
 </ul>
