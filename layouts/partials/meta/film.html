@@ -7,7 +7,7 @@
     <h3>Informations</h3>
 
     {{ if $saga }}
-        <p><strong>Saga</strong> : <em>{{ $saga }}</em></p>
+        <p><strong>Saga</strong> : <em><a href="{{ $saga.url }}" >{{ $saga.title }}</a></em></p>
     {{ end }}
 
     {{ if ne $metadata.title $metadata.original_title }}

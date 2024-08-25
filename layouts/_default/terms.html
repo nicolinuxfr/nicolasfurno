@@ -1,0 +1,10 @@
+{{ define "main" }}
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  {{ range .Data.Terms.Alphabetical }}
+  {{ if (gt .Count 1) }}
+    <h2><a href="{{ .Page.Permalink }}">{{  .Page.Title }}</a></h2>
+  {{ end }}
+  {{ end }}
+{{ end }}
+

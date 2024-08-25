@@ -8,7 +8,7 @@
     <div class="col">
 
     {{ if $saga }}
-        <p><strong>Saga</strong> : <em>{{ $saga }}</em></p>
+        <p><strong>Saga</strong> : <em><a href="{{ $saga.url }}" >{{ $saga.title }}</a></em></p>
     {{ end }}
 
         <ul>

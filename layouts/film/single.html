@@ -41,8 +41,11 @@
 
         {{ $infos.Set "countries" .Site.Data.countries }}
 
-        {{ if $.Params.saga }}
-            {{ $infos.Set "saga" $.Params.saga }}
+        {{ with .GetTerms "sagas" }}
+            {{ range . }}
+                {{ $infos.SetInMap "saga" "url" .RelPermalink }}
+                {{ $infos.SetInMap "saga" "title" .LinkTitle }}
+            {{ end }}
         {{ end }}
 
         {{ with $infos.Get "meta" }}
