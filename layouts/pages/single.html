@@ -1,6 +1,7 @@
 {{ define "main" }}
 
 <section id="single">
+  {{ partial "image.html" . }}
   <div class="content">
     <h1 class="title">{{ .Title | markdownify }}</h1>
     <div class="article">{{ .Content }}</div>
