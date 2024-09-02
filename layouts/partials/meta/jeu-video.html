@@ -13,7 +13,7 @@
         </ul>
     {{ end }}
 
-    <p><strong>Sortie</strong> : {{ $metadata.release_date.date }}</p>
+    <p><strong>Sortie</strong> : {{ index (findRE `\d{4}` $metadata.release_date.date) 0 }}</p>
 
     {{  $compatibilite := slice }}
     
