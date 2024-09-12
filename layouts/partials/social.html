@@ -13,18 +13,17 @@
 
 <meta name="description" content="{{ $description }}">
 <meta property="og:description" content="{{ $description }}" />
-<meta name="fediverse:creator" content="@nicolasf@mastodon.social" />
 <link rel="me" href="https://mastodon.social/@nicolasf"/>
 
-{{- if .IsPage }}
-{{- $iso8601 := "2006-01-02T15:04:05-07:00" -}}
+{{ if .IsPage }}
+<meta property="og:article:author" content="Nicolas Furno">
+<meta name="fediverse:creator" content="@nicolasf@mastodon.social" />
 <meta property="article:section" content="{{ .Section }}" />
+{{ $iso8601 := "2006-01-02T15:04:05-07:00" }}
 {{ with .PublishDate }}<meta property="article:published_time" {{ .Format $iso8601 | printf "content=%q" | safeHTMLAttr }} />{{ end }}
 {{ with .Lastmod }}<meta property="article:modified_time" {{ .Format $iso8601 | printf "content=%q" | safeHTMLAttr }} />{{ end }}
-{{- end -}}
-
-{{ if .IsPage }}
-    {{ with partial "GetImage.html" . }}
+    
+{{ with partial "GetImage.html" . }}
       {{ $image := . }}
       {{ $image = $image.Resize "1000x q70 MitchellNetravali" }}
       <meta property="og:image" content="{{ $image.Permalink }}"/>
