@@ -8,7 +8,7 @@
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
         
-         {{ if $.Params.sagas }}
+        {{ if $.Params.sagas }}
             {{ $tomes := .Site.Taxonomies.sagas.Get $.Params.sagas }}
             {{ $tomePrecedent := index $tomes (int (sub $.Params.sagas_weight 2)) }}
             {{ if $tomePrecedent }}
