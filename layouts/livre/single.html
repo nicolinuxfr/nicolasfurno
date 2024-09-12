@@ -8,13 +8,25 @@
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
         
-        {{ if $.Params.avant }}
+         {{ if $.Params.sagas }}
+            {{ $tomes := .Site.Taxonomies.sagas.Get $.Params.sagas }}
+            {{ $tomePrecedent := index $tomes (int (sub $.Params.sagas_weight 2)) }}
+            {{ if $tomePrecedent }}
+                <div class="saison"><a href="{{ $tomePrecedent.Permalink }}">Critique du livre précédent</a></div>
+            {{ end }}
+        {{ else if $.Params.avant }}
             <div class="saison"><a href="{{ $.Params.avant }}">Critique du livre précédent</a></div>
         {{ end }}
 
         <div class="article">{{ .Content }}</div>
         
-        {{ if $.Params.apres }}
+        {{ if $.Params.sagas }}
+            {{ $tomes := .Site.Taxonomies.sagas.Get $.Params.sagas }}
+            {{ $tomeSuivant := index $tomes (int $.Params.sagas_weight) }}
+                {{ if $tomeSuivant }}
+                    <div class="saison"><a href="{{ $tomeSuivant.Permalink }}">Critique du livre suivant</a></div>
+                {{ end }}
+        {{ else if $.Params.apres }}
             <div class="saison"><a href="{{ $.Params.apres }}">Critique du livre suivant</a></div>
         {{ end }}
 
