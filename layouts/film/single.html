@@ -7,16 +7,7 @@
     <div class="content">
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
-        
-        {{ if $.Params.avant }}
-            <div class="saison"><a href="{{ $.Params.avant }}">Critique du film précédent</a></div>
-        {{ end }}
-
-        <div class="article">{{ .Content }}</div>
-        
-        {{ if $.Params.apres }}
-            <div class="saison"><a href="{{ $.Params.apres }}">Critique du film suivant</a></div>
-        {{ end }}
+        {{ partial "contenu.html" . }}
 
         {{ $infos := newScratch }}
         {{ if .Resources.GetMatch "meta.json" }}
