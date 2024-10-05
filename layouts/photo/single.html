@@ -25,20 +25,18 @@
                     width="{{ $image.Width }}"
                     height="{{ $image.Height }}"
                 >
-          
-                {{ with .Exif.Tags }}
-                    <ul class="meta-photos">
-                        {{ $modele := .Model }}
-                        {{ if eq .Model nil }}
-                            {{ $modele = "iPhone 13 Pro" }}
-                        {{ end }}
-                        <li>{{ $modele }} ({{ index $lenses 0 (string .FocalLengthIn35mmFormat ) }})</li>
-                        <li>ISO {{ .ISO }} | {{ .FocalLengthIn35mmFormat }} mm | {{ .ExposureTime }} s</li>
-                        {{ if ne .DateTime nil }}
-                            <li>{{ .DateTime  | time.Format ":date_long" }} à {{ .DateTime  | time.Format ":time_short" }}</li>
-                        {{ end }}
-                    </ul>
+
+            {{ with .Exif }}
+            <ul class="meta-photos">
+                {{ with .Tags }}
+                    <li>{{ .Model }} ({{ index $lenses 0 (string .FocalLengthIn35mmFormat ) }})</li>
+                    <li>ISO {{ .ISO }} | {{ .FocalLengthIn35mmFormat }} mm | {{ .ExposureTime }} s</li>
                 {{ end }}
+                {{ with .Date }}
+                    <li>{{ . | time.Format ":date_long" }} à {{ . | time.Format ":time_short" }}</li>
+                {{ end }}
+            </ul>
+            {{ end }}
             </div>
         {{ end }}
         {{ end }}
