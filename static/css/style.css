@@ -385,15 +385,14 @@ h1 {
     color: var(--texte);
 }
 
-.littlefoot {
-    --popover-font-family: var(--police-texte);
-    --popover-line-height: 1.2em;
-    --popover-text-color: var(--couleur-texte);
-    --popover-font-size: 0.8em;
+.footnotes{
+    font-size: 0.9em;
+    line-height: 1.3em;
 }
 
-.littlefoot p {
-    margin: 0.5em;
+.footnotes hr{
+    width: 40%;
+    margin: 2em 0 0 0;
 }
 
 @media (prefers-color-scheme: dark) {
