@@ -24,13 +24,13 @@
             {{ end }}
 
             {{ if $.Params.avant }}
-                <div class="saison"><a href="{{ $.Params.avant }}">Critique de la saison {{ $seasonPre }}</a></div>
+                <div class="saison"><a href="{{ $.Params.avant }}">Critique de la saison précédente</a></div>
             {{ end }}
 
             {{ if ge $seasonPost $seasonPre }}
                 {{ range $saisons }}
                     {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonPre }}
-                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonPre }}</a></div>
+                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison précédente</a></div>
                     {{ end }}
                 {{ end }}
              {{ end }}
@@ -41,7 +41,7 @@
                 {{ $seasonNext := (add $seasonPost 1)}}
                 {{ range $saisons }}
                     {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonNext }}
-                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison {{ $seasonNext }}</a></div>
+                        <div class="saison"><a href="{{ .Permalink }}">Critique de la saison suivante</a></div>
                     {{ end }}
                 {{ end }}
             {{ end }}
