@@ -1,5 +1,6 @@
 {{ $id := .Get "id" }}
 {{ $metadata := .Get "meta" }}
+{{ $genres := .Get "genres" }}
 
 <div class="meta">
     <h3>Informations</h3>
@@ -40,7 +41,11 @@
         <ul>
             <li>{{if gt (len . ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} : </li>
             {{ range . }}
-                <li>{{ .description }}</li>
+                {{ with (index $genres 0 .description) }}
+                    <li>{{ . }}</li>
+                {{ else }}
+                    <li>{{ .description }}</li>
+                {{ end }}
             {{ end }}
         </ul>
     {{ end }}
