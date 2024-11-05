@@ -45,11 +45,11 @@
         </ul>
     {{ end }}
 
-        {{ if in $metadata.supported_languages "Français" }}
+        {{ if or (in $metadata.supported_languages "Français") (in $metadata.supported_languages "French") }}
             <p><strong>Langue : </strong>Traduit en français</p>
         {{ else }}
             <p><strong>Langue : </strong>Uniquement en anglais</p>
         {{ end }}
 
-        <p><strong>Liens</strong> : <a href="{{ $metadata.website }}">Site officiel</a> | <a href="https://store.steampowered.com/app/{{ $id }}" target="_blank">Acheter ( {{ div $metadata.price_overview.final 100 }} €)</a></p>
+        <p><strong>Liens</strong> : <a href="{{ $metadata.website }}">Site officiel</a> | <a href="https://store.steampowered.com/app/{{ $id }}" target="_blank">Acheter ({{ div $metadata.price_overview.final 100 | lang.FormatCurrency 2 "EUR" }})</a></p>
 </div>
