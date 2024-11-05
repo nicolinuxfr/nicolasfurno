@@ -19,8 +19,9 @@
                 {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
                 {{ $infos.Set "meta" $data.data }}
             {{ else }}
-                {{ $data := (index (( getJSON "https://store.steampowered.com/api/appdetails?l=french&appids=" $id )) $id).data }}
-                {{ $infos.Set "meta" $data }}
+                {{ with resources.GetRemote (printf "%s%s" "https://store.steampowered.com/api/appdetails?l=french&appids=" $id) }}
+                    {{ $infos.Set "meta" (index (. | unmarshal) $id).data }}
+                {{ end }}
             {{ end }}
         {{ end }}
 
