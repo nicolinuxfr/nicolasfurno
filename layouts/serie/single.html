@@ -10,7 +10,7 @@
         {{ $contenu := .Content }}
 
         {{ if $.Params.saison }}
-            {{ $saisons := where .Site.Pages "Params.id" ($.Param "id") }}
+            {{ $saisons := where .Site.Pages "Params.tmdb" ($.Param "tmdb") }}
             {{ $seasonPost := int (delimit (last 1 $.Params.saison) "") }}
             
             {{ $seasonPre := 0 }}
@@ -55,20 +55,20 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
             {{ $infos.Set "meta" $data }}
         {{ end }}
 
         {{ if .Resources.GetMatch "cast.json" }}
             {{ $data := .Resources.GetMatch "cast.json" | unmarshal }}
             {{ $infos.Set "cast" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
+        {{ else if $.Param "tmdb" }}
+            {{ $id := $.Param "tmdb" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $data := getJSON "https://api.themoviedb.org/3/tv/" $id "/aggregate_credits?api_key=" $tmdb "&language=fr-FR" }}
+            {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "aggregate_credits?language=fr-FR&api_key=" $tmdb)) }}
             {{ $infos.Set "cast" $data }}
         {{ end }}
 
