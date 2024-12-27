@@ -1,5 +1,7 @@
 {{ define "main" }}
 
+{{ $infos := newScratch }}
+
 <section id="single">
     {{ partial "image.html" . }}
 
@@ -11,6 +13,12 @@
 
         {{ if $.Params.saison }}
             {{ $saisons := where .Site.Pages "Params.tmdb" ($.Param "tmdb") }}
+            {{ if gt $saisons 1 }}
+                {{ $infos.Set "liensaison" true }}
+            {{ else }}
+                {{ $infos.Set "liensaison" false }}
+            {{ end }}
+
             {{ $seasonPost := int (delimit (last 1 $.Params.saison) "") }}
             
             {{ $seasonPre := 0 }}
@@ -50,8 +58,6 @@
             <div class="article">{{ $contenu }}</div>
         {{ end }}
 
-
-        {{ $infos := newScratch }}
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
@@ -77,7 +83,7 @@
         {{ if $.Param "saison" }}
             {{ $infos.Set "saison" ($.Param "saison") }}
         {{ else }}
-            {{ $infos.Set "saison" 0 }}
+            {{ $infos.Set "saison" (slice 0) }}
         {{ end }}
 
         {{ with $infos.Get "meta" }}

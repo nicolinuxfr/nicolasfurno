@@ -1,0 +1,30 @@
+{{ define "main" }}
+  <h1>Séries</h1>
+  {{ .Content }}
+
+  {{ $liste := slice }}
+  {{ range .Data.Terms.Alphabetical }}
+    {{ if (gt .Count 1) }}
+      {{ $id := .Page.Title }}
+      {{ $tmdb := getenv "HUGO_TMDB" }}
+      {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
+      {{ $liste = $liste | append (dict "url" .Page.Permalink "title" $data.name "img" $data.poster_path ) }}
+    {{ end }}
+  {{ end }}
+  
+  <div class="articles">
+    {{ range sort $liste "title" }}
+    <section class="item">
+      <div>
+        <a href="{{ .url }}">
+          {{ $url := (add "https://image.tmdb.org/t/p/original/" .img) }}
+            {{ with resources.GetRemote $url }}
+              <div class="image"><img src="{{ .RelPermalink }}"  width="{{ .Width }}" height="{{ .Height }}" alt=""></div>
+            {{ end }}
+        </a>
+      </div>
+    </section>
+    {{ end }}
+
+{{ end }}
+

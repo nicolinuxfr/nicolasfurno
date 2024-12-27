@@ -1,0 +1,34 @@
+{{ define "main" }}
+<main>
+    <article>
+        <header>
+            {{ $id := .Title }}
+            {{ $tmdb := getenv "HUGO_TMDB" }}
+            {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
+            <h1><em>{{ $data.name  }}</em></h1>
+        </header>
+        <section id="single">
+            <div class="content">
+                <div class="article">
+                    {{.Content}}
+                </div>
+            </div>
+        </section>
+    </article>
+
+    <!-- Ranges through content/posts/*.md -->
+    <div class="articles">
+        {{ range (.Paginate .Pages).Pages.ByDate }}
+        <section class="item">
+          <div >
+            <a href='{{ .RelPermalink }}'>
+                {{ partial "image-list.html" . }}
+            </a>
+          </div>
+        </section>
+        {{ end }}
+    </div>
+
+    {{ template "_internal/pagination.html" . }}
+</main>
+{{ end }}

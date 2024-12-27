@@ -2,10 +2,13 @@
 {{ $cast := .Get "cast" }}
 {{ $countries := .Get "countries" }}
 {{ $saison := .Get "saison" }}
+{{ $saisons := .Get "liensaison" }}
 
 <div class="meta">
     <h3>Informations</h3>
     
+    {{ with $saisons }}<strong><a href="/tmdb/{{ $metadata.id }}">Toutes les saisons</a></strong>{{ end }}
+
     {{ if ne $metadata.name $metadata.original_name }}
         <p><strong>Titre original</strong> : <em>{{ $metadata.original_name }}</em></p>
     {{ end }}
@@ -20,8 +23,8 @@
         {{ end }}
     </ul>
 
-    <p><strong>Année</strong> :
-        {{ if gt $saison 0 }}
+    <p><strong>Année{{ if gt (len $saison) 1 }}s{{end}}</strong> :
+        {{ if gt (len $saison) 1 }}
             {{ if gt $saison 1 }}
                 {{ $saisonStart := delimit (first 1 $saison) "" }}
                 {{ $saisonEnd := delimit (last 1 $saison) "" }}
@@ -39,6 +42,7 @@
                     {{ $dateStart }}
                 {{ end }}
             {{ else }} 
+                {{ $metadata.seasons }}
                 {{ range where $metadata.seasons ".season_number" ( int (delimit (first 1 $saison) "" ) ) }}
                     {{ time.Format "2006" .air_date }}
                 {{ end }} 
@@ -75,7 +79,7 @@
     </ul>
 
     <p><strong>Durée</strong> :
-        {{ if gt $saison 0 }} 
+         {{ if gt (len $saison) 1 }} 
             {{ if gt $saison 1 }} 
                 {{ $episodes := 0 }}
                 {{ range  seq (int (delimit (first 1 $saison) "" )) ( int (delimit (last 1 $saison) "" )) }}
