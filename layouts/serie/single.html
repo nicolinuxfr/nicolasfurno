@@ -45,6 +45,10 @@
 
              <div class="article">{{ $contenu }}</div>
 
+             {{ if $.Params.apres }}
+                <div class="saison"><a href="{{ $.Params.apres }}">Critique de la saison suivante</a></div>
+            {{ end }}
+
             {{ if lt $seasonPost $seasonLast }}
                 {{ $seasonNext := (add $seasonPost 1)}}
                 {{ range $saisons }}
