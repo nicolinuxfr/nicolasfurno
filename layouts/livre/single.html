@@ -25,6 +25,10 @@
         {{ if .Params.pays }}
             {{ $infos.Set "pays" .Params.pays }}
         {{ end }}
+        
+        {{ if .Params.original }}
+            {{ $infos.Set "original" .Params.original }}
+        {{ end }}
 
         {{ with .GetTerms "sagas" }}
             {{ range . }}

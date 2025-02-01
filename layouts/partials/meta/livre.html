@@ -1,6 +1,7 @@
 {{ $metadata := .Get "meta" }}
 {{ $countries := .Get "countries" }}
 {{ $pays := .Get "pays" }}
+{{ $original := .Get "original" }}
 {{ $saga := .Get "saga" }}
 
 <div class="meta ">
@@ -11,6 +12,10 @@
         <p><strong>Saga</strong> : <em><a href="{{ $saga.url }}" >{{ $saga.title }}</a></em></p>
     {{ end }}
 
+    {{ with $original }}
+        <p><strong>Titre original</strong> : <em>{{ . }}</em></p>
+    {{ end }}
+    
         <ul>
             <li>{{ if gt (len $metadata.authors ) 1 }}<strong>Auteurs</strong>{{else}}<strong>Auteur</strong>{{end}} : </li>
             {{ range $metadata.authors }}
