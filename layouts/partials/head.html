@@ -19,7 +19,7 @@
     
     {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | htmlUnescape | plainify |  printf "%s" }}
 
-    {{ if eq .Kind "term" }}
+    {{ if and (eq .Kind "term") (eq .Section "tmdb") }}
         {{ $id := .Title }}
         {{ $tmdb := getenv "HUGO_TMDB" }}
         {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
