@@ -7,9 +7,8 @@
     <div class="content">
         <h1 class="title">{{ .Title | markdownify }}</h1>
         {{ partial "meta-top.html" . }}
+        {{ partial "contenu.html" . }}
         
-        <div class="article">{{ .Content }}</div>
-
         {{ $infos := newScratch }}
         
         {{ if $.Param "id" }}
@@ -26,6 +25,13 @@
         {{ end }}
 
         {{ $infos.Set "genres" .Site.Data.genres }}
+
+        {{ with .GetTerms "sagas" }}
+            {{ range . }}
+                {{ $infos.SetInMap "saga" "url" .RelPermalink }}
+                {{ $infos.SetInMap "saga" "title" .LinkTitle }}
+            {{ end }}
+        {{ end }}
 
         {{ with $infos.Get "meta" }}
             {{ if gt (len .) 0 }}

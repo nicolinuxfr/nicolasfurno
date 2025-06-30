@@ -1,19 +1,25 @@
+{{ $section := .Section }}
+
+{{ if eq .Section "jeu-video" }}
+    {{ $section = "jeu vidéo" }}
+{{ end }}
+
 {{ if .Params.avant }}
-    <div class="saison"><a href="{{ .Params.avant }}">Critique du {{ .Section }} précédent</a></div>
+    <div class="saison"><a href="{{ .Params.avant }}">Critique du {{ $section }} précédent</a></div>
 {{ else if .Params.sagas_weight }}
     {{ $pages := .Site.Taxonomies.sagas.Get .Params.sagas }}
     {{ with $pages.Next . }}
-        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ .Section }} précédent</a></div>
+        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ $section }} précédent</a></div>
     {{ end }}
 {{ end }}
 
 <div class="article">{{ .Content }}</div>
 
 {{ if .Params.apres }}
-    <div class="saison"><a href="{{ .Params.apres }}">Critique du {{ .Section }} suivant</a></div>
+    <div class="saison"><a href="{{ .Params.apres }}">Critique du {{ $section }} suivant</a></div>
 {{ else if .Params.sagas_weight }}
     {{ $pages := .Site.Taxonomies.sagas.Get .Params.sagas }}
     {{ with $pages.Prev . }}
-        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ .Section }} suivant</a></div>
+        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ $section }} suivant</a></div>
     {{ end }}
 {{ end }}

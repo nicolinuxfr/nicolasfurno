@@ -1,9 +1,14 @@
 {{ $id := .Get "id" }}
 {{ $metadata := .Get "meta" }}
 {{ $genres := .Get "genres" }}
+{{ $saga := .Get "saga" }}
 
 <div class="meta">
     <h3>Informations</h3>
+
+    {{ if $saga }}
+        <p><strong>Saga</strong> : <em><a href="{{ $saga.url }}" >{{ $saga.title }}</a></em></p>
+    {{ end }}
 
     {{ with $metadata.developers }}
         <ul>
