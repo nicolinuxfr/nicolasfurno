@@ -1,0 +1,126 @@
+<section class="filter-jeu-video-wrapper">
+    <h2>Temps de jeu</h2>
+    <div class="filter-jeu-video-presets" data-jeu-video-filter aria-label="Filtrer par durée">
+        <button type="button" data-preset data-min="1" data-max="5">≤ 5&nbsp;h</button>
+        <button type="button" data-preset data-min="6" data-max="10">≤ 10&nbsp;h</button>
+        <button type="button" data-preset data-min="11" data-max="20">≤ 20&nbsp;h</button>
+        <button type="button" data-preset data-min="21" data-max="">> 20&nbsp;h</button>
+    </div>
+    <p class="filter-feedback" data-filter-count aria-live="polite"></p>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var filter = document.querySelector('[data-jeu-video-filter]');
+    if (!filter) {
+        return;
+    }
+
+    var main = filter.closest('main') || document;
+    var items = Array.prototype.slice.call(main.querySelectorAll('.articles .item[data-temps]'));
+    if (!items.length) {
+        return;
+    }
+
+    var counter = main.querySelector('[data-filter-count]');
+    var presets = Array.prototype.slice.call(filter.querySelectorAll('[data-preset]'));
+    var container = main.querySelector('.articles');
+    var originalOrder = container ? items.slice() : [];
+
+    var totalItems = items.length;
+    var activeMin = null;
+    var activeMax = null;
+
+    function parseRange(value) {
+        return value === null || value === '' ? null : Number(value);
+    }
+
+    function formatLabel(count) {
+        var plural = count > 1 ? 'jeux' : 'jeu';
+        return count + ' ' + plural;
+    }
+
+    function applyFilter() {
+        var visible = 0;
+        var visibleItems = [];
+        var isFiltering = activeMin !== null || activeMax !== null;
+
+        items.forEach(function (item) {
+            var temps = Number(item.getAttribute('data-temps')) || 0;
+            var aboveMin = activeMin === null || temps >= activeMin;
+            var belowMax = activeMax === null || temps <= activeMax;
+            var show = aboveMin && belowMax;
+            item.hidden = !show;
+            item.classList.toggle('is-filtered-out', !show);
+            if (show) {
+                visible += 1;
+                visibleItems.push({ element: item, value: temps });
+            }
+        });
+
+        if (counter) {
+            counter.textContent = formatLabel(visible);
+        }
+
+        if (main) {
+            if (isFiltering) {
+                main.classList.add('filter-has-active');
+            } else {
+                main.classList.remove('filter-has-active');
+            }
+        }
+
+        if (!container) {
+            return;
+        }
+
+        if (isFiltering && visibleItems.length) {
+            visibleItems.sort(function (a, b) {
+                return a.value - b.value;
+            });
+
+            var sortedNodes = visibleItems.map(function (entry) {
+                return entry.element;
+            });
+
+            sortedNodes.forEach(function (node) {
+                container.appendChild(node);
+            });
+
+            items.forEach(function (item) {
+                if (sortedNodes.indexOf(item) === -1) {
+                    container.appendChild(item);
+                }
+            });
+        } else if (originalOrder.length) {
+            originalOrder.forEach(function (item) {
+                container.appendChild(item);
+            });
+        }
+    }
+
+    function clearPresets() {
+        presets.forEach(function (button) {
+            button.removeAttribute('data-active');
+        });
+    }
+
+    presets.forEach(function (button) {
+        button.addEventListener('click', function () {
+            var isActive = button.getAttribute('data-active') === 'true';
+            clearPresets();
+            if (isActive) {
+                activeMin = null;
+                activeMax = null;
+            } else {
+                button.setAttribute('data-active', 'true');
+                activeMin = parseRange(button.getAttribute('data-min'));
+                activeMax = parseRange(button.getAttribute('data-max'));
+            }
+            applyFilter();
+        });
+    });
+
+    applyFilter();
+});
+</script>

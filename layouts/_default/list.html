@@ -1,4 +1,10 @@
 {{ define "main" }}
+{{ $isJeuVideo := and .IsSection (eq .Section "jeu-video") }}
+{{ $pages := .Pages }}
+{{ if not $isJeuVideo }}
+    {{ $paginator := .Paginate .Pages }}
+    {{ $pages = $paginator.Pages }}
+{{ end }}
 <main>
     <article>
         <header>
@@ -19,10 +25,15 @@
         </section>
     </article>
 
+    {{ if $isJeuVideo }}
+        {{ partial "filtre-jeu-video.html" . }}
+    {{ end }}
+
     <!-- Ranges through content/posts/*.md -->
     <div class="articles">
-        {{ range (.Paginate .Pages).Pages }}
-        <section class="item">
+        {{ range $pages }}
+        {{ $temps := default 0 .Params.temps }}
+        <section class="item" {{ if $isJeuVideo }}data-temps="{{ $temps }}"{{ end }}>
           <div>
             <a href='{{ .RelPermalink }}'>
                 {{ partial "image-list.html" . }}
@@ -32,6 +43,8 @@
         {{ end }}
     </div>
 
-    {{ template "_internal/pagination.html" . }}
+    {{ if not $isJeuVideo }}
+        {{ template "_internal/pagination.html" . }}
+    {{ end }}
 </main>
 {{ end }}
