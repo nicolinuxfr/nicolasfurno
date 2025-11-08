@@ -33,6 +33,12 @@
             {{ end }}
         {{ end }}
 
+        {{ if .Params.temps }}
+            {{ $infos.Set "temps" .Params.temps }}
+        {{ else }}
+            {{ $infos.Set "temps" 0 }}
+        {{ end }}
+
         {{ with $infos.Get "meta" }}
             {{ if gt (len .) 0 }}
                 {{ partial "meta/jeu-video.html" $infos }}
