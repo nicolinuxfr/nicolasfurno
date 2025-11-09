@@ -257,6 +257,59 @@ h1 {
 }
 
 
+/* Filtres jeu vidéo */
+
+.filter-jeu-video-wrapper h2 {
+    font-size: 1.3em;
+    font-family: var(--police-meta);
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+}
+
+.filter-feedback {
+    font-family: var(--police-meta);
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 0.5em;
+}
+
+.filter-jeu-video-presets {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75em;
+    margin: 0.5em auto 0;
+}
+
+.filter-jeu-video-presets button {
+    padding: 0.4em 0.9em;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: transparent;
+    font-family: var(--police-meta);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.filter-jeu-video-presets button[data-active="true"] {
+    background: var(--vert);
+    color: white;
+    border-color: var(--vert);
+}
+
+.articles .item[hidden] {
+    display: none !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .filter-jeu-video-presets button {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+}
 
 /* Articles */
 

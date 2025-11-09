@@ -20,7 +20,7 @@
             {{ end }}
 
             {{ $seasonPost := int (delimit (last 1 $.Params.saison) "") }}
-            
+
             {{ $seasonPre := 0 }}
             {{ if gt $seasonPost 1 }}
                 {{ $seasonPre = (sub (int (delimit (first 1 $.Params.saison) "")) 1) }}
@@ -87,7 +87,7 @@
                 {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "aggregate_credits?language=fr-FR&api_key=" $tmdb)) }}
                 {{ $infos.Set "cast" $data }}
             {{ end }}
-            
+
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}
