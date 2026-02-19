@@ -16,8 +16,11 @@
             {{ $infos.Set "meta" $data }}
         {{ else if $.Param "id" }}
             {{ $id := $.Param "id" }}
-            {{ $data := getJSON "https://www.googleapis.com/books/v1/volumes/" $id }}
-            {{ $infos.Set "meta" ($data).volumeInfo }}
+            {{ $url := printf "https://www.googleapis.com/books/v1/volumes/%v" $id }}
+            {{ with resources.GetRemote $url }}
+                {{ $data := . | transform.Unmarshal }}
+                {{ $infos.Set "meta" $data.volumeInfo }}
+            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" .Site.Data.countries }}

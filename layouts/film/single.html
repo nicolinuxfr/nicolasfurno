@@ -16,8 +16,11 @@
         {{ else if $.Param "id" }}
             {{ $id := $.Param "id" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $data := getJSON "https://api.themoviedb.org/3/movie/" $id "?api_key=" $tmdb "&language=fr-FR" }}
-            {{ $infos.Set "meta" $data }}
+            {{ $url := printf "https://api.themoviedb.org/3/movie/%v?api_key=%v&language=fr-FR" $id $tmdb }}
+            {{ with resources.GetRemote $url }}
+                {{ $data := . | transform.Unmarshal }}
+                {{ $infos.Set "meta" $data }}
+            {{ end }}
         {{ end }}
 
         {{ if .Resources.GetMatch "cast.json" }}
@@ -26,8 +29,11 @@
         {{ else if $.Param "id" }}
             {{ $id := $.Param "id" }}
             {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $data := getJSON "https://api.themoviedb.org/3/movie/" $id "/credits?api_key=" $tmdb "&language=fr-FR" }}
-            {{ $infos.Set "cast" $data }}
+            {{ $url := printf "https://api.themoviedb.org/3/movie/%v/credits?api_key=%v&language=fr-FR" $id $tmdb }}
+            {{ with resources.GetRemote $url }}
+                {{ $data := . | transform.Unmarshal }}
+                {{ $infos.Set "cast" $data }}
+            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" .Site.Data.countries }}

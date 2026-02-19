@@ -16,8 +16,11 @@
             {{ $infos.Set "meta" $data }}
         {{ else if $.Param "id" }}
             {{ $id := $.Param "id" }}
-            {{ $data := index (( getJSON "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=" $id).results ) 0 }}
-            {{ $infos.Set "meta" $data }}
+            {{ $url := printf "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=%v" $id }}
+            {{ with resources.GetRemote $url }}
+                {{ $data := . | transform.Unmarshal }}
+                {{ $infos.Set "meta" (index $data.results 0) }}
+            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" .Site.Data.countries }}
