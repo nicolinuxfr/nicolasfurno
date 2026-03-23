@@ -26,9 +26,9 @@
                     height="{{ $image.Height }}"
                 >
 
-            {{ with .Exif }}
+            {{ with .Meta }}
             <ul class="meta-photos">
-                {{ with .Tags }}
+                {{ with .Exif }}
                     <li>{{ .Model }} ({{ index $lenses 0 (string .FocalLengthIn35mmFormat ) }})</li>
                     <li>ISO {{ .ISO }} | {{ .FocalLengthIn35mmFormat }} mm | {{ .ExposureTime }} s</li>
                 {{ end }}
@@ -48,7 +48,7 @@
         {{- $.Scratch.Add "photos" slice -}}
         {{ with .Resources.ByType "image" }}
         {{ range . }}
-            {{ with .Exif }}
+            {{ with .Meta }}
                 {{- $.Scratch.Add "photos" (dict "long" .Long "lat" .Lat ) -}}
             {{ end }}
         {{- end -}}
