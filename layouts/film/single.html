@@ -36,7 +36,7 @@
             {{ end }}
         {{ end }}
 
-        {{ $infos.Set "countries" .Site.Data.countries }}
+        {{ $infos.Set "countries" hugo.Data.countries }}
 
         {{ with .GetTerms "sagas" }}
             {{ range . }}

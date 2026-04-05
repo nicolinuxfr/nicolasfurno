@@ -82,7 +82,7 @@
             {{ $infos.Set "cast" $data }}
         {{ end }}
 
-        {{ $infos.Set "countries" .Site.Data.countries }}
+        {{ $infos.Set "countries" hugo.Data.countries }}
 
         {{ if $.Param "saison" }}
             {{ $infos.Set "saison" ($.Param "saison") }}

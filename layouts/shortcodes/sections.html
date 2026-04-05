@@ -1,4 +1,4 @@
-{{ $emojis := .Site.Data.catemoji }}
+{{ $emojis := hugo.Data.catemoji }}
 
 <ul class="archives sections">
     {{ $sections := (where .Site.Sections "Type" "ne" "pages")}}

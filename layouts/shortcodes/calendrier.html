@@ -1,5 +1,5 @@
-{{ $mois := .Site.Data.mois }}
-{{ $emojis := .Site.Data.catemoji }}
+{{ $mois := hugo.Data.mois }}
+{{ $emojis := hugo.Data.catemoji }}
 {{ range (where .Site.RegularPages "Type" "ne" "pages").GroupByDate "2006" }}
 <h3>{{ .Key }} <span class="compteur">({{ len .Pages }})</span></h3>
     {{ range .Pages.GroupByDate "1"}}  

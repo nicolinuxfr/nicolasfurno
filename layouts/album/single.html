@@ -23,7 +23,7 @@
             {{ end }}
         {{ end }}
 
-        {{ $infos.Set "countries" .Site.Data.countries }}
+        {{ $infos.Set "countries" hugo.Data.countries }}
 
         {{ if .Params.pays }}
             {{ $infos.Set "pays" .Params.pays }}

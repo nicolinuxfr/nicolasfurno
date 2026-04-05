@@ -24,7 +24,7 @@
             {{ end }}
         {{ end }}
 
-        {{ $infos.Set "genres" .Site.Data.genres }}
+        {{ $infos.Set "genres" hugo.Data.genres }}
 
         {{ with .GetTerms "sagas" }}
             {{ range . }}

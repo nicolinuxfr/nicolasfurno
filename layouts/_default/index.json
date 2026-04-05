@@ -1,13 +1,13 @@
-{{ $emojis := .Site.Data.catemoji }}
+{{ $emojis := hugo.Data.catemoji }}
 {{- $.Scratch.Add "index" slice -}}
 {{- range (where .Site.RegularPages "Type" "ne" "pages") -}}
     {{ $contenu := (lower .Content ) }}
-    {{ range .Site.Data.ponctuations }}
+    {{ range hugo.Data.ponctuations }}
         {{ $contenu = replace $contenu . " " }}
     {{ end }}
     {{ $contenu = replaceRE "(<sup.*sup>)" "" $contenu }}
     {{ $contenu = replaceRE "\n" "" ($contenu | plainify) }}
-    {{ $contenu = split $contenu " " | complement .Site.Data.stopwords | uniq }}
+    {{ $contenu = split $contenu " " | complement hugo.Data.stopwords | uniq }}
     {{ $title := printf "%s" ( .Title | markdownify ) | printf "%s%s" " " | printf "%s%s" (index $emojis 0 .Section) | printf "%s" }}
     {{- $.Scratch.Add "index" (dict "title" $title "section" (site.GetPage .Section).Title "permalink" .Permalink "content" $contenu ) -}}
 {{- end -}}

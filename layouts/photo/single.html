@@ -9,7 +9,7 @@
 
         <div class="article">{{ .Content }}</div>
         
-        {{ $lenses := .Site.Data.lenses }}
+        {{ $lenses := hugo.Data.lenses }}
         {{ with .Resources.ByType "image" }}
         {{ range . }}
             {{ $image := . }}
