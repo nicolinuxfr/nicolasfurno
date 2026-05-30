@@ -1,0 +1,124 @@
+<section class="filter-jeu-video-wrapper">
+    <h2 id="filter-jeu-video-label">Temps de jeu</h2>
+    <div class="filter-jeu-video-control" data-jeu-video-filter aria-labelledby="filter-jeu-video-label">
+        <output data-duration-label></output>
+        <input type="range" min="0" max="0" value="0" step="1" data-duration-slider>
+    </div>
+    <p class="filter-feedback" data-filter-count aria-live="polite"></p>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var filter = document.querySelector('[data-jeu-video-filter]');
+    if (!filter) {
+        return;
+    }
+
+    var main = filter.closest('main') || document;
+    var items = Array.prototype.slice.call(main.querySelectorAll('.articles .item[data-temps]'));
+    if (!items.length) {
+        return;
+    }
+
+    var counter = main.querySelector('[data-filter-count]');
+    var slider = filter.querySelector('[data-duration-slider]');
+    var durationLabel = filter.querySelector('[data-duration-label]');
+    var container = main.querySelector('.articles');
+    var originalOrder = container ? items.slice() : [];
+
+    var totalItems = items.length;
+    var durationOptions = items.map(function (item) {
+        return Number(item.getAttribute('data-temps')) || 0;
+    }).filter(function (value) {
+        return value > 0;
+    }).sort(function (a, b) {
+        return a - b;
+    }).filter(function (value, index, values) {
+        return index === 0 || value !== values[index - 1];
+    });
+    var maxDuration = durationOptions[durationOptions.length - 1] || 0;
+
+    if (!slider || maxDuration === 0) {
+        return;
+    }
+
+    slider.min = '1';
+    slider.max = String(durationOptions.length + 1);
+    slider.value = String(durationOptions.length + 1);
+
+    function formatLabel(count) {
+        var plural = count > 1 ? 'jeux' : 'jeu';
+        return count + ' ' + plural;
+    }
+
+    function formatDuration(value, isFiltering) {
+        return isFiltering ? '≤ ' + value + ' h' : 'Tous';
+    }
+
+    function applyFilter() {
+        var visible = 0;
+        var visibleItems = [];
+        var selectedIndex = Number(slider.value) || durationOptions.length + 1;
+        var optionIndex = Math.min(Math.max(selectedIndex - 1, 0), durationOptions.length - 1);
+        var activeMax = durationOptions[optionIndex];
+        var isFiltering = selectedIndex <= durationOptions.length;
+
+        items.forEach(function (item) {
+            var temps = Number(item.getAttribute('data-temps')) || 0;
+            var show = !isFiltering || (temps > 0 && temps <= activeMax);
+            item.hidden = !show;
+            item.classList.toggle('is-filtered-out', !show);
+            if (show) {
+                visible += 1;
+                visibleItems.push({ element: item, value: temps });
+            }
+        });
+
+        if (counter) {
+            counter.textContent = formatLabel(visible);
+        }
+
+        if (durationLabel) {
+            durationLabel.textContent = formatDuration(activeMax, isFiltering);
+        }
+
+        slider.setAttribute('aria-valuetext', formatDuration(activeMax, isFiltering));
+
+        if (main) {
+            if (isFiltering) {
+                main.classList.add('filter-has-active');
+            } else {
+                main.classList.remove('filter-has-active');
+            }
+        }
+
+        if (!container) {
+            return;
+        }
+
+        if (isFiltering && visibleItems.length) {
+            visibleItems.sort(function (a, b) {
+                return b.value - a.value;
+            });
+
+            visibleItems.forEach(function (entry) {
+                container.appendChild(entry.element);
+            });
+
+            items.forEach(function (item) {
+                if (item.hidden) {
+                    container.appendChild(item);
+                }
+            });
+        } else if (originalOrder.length) {
+            originalOrder.forEach(function (item) {
+                container.appendChild(item);
+            });
+        }
+    }
+
+    slider.addEventListener('input', applyFilter);
+
+    applyFilter();
+});
+</script>
