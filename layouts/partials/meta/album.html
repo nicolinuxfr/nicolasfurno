@@ -7,6 +7,9 @@
     <div class="col">
         <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
+        {{ with $metadata.trackCount }}
+            <p><strong>Pistes</strong> : {{ . }}</p>
+        {{ end }}
         {{ if gt (len $pays) 0 }}
             <p><strong>Nationalité</strong> : {{ range where $countries ".alpha2" $pays }} {{ .name }} {{ end }}</p>
         {{ end }}
