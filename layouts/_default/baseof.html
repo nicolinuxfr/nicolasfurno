@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="{{ if .IsHome }}page-home{{ else if .File }}page-{{ .File.ContentBaseName }}{{ else if .Title }}page-{{ .Title | urlize }}{{ end }} page-kind-{{ .Kind }} page-type-{{ .Type }}">
     {{ partial "head.html" . -}}
     <body>
         {{- partial "header.html" . -}}
