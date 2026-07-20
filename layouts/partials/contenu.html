@@ -4,22 +4,32 @@
     {{ $section = "jeu vidéo" }}
 {{ end }}
 
+{{ $texteAvant := printf "Critique du %s précédent" $section }}
+{{ with .Params.texte_avant }}
+    {{ $texteAvant = . | markdownify }}
+{{ end }}
+
+{{ $texteApres := printf "Critique du %s suivant" $section }}
+{{ with .Params.texte_apres }}
+    {{ $texteApres = . | markdownify }}
+{{ end }}
+
 {{ if .Params.avant }}
-    <div class="saison"><a href="{{ .Params.avant }}">Critique du {{ $section }} précédent</a></div>
+    <div class="saison"><a href="{{ .Params.avant }}">{{ $texteAvant }}</a></div>
 {{ else if .Params.sagas_weight }}
     {{ $pages := .Site.Taxonomies.sagas.Get .Params.sagas }}
     {{ with $pages.Next . }}
-        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ $section }} précédent</a></div>
+        <div class="saison"><a href="{{ .Permalink }}">{{ $texteAvant }}</a></div>
     {{ end }}
 {{ end }}
 
 <div class="article">{{ .Content }}</div>
 
 {{ if .Params.apres }}
-    <div class="saison"><a href="{{ .Params.apres }}">Critique du {{ $section }} suivant</a></div>
+    <div class="saison"><a href="{{ .Params.apres }}">{{ $texteApres }}</a></div>
 {{ else if .Params.sagas_weight }}
     {{ $pages := .Site.Taxonomies.sagas.Get .Params.sagas }}
     {{ with $pages.Prev . }}
-        <div class="saison"><a href="{{ .Permalink }}">Critique du {{ $section }} suivant</a></div>
+        <div class="saison"><a href="{{ .Permalink }}">{{ $texteApres }}</a></div>
     {{ end }}
 {{ end }}
