@@ -1,7 +1,7 @@
 <header class="header">
-       <a href="{{ if in .Page "menu" }}javascript:onclick=history.back(){{ else }}/menu{{ end }}">
+       <a href="{{ if in .Page "menu" }}javascript:onclick=history.back(){{ else }}/menu{{ end }}" aria-label="{{ if in .Page "menu" }}Retour à la page précédente{{ else }}Ouvrir le menu{{ end }}">
         <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-        <svg width="100%" height="100%" viewBox="0 0 359 213" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" class="logo">
+        <svg width="100%" height="100%" viewBox="0 0 359 213" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" class="logo" aria-hidden="true" focusable="false">
             <g transform="matrix(1,0,0,1,-95.3505,-80.8179)">
                 <path d="M120.35,105.818L428.553,105.818" style="fill:none;stroke-width:50px;"/>
                 <g transform="matrix(1,0,0,1,0,82.7248)">
@@ -14,9 +14,9 @@
         </svg>
     </a>
 
-    <a href="/">
+    <a href="/" aria-label="Accueil">
         <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-        <svg width="100%" height="100%" viewBox="0 0 4267 4267" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;" class="logo">
+        <svg width="100%" height="100%" viewBox="0 0 4267 4267" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;" class="logo" aria-hidden="true" focusable="false">
             <g id="Associer">
                 <circle cx="2658.34" cy="1256.31" r="445.215"/>
                 <path d="M3589.79,631.462c-0,-149.311 -121.222,-270.533 -270.533,-270.533l-2386.35,0c-149.311,0 -270.533,121.222 -270.533,270.533l0,3021.55c0,149.311 121.222,270.532 270.533,270.532l2386.35,0c149.311,0 270.533,-121.221 270.533,-270.532l-0,-3021.55Z" style="fill:none;stroke-width:300px;"/>
@@ -28,9 +28,9 @@
         </svg>
     </a>
     
-    <a href="{{ if eq .Title "Recherche" }}javascript:onclick=history.back(){{ else }}/recherche{{ end }}">
+    <a href="{{ if eq .Title "Recherche" }}javascript:onclick=history.back(){{ else }}/recherche{{ end }}" aria-label="{{ if eq .Title "Recherche" }}Retour à la page précédente{{ else }}Ouvrir la recherche{{ end }}">
         <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-        <svg width="100%" height="100%" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" class="logo" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+        <svg width="100%" height="100%" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" class="logo" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" aria-hidden="true" focusable="false">
         <g transform="matrix(1,0,0,1,165.571,-28.9503)">
             <circle cx="273.898" cy="278.399" r="173.201" style="fill:none;stroke-width:100px;"/>
         </g>
@@ -40,4 +40,3 @@
         </svg>
     </a>
 </header>
-
