@@ -5,10 +5,7 @@
   navigation: auto;
 }
 
-/* 
-  Scope all transition names to Chromium-based browsers only (via .supports-view-transitions class).
-  This avoids applying layout/paint containment to elements in Safari/Firefox which would break their layout.
-*/
+/* Browsers without View Transitions ignore these declarations and keep normal navigation. */
 
 .header {
   view-transition-name: site-header;
@@ -83,4 +80,12 @@
 }
 ::view-transition-new(main-content) {
   animation: fade-in 0.2s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
 }
