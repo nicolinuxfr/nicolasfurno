@@ -36,7 +36,7 @@
         <section class="item" {{ if $isJeuVideo }}data-temps="{{ $temps }}"{{ end }}>
           <div>
             <a href='{{ .RelPermalink }}'>
-                {{ partial "image-list.html" . }}
+                {{ partial "image-list.html" (dict "page" . "eager" false) }}
             </a>
           </div>
         </section>

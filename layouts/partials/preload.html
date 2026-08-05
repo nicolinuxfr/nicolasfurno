@@ -4,13 +4,3 @@
 {{ if .IsPage }}
     <link rel="preload" href="/fonts/EBGaramond.woff2" as="font" crossOrigin="anonymous">
 {{ end }}
-
-{{ if .IsHome }}
-    {{ range first 3 (where .Site.RegularPages "Type" "ne" "pages")  }}
-        {{ with partial "GetImage.html" . }}
-            {{ $image := . }}
-            {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
-                <link rel="preload" href="{{ $image1000.RelPermalink }}" as="image">
-        {{ end }}
-    {{ end }}
-{{ end }}

@@ -6,10 +6,10 @@
         {{.Content}}
       </div>
       <div class="articles">
-        {{ range (.Paginate  (where .Site.RegularPages "Type" "ne" "pages") ).Pages }}
+        {{ range $index, $page := (.Paginate  (where .Site.RegularPages "Type" "ne" "pages") ).Pages }}
         <section class="item">
-            <a href='{{ .RelPermalink }}'>
-              {{ partial "image-list.html" . }}
+            <a href='{{ $page.RelPermalink }}'>
+              {{ partial "image-list.html" (dict "page" $page "eager" (eq $index 0)) }}
             </a>
         </section>
         {{ end }}
