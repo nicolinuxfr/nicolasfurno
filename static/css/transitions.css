@@ -77,10 +77,10 @@
 
 /* --- TRANSITIONS MAPS --- */
 
-/* All pages (including menu and search): smooth, quick crossfade for a polished app-like feel */
+/* Keep both halves of the crossfade synchronized so the page background never shows through. */
 ::view-transition-old(main-content) {
-  animation: fade-out 0.15s ease-out both;
+  animation: fade-out 0.2s ease-in-out both;
 }
 ::view-transition-new(main-content) {
-  animation: fade-in 0.25s ease-in both;
+  animation: fade-in 0.2s ease-in-out both;
 }
