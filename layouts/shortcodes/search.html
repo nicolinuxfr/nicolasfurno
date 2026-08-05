@@ -39,7 +39,13 @@
         }
         search_input.focus();
 
-        search_input.addEventListener('keyup', function(e) { // execute search as each character is typed
+        // `input` also covers paste, autofill and Safari's native clear button.
+        search_input.addEventListener('input', function(e) {
+            search_exec(this.value);
+        });
+
+        // Safari emits `search` when the built-in clear button is used.
+        search_input.addEventListener('search', function(e) {
             search_exec(this.value);
         });
     });
@@ -76,4 +82,3 @@
     search_results.innerHTML = search_items;
   }
 </script>
-
