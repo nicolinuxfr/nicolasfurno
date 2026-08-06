@@ -3,7 +3,11 @@
     {{ partial "head.html" . -}}
     <body>
         {{- partial "header.html" . -}}
-        <div id="content">
+        {{ $pagefindBody := and .IsPage (ne .Type "pages") }}
+        <div id="content"{{ if $pagefindBody }} data-pagefind-body{{ end }}>
+        {{ if $pagefindBody }}
+            <span hidden data-pagefind-ignore data-pagefind-meta="title">{{ with index hugo.Data.catemoji 0 .Section }}{{ . }} {{ end }}{{ .Title | markdownify | plainify }}</span>
+        {{ end }}
         {{  block "main" . }}{{- end }}
         </div>
         {{- partial "footer.html" . -}}

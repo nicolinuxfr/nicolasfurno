@@ -1,84 +1,55 @@
-<script src="/js/fuse.min.js"></script>
-
 <div class="recherche">
     <form id="search" role="search" aria-haspopup="listbox" aria-labelledby="search-label" onsubmit="return false">
-        <input id="search-input" type="search" list="search-results" placeholder="Chercher" aria-label="Recherche" autocomplete="off" spellcheck="false" ></input>
+        <input id="search-input" type="search" list="search-results" placeholder="Chercher" aria-label="Recherche" autocomplete="off" spellcheck="false" autofocus>
         <ul id="search-results" role="listbox"></ul>
     </form>
 </div>
 
-<script>
-    var search_form = document.getElementById('search'); // search form
-    var search_input = document.getElementById('search-input'); // input box for search
-    var search_submit = document.getElementById('search-submit'); // form submit button
-    var search_results = document.getElementById('search-results'); // targets the <ul>
-    var resultsAvailable = false; 
-    var fuse; // holds our search engine
+<script type="module">
+    import * as pagefind from "/pagefind/pagefind.js";
 
-    // Récupération des paramètres de recherche dans l'URL
-    let params = (new URL(document.location)).searchParams;
-    var searchURL = params.get('s');
-   
-    fetch_JSON('/index.json', function(data){
-        var options = { // fuse.js options; check fuse.js website for details
-            shouldSort: true,
-            location: 0,
-            distance: 10000,
-            threshold: 0.2,
-            minMatchCharLength: 2,
-            keys: [ 
-              { name: "title", weight: 8 },
-              { name: "content", weight: 4 },
-              { name: "section", weight: 10 }
-          ]
-        };
-        fuse = new Fuse(data, options);
-        if (searchURL) {
-          search_input.value = searchURL;
-          search_exec(searchURL);
-        }
-        search_input.focus();
+    const searchInput = document.getElementById("search-input");
+    const searchResults = document.getElementById("search-results");
+    const searchTerm = new URL(document.location).searchParams.get("s");
+    let searchNumber = 0;
 
-        // `input` also covers paste, autofill and Safari's native clear button.
-        search_input.addEventListener('input', function(e) {
-            search_exec(this.value);
-        });
-
-        // Safari emits `search` when the built-in clear button is used.
-        search_input.addEventListener('search', function(e) {
-            search_exec(this.value);
-        });
-    });
-  
-    function fetch_JSON(path, callback) {
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.onreadystatechange = function() {
-      if (httpRequest.readyState === 4) {
-        if (httpRequest.status === 200) {
-          var data = JSON.parse(httpRequest.responseText);
-            if (callback) callback(data);
-        }
-      }
-    };
-    httpRequest.open('GET', path);
-    httpRequest.send();
-  }
-  
-    function search_exec(term) {
-      let results = fuse.search(term); // the actual query being run using fuse.js
-      let search_items = ''; // our results bucket
-    
-      if (results.length === 0) { // no results based on what was typed into the input box
-        results_available = false;
-        search_items = '';
-      } else { // build our html
-        for (let item in results) { 
-          search_items = search_items +
-    `<li><a href="${results[item].item.permalink}">${results[item].item.title}</a></li>`;
-        }
-      results_available = true;
+    if (searchTerm) {
+        searchInput.value = searchTerm;
     }
-  
-    search_results.innerHTML = search_items;
-  }
+
+    searchInput.focus();
+
+    async function searchExec(term) {
+        const currentSearch = ++searchNumber;
+        searchResults.replaceChildren();
+
+        if (!term) return;
+
+        const results = await pagefind.search(term);
+        if (currentSearch !== searchNumber) return;
+
+        const items = await Promise.all(results.results.map(async (result) => {
+            const data = await result.data();
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = data.url;
+            link.textContent = data.meta.title;
+            item.append(link);
+            return item;
+        }));
+
+        if (currentSearch === searchNumber) {
+            searchResults.replaceChildren(...items);
+        }
+    }
+
+    if (searchTerm) {
+        searchExec(searchTerm);
+    }
+
+    // `input` also covers paste, autofill and Safari's native clear button.
+    searchInput.addEventListener("input", () => searchExec(searchInput.value));
+
+    // Safari emits `search` when the built-in clear button is used.
+    searchInput.addEventListener("search", () => searchExec(searchInput.value));
 </script>
