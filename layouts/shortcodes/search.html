@@ -1,7 +1,8 @@
 <div class="recherche">
-    <form id="search" role="search" aria-haspopup="listbox" aria-labelledby="search-label" onsubmit="return false">
-        <input id="search-input" type="search" list="search-results" placeholder="Chercher" aria-label="Recherche" autocomplete="off" spellcheck="false" autofocus>
-        <ul id="search-results" role="listbox"></ul>
+    <form id="search" role="search" onsubmit="return false">
+        <label class="visually-hidden" for="search-input">Rechercher sur le blog</label>
+        <input id="search-input" type="search" placeholder="Chercher" aria-controls="search-results" autocomplete="off" spellcheck="false" autofocus>
+        <ul id="search-results" aria-label="Résultats de recherche"></ul>
     </form>
 </div>
 
@@ -16,8 +17,6 @@
     if (searchTerm) {
         searchInput.value = searchTerm;
     }
-
-    searchInput.focus();
 
     async function searchExec(term) {
         const currentSearch = ++searchNumber;
@@ -47,9 +46,36 @@
         searchExec(searchTerm);
     }
 
-    // `input` also covers paste, autofill and Safari's native clear button.
     searchInput.addEventListener("input", () => searchExec(searchInput.value));
 
     // Safari emits `search` when the built-in clear button is used.
     searchInput.addEventListener("search", () => searchExec(searchInput.value));
+
+    searchInput.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+        const links = [...searchResults.querySelectorAll("a")];
+        if (!links.length) return;
+        event.preventDefault();
+        (event.key === "ArrowDown" ? links[0] : links.at(-1)).focus();
+    });
+
+    searchResults.addEventListener("keydown", (event) => {
+        if (!["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) return;
+        const links = [...searchResults.querySelectorAll("a")];
+        const currentIndex = links.indexOf(document.activeElement);
+        if (currentIndex === -1) return;
+        event.preventDefault();
+
+        if (event.key === "Escape" || (event.key === "ArrowUp" && currentIndex === 0)) {
+            searchInput.focus();
+            return;
+        }
+
+        const nextIndex = event.key === "ArrowDown"
+            ? Math.min(currentIndex + 1, links.length - 1)
+            : currentIndex - 1;
+        links[nextIndex].focus();
+    });
+
+    searchInput.focus();
 </script>
