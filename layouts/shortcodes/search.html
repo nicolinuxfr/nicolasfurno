@@ -2,6 +2,15 @@
     <form id="search" role="search" onsubmit="return false">
         <label class="visually-hidden" for="search-input">Rechercher sur le blog</label>
         <input id="search-input" type="search" placeholder="Chercher" aria-controls="search-results" autocomplete="off" spellcheck="false" autofocus>
+        <div id="search-filters" aria-label="Filtres de recherche" hidden>
+            <button id="search-sort" class="search-filter" type="button" aria-label="Trier par date, du plus récent au plus ancien" title="Pertinence">
+                <svg class="sort-arrows" viewBox="0 0 24 24" aria-hidden="true">
+                    <path class="sort-arrow sort-oldest" d="M7 19V5m0 0L3.5 8.5M7 5l3.5 3.5"/>
+                    <path class="sort-arrow sort-newest" d="M17 5v14m0 0l-3.5-3.5M17 19l3.5-3.5"/>
+                </svg>
+            </button>
+            <div id="search-categories" aria-label="Catégories"></div>
+        </div>
         <ul id="search-results" aria-label="Résultats de recherche"></ul>
     </form>
 </div>
@@ -11,36 +20,143 @@
 
     const searchInput = document.getElementById("search-input");
     const searchResults = document.getElementById("search-results");
+    const searchFilters = document.getElementById("search-filters");
+    const searchSort = document.getElementById("search-sort");
+    const searchCategories = document.getElementById("search-categories");
     const searchTerm = new URL(document.location).searchParams.get("s");
     let searchNumber = 0;
+    let currentResults = [];
+    let activeCategory = null;
+    let sortMode = "relevance";
+    let currentTerm = null;
 
     if (searchTerm) {
         searchInput.value = searchTerm;
     }
 
     async function searchExec(term) {
+        term = term.trim();
+        if (term === currentTerm) return;
+        currentTerm = term;
+
         const currentSearch = ++searchNumber;
         searchResults.replaceChildren();
+        searchFilters.hidden = true;
 
-        if (!term) return;
+        if (!term) {
+            currentResults = [];
+            activeCategory = null;
+            return;
+        }
 
         const results = await pagefind.search(term);
         if (currentSearch !== searchNumber) return;
 
-        const items = await Promise.all(results.results.map(async (result) => {
+        currentResults = await Promise.all(results.results.map(async (result, relevance) => {
             const data = await result.data();
+            return {
+                data,
+                relevance,
+                category: data.meta.category,
+                date: Number(data.meta.date) || 0
+            };
+        }));
+
+        if (currentSearch === searchNumber) {
+            activeCategory = null;
+            sortMode = "relevance";
+            updateFilters(true);
+            renderResults();
+        }
+    }
+
+    function renderResults() {
+        let visibleResults = activeCategory
+            ? currentResults.filter((result) => result.category === activeCategory)
+            : [...currentResults];
+
+        if (sortMode !== "relevance") {
+            const direction = sortMode === "newest" ? -1 : 1;
+            visibleResults.sort((a, b) => direction * (a.date - b.date) || a.relevance - b.relevance);
+        }
+
+        const items = visibleResults.map(({ data }) => {
             const item = document.createElement("li");
             const link = document.createElement("a");
             link.href = data.url;
             link.textContent = data.meta.title;
             item.append(link);
             return item;
-        }));
+        });
 
-        if (currentSearch === searchNumber) {
-            searchResults.replaceChildren(...items);
-        }
+        searchResults.replaceChildren(...items);
     }
+
+    function updateFilters(rebuildCategories = false) {
+        searchFilters.hidden = currentResults.length <= 10;
+        if (searchFilters.hidden) return;
+
+        const sortLabels = {
+            relevance: ["Pertinence", "Trier par date, du plus récent au plus ancien"],
+            newest: ["Plus récents d’abord", "Trier par date, du plus ancien au plus récent"],
+            oldest: ["Plus anciens d’abord", "Revenir au tri par pertinence"]
+        };
+        const [title, label] = sortLabels[sortMode];
+        searchSort.title = title;
+        searchSort.setAttribute("aria-label", label);
+        searchSort.dataset.sort = sortMode;
+        searchSort.classList.toggle("active", sortMode !== "relevance");
+
+        if (rebuildCategories) {
+            const categories = currentResults.reduce((allCategories, result) => {
+                if (result.category) {
+                    const category = allCategories[result.category] || {
+                        count: 0,
+                        title: result.data.meta.categoryTitle || result.category
+                    };
+                    category.count += 1;
+                    allCategories[result.category] = category;
+                }
+                return allCategories;
+            }, {});
+            const buttons = Object.entries(categories)
+                .sort(([, categoryA], [, categoryB]) => categoryA.title.localeCompare(categoryB.title, "fr"))
+                .map(([category, { count, title }]) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "search-filter";
+                    button.setAttribute("aria-label", `${title}, ${count} résultat${count > 1 ? "s" : ""}`);
+                    button.dataset.category = category;
+                    button.append(document.createTextNode(`${title} `));
+                    const counter = document.createElement("span");
+                    counter.className = "search-filter-count";
+                    counter.textContent = count;
+                    button.append(counter);
+                    return button;
+                });
+            searchCategories.replaceChildren(...buttons);
+        }
+
+        searchCategories.querySelectorAll("button[data-category]").forEach((button) => {
+            const isActive = button.dataset.category === activeCategory;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", String(isActive));
+        });
+    }
+
+    searchSort.addEventListener("click", () => {
+        sortMode = sortMode === "relevance" ? "newest" : sortMode === "newest" ? "oldest" : "relevance";
+        updateFilters();
+        renderResults();
+    });
+
+    searchCategories.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-category]");
+        if (!button) return;
+        activeCategory = activeCategory === button.dataset.category ? null : button.dataset.category;
+        updateFilters();
+        renderResults();
+    });
 
     if (searchTerm) {
         searchExec(searchTerm);

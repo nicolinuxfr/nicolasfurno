@@ -725,6 +725,117 @@ h1 {
     padding: 0.1em;
 }
 
+#search-filters {
+    display: flex;
+    position: fixed;
+    z-index: 10;
+    right: 1em;
+    bottom: max(4.25rem, calc(env(safe-area-inset-bottom) + 1rem));
+    left: 1em;
+    align-items: center;
+    width: max-content;
+    max-width: calc(100% - 2em);
+    gap: 0.35em;
+    margin: 0 auto;
+    padding: 0.35em 0.65em;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-radius: 1.5em;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 0.15em 0.8em rgba(0, 0, 0, 0.12);
+    font-family: var(--police-meta);
+    font-size: 0.72em;
+    white-space: nowrap;
+    backdrop-filter: blur(0.4em);
+}
+
+#search-filters[hidden] {
+    display: none;
+}
+
+#search-filters:not([hidden]) + #search-results {
+    padding-bottom: 4em;
+}
+
+#search-filters::-webkit-scrollbar {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    #search-filters {
+        background: rgba(13, 26, 8, 0.94);
+        box-shadow: 0 0.15em 0.8em rgba(0, 0, 0, 0.35);
+    }
+}
+
+#search-categories {
+    display: flex;
+    gap: 0.35em;
+}
+
+.search-filter {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.25em;
+    min-height: 2em;
+    padding: 0.15em 0.55em;
+    border: 0;
+    border-radius: 1em;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    cursor: pointer;
+}
+
+.search-filter:hover,
+.search-filter:focus-visible,
+.search-filter.active {
+    color: var(--vert);
+}
+
+.search-filter:focus-visible {
+    outline: 2px solid var(--vert);
+    outline-offset: 1px;
+}
+
+#search-sort {
+    color: var(--couleur-texte);
+    border-right: 1px solid currentColor;
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0.7em;
+}
+
+.sort-arrows {
+    width: 1.65em;
+    height: 1.65em;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sort-arrow {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    transition: stroke 0.15s ease;
+}
+
+#search-sort:hover .sort-arrow {
+    stroke: var(--vert);
+}
+
+#search-sort[data-sort="newest"] .sort-newest,
+#search-sort[data-sort="oldest"] .sort-oldest {
+    stroke: var(--vert);
+    stroke-width: 3;
+}
+
+.search-filter-count {
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+}
+
 input:focus::placeholder {
     color: transparent;
 }

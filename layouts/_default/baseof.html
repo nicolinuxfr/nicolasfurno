@@ -7,6 +7,9 @@
         <div id="content"{{ if $pagefindBody }} data-pagefind-body{{ end }}>
         {{ if $pagefindBody }}
             <span hidden data-pagefind-ignore data-pagefind-meta="title">{{ with index hugo.Data.catemoji 0 .Section }}{{ . }} {{ end }}{{ .Title | markdownify | plainify | htmlUnescape }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="category">{{ .Section }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="categoryTitle">{{ with index hugo.Data.catemoji 0 .Section }}{{ . }} {{ end }}{{ (site.GetPage .Section).Title }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="date">{{ .Date.Unix }}</span>
         {{ end }}
         {{  block "main" . }}{{- end }}
         </div>
