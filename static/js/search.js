@@ -33,6 +33,10 @@ function focusResult(link) {
     link.scrollIntoView({ block: "center", inline: "nearest" });
 }
 
+function normalizeSearchTerm(term) {
+    return term.replace(/(^|\s)(?:[cdjlmnst]|qu)['’](?=\p{L})/giu, "$1");
+}
+
 new ResizeObserver(() => {
     document.documentElement.style.setProperty("--search-input-height", `${searchInputContainer.offsetHeight}px`);
 }).observe(searchInputContainer);
@@ -54,7 +58,7 @@ async function searchExec(term) {
             return;
     }
 
-    const results = await pagefind.search(term);
+    const results = await pagefind.search(normalizeSearchTerm(term));
     if (currentSearch !== searchNumber) return;
 
         currentResults = await Promise.all(results.results.map(async (result, relevance) => {
