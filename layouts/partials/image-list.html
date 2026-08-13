@@ -6,13 +6,21 @@
     {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
     {{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
     {{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}
+    {{ $srcset := slice }}
+    {{ if gt $image.Width 1000 }}
+        {{ $srcset = $srcset | append (printf "%s 1000w" $image1000.RelPermalink) }}
+    {{ end }}
+    {{ if gt $image.Width 1500 }}
+        {{ $srcset = $srcset | append (printf "%s 1500w" $image1500.RelPermalink) }}
+    {{ end }}
+    {{ if gt $image.Width 2000 }}
+        {{ $srcset = $srcset | append (printf "%s 2000w" $image2000.RelPermalink) }}
+    {{ end }}
+    {{ $srcset = $srcset | append (printf "%s %dw" $image.RelPermalink $image.Width) }}
 
     <div class="image">
         <img style="--vt-name: img-{{ if $page.File }}{{ $page.File.ContentBaseName }}{{ else }}{{ $page.Title | urlize }}{{ end }};" src="{{ $image.RelPermalink }}"
-            srcset="{{ if gt $image.Width 1000 }} {{ $image1000.RelPermalink }} 1000w,{{ end }},
-                    {{ if gt $image.Width 1500 }} {{ $image1500.RelPermalink }} 1500w,{{ end }}
-                    {{ if gt $image.Width 2000 }} {{ $image2000.RelPermalink }} 2000w,{{ end }}
-                    {{ $image.RelPermalink }} {{ $image.Width }}w"
+            srcset="{{ delimit $srcset ", " }}"
             sizes="(min-width: 1800px) 25vw,
                     (min-width: 1200px) 33vw,
                     (min-width: 800px) 50vw,
