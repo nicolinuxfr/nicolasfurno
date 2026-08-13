@@ -1,0 +1,8 @@
+{{- $image := .image -}}
+{{- $maxWidth := .maxWidth -}}
+{{- $width := $image.Width -}}
+{{- if gt $width $maxWidth -}}
+    {{- $width = $maxWidth -}}
+{{- end -}}
+{{- $result := $image.Resize (printf "%dx jpeg" $width) -}}
+{{- return $result -}}

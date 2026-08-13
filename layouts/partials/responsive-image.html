@@ -1,0 +1,37 @@
+{{- $image := .image -}}
+{{- $maxWidth := default 2000 .maxWidth -}}
+{{- $widths := default (slice 500 800 1000 1200 1500 2000) .widths -}}
+{{- $loading := default "lazy" .loading -}}
+{{- $finalWidth := $image.Width -}}
+{{- if gt $finalWidth $maxWidth -}}
+    {{- $finalWidth = $maxWidth -}}
+{{- end -}}
+
+{{- $srcset := slice -}}
+{{- $fallback := false -}}
+{{- range $widths -}}
+    {{- if lt . $finalWidth -}}
+        {{- $candidate := $image.Resize (printf "%dx jpeg" .) -}}
+        {{- $srcset = $srcset | append (printf "%s %dw" $candidate.RelPermalink $candidate.Width) -}}
+        {{- if eq . 1000 -}}
+            {{- $fallback = $candidate -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $final := partial "image-variant.html" (dict "image" $image "maxWidth" $maxWidth) -}}
+{{- $srcset = $srcset | append (printf "%s %dw" $final.RelPermalink $final.Width) -}}
+{{- if not $fallback -}}
+    {{- $fallback = $final -}}
+{{- end -}}
+
+<img{{ with .transitionName }} style="--vt-name: img-{{ . }};"{{ end }}
+    src="{{ $fallback.RelPermalink }}"
+    srcset="{{ delimit $srcset ", " }}"
+    sizes="{{ .sizes }}"
+    alt="{{ .alt }}"
+    loading="{{ $loading }}"
+    {{- if eq $loading "eager" }} fetchpriority="high"{{ end }}
+    width="{{ $image.Width }}"
+    height="{{ $image.Height }}"
+>

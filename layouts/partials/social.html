@@ -32,7 +32,7 @@
     
 {{ with partial "GetImage.html" . }}
       {{ $image := . }}
-      {{ $image = $image.Resize "1000x q70 MitchellNetravali" }}
+      {{ $image = partial "image-variant.html" (dict "image" $image "maxWidth" 1200) }}
       <meta property="og:image" content="{{ $image.Permalink }}"/>
     {{ end }}
 {{ else }}
@@ -40,4 +40,3 @@
         <meta property="og:image" content="{{ index . 0 | absURL }}"/>
     {{ end }}
 {{ end }}
-

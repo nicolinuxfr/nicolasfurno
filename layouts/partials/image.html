@@ -1,29 +1,18 @@
 {{ $titre := .Title | markdownify }}
+{{ $transitionName := .Title | urlize }}
+{{ with .File }}
+    {{ $transitionName = .ContentBaseName }}
+{{ end }}
 {{ with partial "GetImage.html" . }}
     {{ $image := . }}
-	{{ $width := $image.Width }}
-	{{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
-	{{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
-	{{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}
-	{{ $srcset := slice }}
-	{{ if gt $image.Width 1000 }}
-		{{ $srcset = $srcset | append (printf "%s 1000w" $image1000.RelPermalink) }}
-	{{ end }}
-	{{ if gt $image.Width 1500 }}
-		{{ $srcset = $srcset | append (printf "%s 1500w" $image1500.RelPermalink) }}
-	{{ end }}
-	{{ if gt $image.Width 2000 }}
-		{{ $srcset = $srcset | append (printf "%s 2000w" $image2000.RelPermalink) }}
-	{{ end }}
-	{{ $srcset = $srcset | append (printf "%s %dw" $image.RelPermalink $image.Width) }}
 
     <div class="image">
-        <img style="--vt-name: img-{{ if $.File }}{{ $.File.ContentBaseName }}{{ else }}{{ $.Title | urlize }}{{ end }};" src="{{ $image.RelPermalink }}"
-			srcset="{{ delimit $srcset ", " }}"
-            alt="{{ $titre }}"
-            loading="lazy"
-            width="{{ $image.Width }}"
-            height="{{ $image.Height }}"
-        >
+        {{ partial "responsive-image.html" (dict
+            "image" $image
+            "alt" $titre
+            "sizes" "(min-width: 900px) 40vw, 100vw"
+            "loading" "lazy"
+            "transitionName" $transitionName
+        ) }}
     </div>
 {{ end }}

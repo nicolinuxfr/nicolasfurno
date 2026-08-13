@@ -24,8 +24,8 @@
         <description>
         {{ printf "<![CDATA[" | safeHTML }}
         {{ with partial "GetImage.html" . }}
-            {{ $image := . }}
-            <img src="{{ .Permalink }}">
+            {{ $image := partial "image-variant.html" (dict "image" . "maxWidth" 1000) }}
+            <img src="{{ $image.Permalink }}">
         {{ end }}
         {{- printf "%s" .Content | safeHTML }}
         {{- printf "]]>" | safeHTML }}

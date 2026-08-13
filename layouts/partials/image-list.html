@@ -1,35 +1,20 @@
 {{ $page := .page }}
 {{ $eager := .eager }}
 {{ $titre := $page.Title | markdownify }}
+{{ $transitionName := $page.Title | urlize }}
+{{ with $page.File }}
+    {{ $transitionName = .ContentBaseName }}
+{{ end }}
 {{ with partial "GetImage.html" $page }}
     {{ $image := . }}
-    {{ $image1000 := $image.Resize "1000x q70 MitchellNetravali" }}
-    {{ $image1500 := $image.Resize "1500x q70 MitchellNetravali" }}
-    {{ $image2000 := $image.Resize "2000x q70 MitchellNetravali" }}
-    {{ $srcset := slice }}
-    {{ if gt $image.Width 1000 }}
-        {{ $srcset = $srcset | append (printf "%s 1000w" $image1000.RelPermalink) }}
-    {{ end }}
-    {{ if gt $image.Width 1500 }}
-        {{ $srcset = $srcset | append (printf "%s 1500w" $image1500.RelPermalink) }}
-    {{ end }}
-    {{ if gt $image.Width 2000 }}
-        {{ $srcset = $srcset | append (printf "%s 2000w" $image2000.RelPermalink) }}
-    {{ end }}
-    {{ $srcset = $srcset | append (printf "%s %dw" $image.RelPermalink $image.Width) }}
 
     <div class="image">
-        <img style="--vt-name: img-{{ if $page.File }}{{ $page.File.ContentBaseName }}{{ else }}{{ $page.Title | urlize }}{{ end }};" src="{{ $image.RelPermalink }}"
-            srcset="{{ delimit $srcset ", " }}"
-            sizes="(min-width: 1800px) 25vw,
-                    (min-width: 1200px) 33vw,
-                    (min-width: 800px) 50vw,
-                    100vw"
-            alt="{{ $titre }}"
-            loading="{{ if $eager }}eager{{ else }}lazy{{ end }}"
-            {{ if $eager }}fetchpriority="high"{{ end }}
-            width="{{ $image.Width }}"
-            height="{{ $image.Height }}"
-        >
+        {{ partial "responsive-image.html" (dict
+            "image" $image
+            "alt" $titre
+            "sizes" "(min-width: 1800px) calc((100vw - 1.5em) / 4), (min-width: 1200px) calc((100vw - 1em) / 3), (min-width: 800px) calc((100vw - 0.5em) / 2), 100vw"
+            "loading" (cond $eager "eager" "lazy")
+            "transitionName" $transitionName
+        ) }}
     </div>
 {{ end }}

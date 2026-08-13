@@ -18,8 +18,16 @@
       <div>
         <a href="{{ .url }}">
           {{ $url := (add "https://image.tmdb.org/t/p/original/" .img) }}
+          {{ $title := .title }}
             {{ with resources.GetRemote $url }}
-              <div class="image"><img src="{{ .RelPermalink }}"  width="{{ .Width }}" height="{{ .Height }}" alt=""></div>
+              <div class="image">
+                {{ partial "responsive-image.html" (dict
+                    "image" .
+                    "alt" $title
+                    "sizes" "(min-width: 1800px) calc((100vw - 1.5em) / 4), (min-width: 1200px) calc((100vw - 1em) / 3), (min-width: 800px) calc((100vw - 0.5em) / 2), 100vw"
+                    "loading" "lazy"
+                ) }}
+              </div>
             {{ end }}
         </a>
       </div>
@@ -27,4 +35,3 @@
     {{ end }}
 
 {{ end }}
-
