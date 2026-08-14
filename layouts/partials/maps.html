@@ -7,14 +7,13 @@
 }
 </style>
 
-<body>
 <div id="map"></div>
 
 {{ $token := getenv "HUGO_MAPKIT" }}
 
 <script>
-    const tokenID = "{{ $token }}";
-    const coordonnees = {{ . }};
+    const tokenID = {{ $token | jsonify | safeJS }};
+    const coordonnees = {{ . | jsonify | safeJS }};
 
     mapkit.init({
         authorizationCallback: function(done) {
@@ -24,25 +23,21 @@
         mapType: "Hybrid"
     });
 
-    var region = new mapkit.CoordinateRegion(
-        new mapkit.Coordinate(coordonnees[coordonnees.length / 2 | 0].lat, coordonnees[coordonnees.length / 2 | 0].long),
-        new mapkit.CoordinateSpan(0.010, 0.010)
-    );
-
-    var map = new mapkit.Map("map", {
-        region: region,
+    const map = new mapkit.Map("map", {
         mapType: mapkit.Map.MapTypes.Hybrid
     });
 
-    coordonnees.forEach((location) => {
-        var coordinate = new mapkit.Coordinate(location.lat, location.long);
-        var pinOptions = {
+    const annotations = coordonnees.map((location) => {
+        const coordinate = new mapkit.Coordinate(location.lat, location.long);
+        const pinOptions = {
             glyphImage: { 1: "/img/pin.png", 2: "/img/pin@2x.png" },
             selectedGlyphImage: { 1: "/img/icon-192.png", 2: "/img/icon-512.png"},
             color: "#487b00"
         };
-        let marker = new mapkit.MarkerAnnotation(coordinate, pinOptions);
-        map.addAnnotation(marker);
+        return new mapkit.MarkerAnnotation(coordinate, pinOptions);
     });
 
+    map.showItems(annotations, {
+        padding: new mapkit.Padding(48, 48, 48, 48)
+    });
 </script>

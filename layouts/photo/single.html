@@ -38,21 +38,25 @@
         {{ end }}
 
     {{ if .Params.image }}
-        {{ $image := .Resources.GetMatch .Params.image }}
+        {{- $photos := slice -}}
+        {{- with .Resources.ByType "image" -}}
+            {{- range . -}}
+                {{- with .Meta -}}
+                    {{- $lat := float .Lat -}}
+                    {{- $long := float .Long -}}
+                    {{- if and (not (and (eq $lat 0.0) (eq $long 0.0))) (ge $lat -90.0) (le $lat 90.0) (ge $long -180.0) (le $long 180.0) -}}
+                        {{- $photos = $photos | append (dict "long" $long "lat" $lat) -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+
+        {{ if gt (len $photos) 0 }}
         <div class="meta">
             <h3>Emplacement</h3>
-        {{- $.Scratch.Add "photos" slice -}}
-        {{ with .Resources.ByType "image" }}
-        {{ range . }}
-            {{ with .Meta }}
-                {{- $.Scratch.Add "photos" (dict "long" .Long "lat" .Lat ) -}}
-            {{ end }}
-        {{- end -}}
-        {{- end -}}
-        {{- $photos := $.Scratch.Get "photos" -}}
-        
-        {{ partial "maps.html" $photos }}
-    </div>
+            {{ partial "maps.html" $photos }}
+        </div>
+        {{ end }}
     {{ end }}
     </div>
 </section>
