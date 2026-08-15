@@ -17,14 +17,8 @@
         {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
     {{ end -}}
     
-    {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | htmlUnescape | plainify |  printf "%s" }}
-
-    {{ if and (eq .Kind "term") (eq .Section "tmdb") }}
-        {{ $id := .Title }}
-        {{ $tmdb := getenv "HUGO_TMDB" }}
-        {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
-        {{ $title = printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" $data.name | markdownify | htmlUnescape | plainify |  printf "%s" }}
-    {{ end }}
+    {{ $pageTitle := partial "tmdb-term-title.html" . }}
+    {{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" $pageTitle | markdownify | htmlUnescape | plainify | printf "%s" }}
 
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }}</title>

@@ -35,8 +35,11 @@
             {{ end }}
 
             {{ $seasonLast := 0 }}
-            {{ range last 1 $saisons.ByDate }}
-                {{ $seasonLast = int (delimit (last 1 (.Param "saison")) "") }}
+            {{ range $saisons }}
+                {{ with .Params.saison }}
+                    {{ $candidate := int (delimit (last 1 .) "") }}
+                    {{ if gt $candidate $seasonLast }}{{ $seasonLast = $candidate }}{{ end }}
+                {{ end }}
             {{ end }}
 
             {{ if $.Params.avant }}
@@ -45,8 +48,11 @@
 
             {{ if ge $seasonPost $seasonPre }}
                 {{ range $saisons }}
-                    {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonPre }}
-                        <div class="saison"><a href="{{ .Permalink }}">{{ $texteAvant }}</a></div>
+                    {{ $page := . }}
+                    {{ with .Params.saison }}
+                        {{ if eq (int (delimit (last 1 .) "")) $seasonPre }}
+                            <div class="saison"><a href="{{ $page.Permalink }}">{{ $texteAvant }}</a></div>
+                        {{ end }}
                     {{ end }}
                 {{ end }}
              {{ end }}
@@ -60,8 +66,11 @@
             {{ if lt $seasonPost $seasonLast }}
                 {{ $seasonNext := (add $seasonPost 1)}}
                 {{ range $saisons }}
-                    {{ if eq (int (delimit (last 1 .Params.saison) "")) $seasonNext }}
-                        <div class="saison"><a href="{{ .Permalink }}">{{ $texteApres }}</a></div>
+                    {{ $page := . }}
+                    {{ with .Params.saison }}
+                        {{ if eq (int (delimit (last 1 .) "")) $seasonNext }}
+                            <div class="saison"><a href="{{ $page.Permalink }}">{{ $texteApres }}</a></div>
+                        {{ end }}
                     {{ end }}
                 {{ end }}
             {{ end }} 
@@ -73,37 +82,15 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "tmdb" }}
-            {{ $id := $.Param "tmdb" }}
-            {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $url := printf "https://api.themoviedb.org/3/tv/%v?language=fr-FR&api_key=%v" $id $tmdb }}
-            {{ with resources.GetRemote $url }}
-                {{ $data := . | transform.Unmarshal }}
-                {{ $infos.Set "meta" $data }}
-            {{ end }}
         {{ end }}
 
+        {{ if .Resources.GetMatch "seasons.json" }}
+            {{ $data := .Resources.GetMatch "seasons.json" | unmarshal }}
+            {{ $infos.Set "seasons" $data }}
+        {{ end }}
         {{ if .Resources.GetMatch "cast.json" }}
             {{ $data := .Resources.GetMatch "cast.json" | unmarshal }}
             {{ $infos.Set "cast" $data }}
-        {{ else if $.Param "tmdb" }}
-            {{ $id := string ($.Param "tmdb") }}
-            {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ if $.Params.saison }}
-                {{ $saison := (delimit (first 1 $.Params.saison) "") }}
-                {{ $url := printf "https://api.themoviedb.org/3/tv/%s/season/%s/credits?language=fr-FR&api_key=%s" $id $saison $tmdb }}
-                {{ with resources.GetRemote $url }}
-                    {{ $data := . | transform.Unmarshal }}
-                    {{ $infos.Set "cast" $data }}
-                {{ end }}
-            {{ else }}
-                {{ $url := printf "https://api.themoviedb.org/3/tv/%v/aggregate_credits?language=fr-FR&api_key=%v" $id $tmdb }}
-                {{ with resources.GetRemote $url }}
-                    {{ $data := . | transform.Unmarshal }}
-                    {{ $infos.Set "cast" $data }}
-                {{ end }}
-            {{ end }}
-
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}

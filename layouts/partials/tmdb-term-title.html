@@ -1,0 +1,10 @@
+{{ $title := .Title }}
+{{ if and (eq .Kind "term") (eq .Section "tmdb") }}
+    {{ range first 1 .Pages }}
+        {{ with .Resources.GetMatch "meta.json" }}
+            {{ $metadata := . | transform.Unmarshal }}
+            {{ with $metadata.name }}{{ $title = . }}{{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ return $title }}

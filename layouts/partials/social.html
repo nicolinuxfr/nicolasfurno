@@ -3,15 +3,9 @@
 <meta property="og:url" content="{{ .Permalink }}" />
 {{- with .Site.Params.title }}<meta property="og:site_name" content="{{ . }}" />{{ end }}
 
-{{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" .Title | markdownify | plainify |  printf "%s" }}
+{{ $pageTitle := partial "tmdb-term-title.html" . }}
+{{ $title := printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" $pageTitle | markdownify | plainify | printf "%s" }}
 {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
-
-{{ if and (eq .Kind "term") (eq .Section "tmdb") }}
-    {{ $id := .Title }}
-    {{ $tmdb := getenv "HUGO_TMDB" }}
-    {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
-    {{ $title = printf "%s" .Site.Title | printf "%s%s" " - " | printf "%s%s" $data.name | markdownify | htmlUnescape | plainify |  printf "%s" }}
-{{ end }}
 
 <meta property="og:title" content="{{ $title }}" />
 

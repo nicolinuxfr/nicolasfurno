@@ -2,10 +2,7 @@
 <main>
     <article>
         <header>
-            {{ $id := .Title }}
-            {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
-            <h1><em>{{ $data.name  }}</em></h1>
+            <h1><em>{{ partial "tmdb-term-title.html" . }}</em></h1>
         </header>
         <section id="single">
             <div class="content">

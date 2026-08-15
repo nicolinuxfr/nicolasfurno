@@ -13,27 +13,11 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
-            {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $url := printf "https://api.themoviedb.org/3/movie/%v?api_key=%v&language=fr-FR" $id $tmdb }}
-            {{ with resources.GetRemote $url }}
-                {{ $data := . | transform.Unmarshal }}
-                {{ $infos.Set "meta" $data }}
-            {{ end }}
         {{ end }}
 
         {{ if .Resources.GetMatch "cast.json" }}
             {{ $data := .Resources.GetMatch "cast.json" | unmarshal }}
             {{ $infos.Set "cast" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
-            {{ $tmdb := getenv "HUGO_TMDB" }}
-            {{ $url := printf "https://api.themoviedb.org/3/movie/%v/credits?api_key=%v&language=fr-FR" $id $tmdb }}
-            {{ with resources.GetRemote $url }}
-                {{ $data := . | transform.Unmarshal }}
-                {{ $infos.Set "cast" $data }}
-            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}

@@ -5,10 +5,15 @@
   {{ $liste := slice }}
   {{ range .Data.Terms.Alphabetical }}
     {{ if (gt .Count 1) }}
-      {{ $id := .Page.Title }}
-      {{ $tmdb := getenv "HUGO_TMDB" }}
-      {{ $data := unmarshal (resources.GetRemote (add "https://api.themoviedb.org/3/tv/" $id "?language=fr-FR&api_key=" $tmdb)) }}
-      {{ $liste = $liste | append (dict "url" .Page.Permalink "title" $data.name "img" $data.poster_path ) }}
+      {{ $term := .Page }}
+      {{ range first 1 $term.Pages.ByDate.Reverse }}
+        {{ $title := $term.Title }}
+        {{ with .Resources.GetMatch "meta.json" }}
+          {{ $metadata := . | transform.Unmarshal }}
+          {{ with $metadata.name }}{{ $title = . }}{{ end }}
+        {{ end }}
+        {{ $liste = $liste | append (dict "url" $term.Permalink "title" $title "page" .) }}
+      {{ end }}
     {{ end }}
   {{ end }}
   
@@ -17,18 +22,7 @@
     <section class="item">
       <div>
         <a href="{{ .url }}">
-          {{ $url := (add "https://image.tmdb.org/t/p/original/" .img) }}
-          {{ $title := .title }}
-            {{ with resources.GetRemote $url }}
-              <div class="image">
-                {{ partial "responsive-image.html" (dict
-                    "image" .
-                    "alt" $title
-                    "sizes" "(min-width: 1800px) calc((100vw - 1.5em) / 4), (min-width: 1200px) calc((100vw - 1em) / 3), (min-width: 800px) calc((100vw - 0.5em) / 2), 100vw"
-                    "loading" "lazy"
-                ) }}
-              </div>
-            {{ end }}
+          {{ partial "image-list.html" (dict "page" .page "eager" false) }}
         </a>
       </div>
     </section>

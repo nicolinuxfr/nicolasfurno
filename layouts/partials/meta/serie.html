@@ -1,12 +1,14 @@
 {{ $metadata := .Get "meta" }}
-{{ $cast := .Get "cast" }}
+{{ $cast := default (dict) (.Get "cast") }}
+{{ $seasonData := default (slice) (.Get "seasons") }}
 {{ $countries := .Get "countries" }}
 {{ $saison := .Get "saison" }}
 {{ $saisons := .Get "liensaison" }}
+{{ $wholeSeries := and (eq (len $saison) 1) (eq (int (delimit (first 1 $saison) "")) 0) }}
 
 <div class="meta">
     <h3>Informations</h3>
-    
+
     {{ with $saisons }}<strong><a href="/tmdb/{{ $metadata.id }}">Toutes les saisons</a></strong>{{ end }}
 
     {{ if ne $metadata.name $metadata.original_name }}
@@ -16,89 +18,154 @@
     <ul>
         <li><strong>Créateurs</strong> :</li>
         {{ range $metadata.networks }}
-            <li><a href="https://www.themoviedb.org/network/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            <li><a href="https://www.themoviedb.org/network/{{ string .id }}" target="_blank" rel="noopener noreferrer">{{ .name }}</a></li>
         {{ end }}
         {{ range $metadata.created_by }}
-            <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            <li><a href="https://www.themoviedb.org/person/{{ string .id }}" target="_blank" rel="noopener noreferrer">{{ .name }}</a></li>
         {{ end }}
     </ul>
 
-    <p><strong>Année{{ if gt (len $saison) 1 }}s{{end}}</strong> :
-        {{ if eq (len $saison) 1 }}
-            {{ if eq (int (delimit (first 1 $saison) "" )) 0}}
-                {{ time.Format "2006" $metadata.first_air_date }}{{ if ne (time.Format "2006" $metadata.first_air_date) (time.Format "2006" $metadata.last_air_date) }} à {{ time.Format "2006" $metadata.last_air_date }}{{ end }}
-            {{ else }}
-                {{ range where $metadata.seasons ".season_number" ( int (delimit (first 1 $saison) "" ) ) }}
-                    {{ time.Format "2006" .air_date }}
+    <p><strong>Année{{ if gt (len $saison) 1 }}s{{ end }}</strong> :
+        {{ if and (gt (len $seasonData) 0) (not $wholeSeries) }}
+            {{ $firstYear := "" }}
+            {{ $lastYear := "" }}
+            {{ range $seasonData }}
+                {{ with .air_date }}
+                    {{ $year := time.Format "2006" . }}
+                    {{ if eq $firstYear "" }}{{ $firstYear = $year }}{{ end }}
+                    {{ $lastYear = $year }}
                 {{ end }}
             {{ end }}
-        {{ else  }}
+            {{ if eq $firstYear "" }}
+                inconnue
+            {{ else if ne $firstYear $lastYear }}
+                {{ $firstYear }} à {{ $lastYear }}
+            {{ else }}
+                {{ $firstYear }}
+            {{ end }}
+        {{ else if eq (len $saison) 1 }}
+            {{ if eq (int (delimit (first 1 $saison) "")) 0 }}
+                {{ time.Format "2006" $metadata.first_air_date }}{{ if ne (time.Format "2006" $metadata.first_air_date) (time.Format "2006" $metadata.last_air_date) }} à {{ time.Format "2006" $metadata.last_air_date }}{{ end }}
+            {{ else }}
+                {{ range where $metadata.seasons ".season_number" (int (delimit (first 1 $saison) "")) }}{{ time.Format "2006" .air_date }}{{ end }}
+            {{ end }}
+        {{ else }}
             {{ $saisonStart := delimit (first 1 $saison) "" }}
             {{ $saisonEnd := delimit (last 1 $saison) "" }}
             {{ $dateStart := 0 }}
             {{ $dateEnd := 0 }}
-            {{ range where $metadata.seasons ".season_number" (int $saisonStart) }}
-                {{ $dateStart = time.Format "2006" .air_date }}
-            {{ end }}
-            {{ range where $metadata.seasons ".season_number" (int $saisonEnd) }}
-                {{ $dateEnd = time.Format "2006" .air_date }}
-            {{ end }}
-            {{ if ne $dateStart $dateEnd }}
-                {{ $dateStart }} à {{ $dateEnd }}
-            {{ else }}
-                {{ $dateStart }}
-            {{ end }}
-        {{ end }} 
+            {{ range where $metadata.seasons ".season_number" (int $saisonStart) }}{{ $dateStart = time.Format "2006" .air_date }}{{ end }}
+            {{ range where $metadata.seasons ".season_number" (int $saisonEnd) }}{{ $dateEnd = time.Format "2006" .air_date }}{{ end }}
+            {{ if ne $dateStart $dateEnd }}{{ $dateStart }} à {{ $dateEnd }}{{ else }}{{ $dateStart }}{{ end }}
+        {{ end }}
     </p>
 
     <ul>
-        <li>{{if gt (len $metadata.origin_country ) 1}}<strong>Nationalités</strong>{{else}}<strong>Nationalité</strong>{{end}} :</li>
+        <li>{{ if gt (len $metadata.origin_country) 1 }}<strong>Nationalités</strong>{{ else }}<strong>Nationalité</strong>{{ end }} :</li>
         {{ range $metadata.origin_country }}
             {{ $code := (lower . | string) }}
-            {{ range where $countries ".alpha2" $code }}
-                <li>{{ .name }}</li>
-            {{ end }}
+            {{ range where $countries ".alpha2" $code }}<li>{{ .name }}</li>{{ end }}
         {{ end }}
     </ul>
 
-    {{ with $cast.cast }}
+    {{ $actors := slice }}
+    {{ if and (gt (len $seasonData) 0) (not $wholeSeries) }}
+        {{ range $seasonData }}
+            {{ range .aggregate_credits.cast }}{{ $actors = $actors | append . }}{{ end }}
+        {{ end }}
+    {{ else }}
+        {{ with $cast.cast }}{{ $actors = . }}{{ end }}
+    {{ end }}
+    {{ with $actors }}
+        {{ $seen := newScratch }}
+        {{ $actorCount := 0 }}
         <ul>
             <li><strong>Acteurs</strong> :</li>
-            {{ range first 10 . }}
-                <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            {{ range sort . "order" }}
+                {{ $key := string .id }}
+                {{ if and (lt $actorCount 10) (not ($seen.Get $key)) }}
+                    <li><a href="https://www.themoviedb.org/person/{{ $key }}" target="_blank" rel="noopener noreferrer">{{ .name }}</a></li>
+                    {{ $seen.Set $key true }}
+                    {{ $actorCount = add $actorCount 1 }}
+                {{ end }}
             {{ end }}
         </ul>
     {{ end }}
 
     <ul>
-        <li>{{if gt (len $metadata.genres ) 1}}<strong>Genres</strong>{{else}}<strong>Genre</strong>{{end}} :</li>
-    {{ range $metadata.genres }}
-        <li>{{.name}}</li>
-    {{ end }}
+        <li>{{ if gt (len $metadata.genres) 1 }}<strong>Genres</strong>{{ else }}<strong>Genre</strong>{{ end }} :</li>
+        {{ range $metadata.genres }}<li>{{ .name }}</li>{{ end }}
     </ul>
 
     <p><strong>Durée</strong> :
-        {{ if eq (len $saison) 1 }}
-            {{ if eq (int (delimit (first 1 $saison) "" )) 0}}
-                {{ $metadata.number_of_episodes }}
-            {{ else }}
-                {{ range where $metadata.seasons ".season_number" ( int (delimit (first 1 $saison) "" ) ) }}
-                    {{ .episode_count }}
-                {{ end }}
-            {{ end }}
-        {{ else }}
+        {{ if gt (len $seasonData) 0 }}
             {{ $episodes := 0 }}
-            {{ range  seq (int (delimit (first 1 $saison) "" )) ( int (delimit (last 1 $saison) "" )) }}
-                {{ range where $metadata.seasons ".season_number" (int . ) }}
-                    {{ $episodes = add $episodes .episode_count }}
+            {{ $runtimeMin := 0 }}
+            {{ $runtimeMax := 0 }}
+            {{ range $seasonData }}
+                {{ range .episodes }}
+                    {{ $episodes = add $episodes 1 }}
+                    {{ with .runtime }}
+                        {{ $runtime := int . }}
+                        {{ if or (eq $runtimeMin 0) (lt $runtime $runtimeMin) }}{{ $runtimeMin = $runtime }}{{ end }}
+                        {{ if gt $runtime $runtimeMax }}{{ $runtimeMax = $runtime }}{{ end }}
+                    {{ end }}
                 {{ end }}
             {{ end }}
-            {{ $episodes }}
-        {{ end }}épisodes 
-        {{ $duree := 0 }}
-        {{ range first 1 $metadata.episode_run_time }}{{ $duree = . }}{{ end }}
-        {{ if ne $duree 0 }}
-            de {{ $duree }} minutes
+            {{ if eq $runtimeMin 0 }}
+                {{ range $metadata.episode_run_time }}
+                    {{ $runtime := int . }}
+                    {{ if gt $runtime 0 }}
+                        {{ if or (eq $runtimeMin 0) (lt $runtime $runtimeMin) }}{{ $runtimeMin = $runtime }}{{ end }}
+                        {{ if gt $runtime $runtimeMax }}{{ $runtimeMax = $runtime }}{{ end }}
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+            {{ if eq $runtimeMin 0 }}
+                {{ with $metadata.last_episode_to_air }}{{ with .runtime }}{{ $runtimeMin = int . }}{{ $runtimeMax = int . }}{{ end }}{{ end }}
+            {{ end }}
+            {{ if eq $runtimeMin 0 }}
+                {{ with $metadata.next_episode_to_air }}{{ with .runtime }}{{ $runtimeMin = int . }}{{ $runtimeMax = int . }}{{ end }}{{ end }}
+            {{ end }}
+            {{ if $wholeSeries }}{{ $metadata.number_of_episodes }}{{ else }}{{ $episodes }}{{ end }} épisodes{{ if gt $runtimeMin 0 }} de {{ $runtimeMin }}{{ if ne $runtimeMin $runtimeMax }} à {{ $runtimeMax }}{{ end }} minutes{{ end }}
+        {{ else }}
+            {{ if eq (len $saison) 1 }}
+                {{ if eq (int (delimit (first 1 $saison) "")) 0 }}
+                    {{ $metadata.number_of_episodes }}
+                {{ else }}
+                    {{ range where $metadata.seasons ".season_number" (int (delimit (first 1 $saison) "")) }}{{ .episode_count }}{{ end }}
+                {{ end }}
+            {{ else }}
+                {{ $episodes := 0 }}
+                {{ range seq (int (delimit (first 1 $saison) "")) (int (delimit (last 1 $saison) "")) }}
+                    {{ range where $metadata.seasons ".season_number" (int .) }}{{ $episodes = add $episodes .episode_count }}{{ end }}
+                {{ end }}
+                {{ $episodes }}
+            {{ end }} épisodes
+            {{ $runtimeMin := 0 }}
+            {{ $runtimeMax := 0 }}
+            {{ range $metadata.episode_run_time }}
+                {{ $runtime := int . }}
+                {{ if gt $runtime 0 }}
+                    {{ if or (eq $runtimeMin 0) (lt $runtime $runtimeMin) }}{{ $runtimeMin = $runtime }}{{ end }}
+                    {{ if gt $runtime $runtimeMax }}{{ $runtimeMax = $runtime }}{{ end }}
+                {{ end }}
+            {{ end }}
+            {{ with $metadata.last_episode_to_air }}
+                {{ with .runtime }}
+                    {{ $runtime := int . }}
+                    {{ if or (eq $runtimeMin 0) (lt $runtime $runtimeMin) }}{{ $runtimeMin = $runtime }}{{ end }}
+                    {{ if gt $runtime $runtimeMax }}{{ $runtimeMax = $runtime }}{{ end }}
+                {{ end }}
+            {{ end }}
+            {{ with $metadata.next_episode_to_air }}
+                {{ with .runtime }}
+                    {{ $runtime := int . }}
+                    {{ if or (eq $runtimeMin 0) (lt $runtime $runtimeMin) }}{{ $runtimeMin = $runtime }}{{ end }}
+                    {{ if gt $runtime $runtimeMax }}{{ $runtimeMax = $runtime }}{{ end }}
+                {{ end }}
+            {{ end }}
+            {{ if gt $runtimeMin 0 }} de {{ $runtimeMin }}{{ if ne $runtimeMin $runtimeMax }} à {{ $runtimeMax }}{{ end }} minutes{{ end }}
         {{ end }}
     </p>
 </div>
