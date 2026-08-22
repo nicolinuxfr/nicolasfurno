@@ -14,13 +14,6 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
-            {{ $url := printf "https://www.googleapis.com/books/v1/volumes/%v" $id }}
-            {{ with resources.GetRemote $url }}
-                {{ $data := . | transform.Unmarshal }}
-                {{ $infos.Set "meta" $data.volumeInfo }}
-            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}
