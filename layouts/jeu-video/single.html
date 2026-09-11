@@ -14,13 +14,11 @@
         {{ if $.Param "id" }}
             {{ $id := string ($.Param "id") }}
             {{ $infos.Set "id" $id }}
-            {{ if .Resources.GetMatch "meta.json" }}
-                {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
+            {{ with .Resources.GetMatch "meta.json" }}
+                {{ $data := . | unmarshal }}
                 {{ $infos.Set "meta" $data.data }}
             {{ else }}
-                {{ with resources.GetRemote (printf "%s%s" "https://store.steampowered.com/api/appdetails?l=french&appids=" $id) }}
-                    {{ $infos.Set "meta" (index (. | unmarshal) $id).data }}
-                {{ end }}
+                {{ errorf "Fichier meta.json manquant pour %s" $.File.Path }}
             {{ end }}
         {{ end }}
 

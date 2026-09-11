@@ -11,16 +11,11 @@
         <div class="article">{{ .Content }}</div>
 
         {{ $infos := newScratch }}
-        {{ if .Resources.GetMatch "meta.json" }}
-            {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
+        {{ with .Resources.GetMatch "meta.json" }}
+            {{ $data := . | unmarshal }}
             {{ $infos.Set "meta" $data }}
-        {{ else if $.Param "id" }}
-            {{ $id := $.Param "id" }}
-            {{ $url := printf "https://itunes.apple.com/lookup?country=FR&lang=fr_fr&id=%v" $id }}
-            {{ with resources.GetRemote $url }}
-                {{ $data := . | transform.Unmarshal }}
-                {{ $infos.Set "meta" (index $data.results 0) }}
-            {{ end }}
+        {{ else }}
+            {{ errorf "Fichier meta.json manquant pour %s" $.File.Path }}
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}
