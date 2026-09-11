@@ -7,7 +7,9 @@ const searchFilters = document.getElementById("search-filters");
 const searchSort = document.getElementById("search-sort");
 const searchCategories = document.getElementById("search-categories");
 const searchTerm = new URL(document.location).searchParams.get("s");
+const searchDebounceDelay = 120;
 let searchNumber = 0;
+let searchDebounceTimer = null;
 let currentResults = [];
 let termResults = [];
 let activeCategory = null;
@@ -93,6 +95,21 @@ async function searchExec(term) {
             updateFilters();
             renderResults();
     }
+}
+
+function scheduleSearch(term) {
+    window.clearTimeout(searchDebounceTimer);
+    searchNumber += 1;
+    searchDebounceTimer = window.setTimeout(() => {
+        searchDebounceTimer = null;
+        searchExec(term);
+    }, searchDebounceDelay);
+}
+
+function searchImmediately(term) {
+    window.clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = null;
+    searchExec(term);
 }
 
 function renderResults() {
@@ -207,10 +224,10 @@ if (searchTerm) {
     searchExec(searchTerm);
 }
 
-searchInput.addEventListener("input", () => searchExec(searchInput.value));
+searchInput.addEventListener("input", () => scheduleSearch(searchInput.value));
 
 // Safari emits `search` when the built-in clear button is used.
-searchInput.addEventListener("search", () => searchExec(searchInput.value));
+searchInput.addEventListener("search", () => searchImmediately(searchInput.value));
 
 document.addEventListener("keydown", (event) => {
     if (!["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) return;
