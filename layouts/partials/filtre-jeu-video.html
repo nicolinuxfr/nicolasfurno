@@ -1,8 +1,18 @@
+{{- $pagesAvecTemps := where .Pages "Params.temps" "gt" 0 -}}
+{{- $durationOptions := slice -}}
+{{- range $pagesAvecTemps -}}
+    {{- $durationOptions = append .Params.temps $durationOptions -}}
+{{- end -}}
+{{- $durationOptions = sort (uniq $durationOptions) -}}
+{{- $durationCount := len $durationOptions -}}
+{{- $hasDurations := gt $durationCount 0 -}}
+{{- $sliderMin := cond $hasDurations 1 0 -}}
+{{- $sliderMax := cond $hasDurations (add $durationCount 1) 0 -}}
 <section class="filter-jeu-video-wrapper">
     <h2 id="filter-jeu-video-label">Temps de jeu</h2>
-    <div class="filter-jeu-video-control" data-jeu-video-filter aria-labelledby="filter-jeu-video-label">
+    <div class="filter-jeu-video-control" data-jeu-video-filter data-duration-count="{{ $durationCount }}" data-duration-options="{{ $durationOptions | jsonify }}" aria-labelledby="filter-jeu-video-label">
         <output data-duration-label></output>
-        <input type="range" min="0" max="0" value="0" step="1" data-duration-slider>
+        <input type="range" min="{{ $sliderMin }}" max="{{ $sliderMax }}" value="{{ $sliderMax }}" step="1" data-duration-slider>
     </div>
     <p class="filter-feedback" data-filter-count aria-live="polite"></p>
 </section>
@@ -26,25 +36,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var container = main.querySelector('.articles');
     var originalOrder = container ? items.slice() : [];
 
-    var totalItems = items.length;
-    var durationOptions = items.map(function (item) {
-        return Number(item.getAttribute('data-temps')) || 0;
-    }).filter(function (value) {
-        return value > 0;
-    }).sort(function (a, b) {
-        return a - b;
-    }).filter(function (value, index, values) {
-        return index === 0 || value !== values[index - 1];
-    });
-    var maxDuration = durationOptions[durationOptions.length - 1] || 0;
+    var durationOptions = JSON.parse(filter.getAttribute('data-duration-options') || '[]');
+    var durationCount = Number(filter.getAttribute('data-duration-count')) || 0;
 
-    if (!slider || maxDuration === 0) {
+    if (!slider || durationCount === 0) {
         return;
     }
-
-    slider.min = '1';
-    slider.max = String(durationOptions.length + 1);
-    slider.value = String(durationOptions.length + 1);
 
     function formatLabel(count) {
         var plural = count > 1 ? 'jeux' : 'jeu';
@@ -58,10 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function applyFilter() {
         var visible = 0;
         var visibleItems = [];
-        var selectedIndex = Number(slider.value) || durationOptions.length + 1;
-        var optionIndex = Math.min(Math.max(selectedIndex - 1, 0), durationOptions.length - 1);
+        var selectedIndex = Number(slider.value) || durationCount + 1;
+        var optionIndex = Math.min(Math.max(selectedIndex - 1, 0), durationCount - 1);
         var activeMax = durationOptions[optionIndex];
-        var isFiltering = selectedIndex <= durationOptions.length;
+        var isFiltering = selectedIndex <= durationCount;
 
         items.forEach(function (item) {
             var temps = Number(item.getAttribute('data-temps')) || 0;
