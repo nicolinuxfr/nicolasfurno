@@ -31,12 +31,12 @@
 
     <!-- Ranges through content/posts/*.md -->
     <div class="articles">
-        {{ range $pages }}
-        {{ $temps := default 0 .Params.temps }}
+        {{ range $index, $page := $pages }}
+        {{ $temps := default 0 $page.Params.temps }}
         <section class="item" {{ if $isJeuVideo }}data-temps="{{ $temps }}"{{ end }}>
           <div>
-            <a href='{{ .RelPermalink }}'>
-                {{ partial "image-list.html" (dict "page" . "eager" false) }}
+            <a href='{{ $page.RelPermalink }}'>
+                {{ partial "image-list.html" (dict "page" $page "eager" (eq $index 0)) }}
             </a>
           </div>
         </section>

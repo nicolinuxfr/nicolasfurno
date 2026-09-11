@@ -18,11 +18,11 @@
   {{ end }}
   
   <div class="articles">
-    {{ range sort $liste "title" }}
+    {{ range $index, $item := sort $liste "title" }}
     <section class="item">
       <div>
-        <a href="{{ .url }}">
-          {{ partial "image-list.html" (dict "page" .page "eager" false) }}
+        <a href="{{ $item.url }}">
+          {{ partial "image-list.html" (dict "page" $item.page "eager" (eq $index 0)) }}
         </a>
       </div>
     </section>

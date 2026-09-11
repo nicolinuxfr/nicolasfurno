@@ -16,11 +16,11 @@
 
     <!-- Ranges through content/posts/*.md -->
     <div class="articles">
-        {{ range (.Paginate .Pages).Pages }}
+        {{ range $index, $page := (.Paginate .Pages).Pages }}
         <section class="item">
           <div >
-            <a href='{{ .RelPermalink }}'>
-                {{ partial "image-list.html" (dict "page" . "eager" false) }}
+            <a href='{{ $page.RelPermalink }}'>
+                {{ partial "image-list.html" (dict "page" $page "eager" (eq $index 0)) }}
             </a>
           </div>
         </section>
