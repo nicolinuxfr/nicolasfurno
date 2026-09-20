@@ -1,0 +1,21 @@
+{{ define "main" }}
+<main id="single">
+    <div class="content">
+        <h1 class="title">{{ .Title }}</h1>
+        <div class="article">
+            {{ range slice (dict "role" "actor" "title" "Acteurs") (dict "role" "artist" "title" "Artistes et groupes") (dict "role" "author" "title" "Auteurs") (dict "role" "creator" "title" "Créateurs de séries") (dict "role" "director" "title" "Réalisateurs") }}
+                <h2>{{ .title }}</h2>
+                {{ $role := . }}
+                <ul class="archives">
+                {{ range hugo.Data.discovery.orderedKeys }}
+                    {{ $person := index hugo.Data.discovery.people . }}
+                    {{ with $person }}
+                    {{ if in .roles $role.role }}<li><a href="{{ .url }}">{{ .name }}</a> <span class="compteur">({{ .workCount }})</span></li>{{ end }}
+                    {{ end }}
+                {{ end }}
+                </ul>
+            {{ end }}
+        </div>
+    </div>
+</main>
+{{ end }}

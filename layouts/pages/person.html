@@ -1,0 +1,49 @@
+{{ define "main" }}
+{{ $person := index hugo.Data.discovery.people .Params.personKey }}
+{{ $emoji := index hugo.Data.personemoji 0 $person.role }}
+{{ $cards := slice }}
+{{ range $person.groups }}
+    {{ $group := . }}
+    {{ $pages := slice }}
+    {{ range . }}{{ with site.GetPage .page }}{{ $pages = $pages | append . }}{{ end }}{{ end }}
+    {{ range first 1 (sort $pages "Date" "desc") }}
+        {{ $url := .RelPermalink }}
+        {{ if gt (len $group) 1 }}
+            {{ with (index $group 0).seriesId }}
+                {{ with site.GetPage (printf "/tmdb/%v" .) }}{{ $url = .RelPermalink }}{{ end }}
+            {{ end }}
+        {{ end }}
+        {{ $releaseDate := (index (sort $group "releaseDate" "asc") 0).releaseDate }}
+        {{ $cards = $cards | append (dict "page" . "url" $url "date" $releaseDate) }}
+    {{ end }}
+{{ end }}
+{{ $orderedPages := slice }}
+{{ $links := dict }}
+{{ $order := cond (eq $person.role "network") "desc" "asc" }}
+{{ range sort $cards "date" $order }}
+    {{ $orderedPages = $orderedPages | append .page }}
+    {{ $links = merge $links (dict .page.RelPermalink .url) }}
+{{ end }}
+{{ $paginator := .Paginate $orderedPages }}
+<main>
+    <article>
+        <header{{ if eq $paginator.PageNumber 1 }} data-pagefind-body{{ end }}>
+            <span hidden data-pagefind-ignore data-pagefind-meta="title">{{ $emoji }} {{ .Title }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="kind">person</span>
+            <h1>{{ with $person.external }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.Title }}</a>{{ else }}{{ .Title }}{{ end }}</h1>
+        </header>
+    </article>
+    <div class="articles" data-pagefind-ignore>
+        {{ range $index, $page := $paginator.Pages }}
+        <section class="item">
+          <div>
+            <a href="{{ index $links $page.RelPermalink }}">
+                {{ partial "image-list.html" (dict "page" $page "eager" (eq $index 0)) }}
+            </a>
+          </div>
+        </section>
+        {{ end }}
+    </div>
+    {{ template "_internal/pagination.html" . }}
+</main>
+{{ end }}

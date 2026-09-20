@@ -1,3 +1,4 @@
+{{ $page := .Get "page" }}
 {{ $metadata := .Get "meta" }}
 {{ $countries := .Get "countries" }}
 {{ $pays := .Get "pays" }}
@@ -5,7 +6,7 @@
 <div class="meta">
     <h3>Informations</h3>
     <div class="col">
-        <p><strong>Artiste</strong> : {{ $metadata.artistName }}</p>
+        <p><strong>Artiste</strong> : {{ partial "discovery-link.html" (dict "page" $page "name" $metadata.artistName "role" "artist") }}</p>
         <p><strong>Année</strong> : {{ time.Format "2006" $metadata.releaseDate }}</p>
         {{ with $metadata.trackCount }}
             <p><strong>Pistes</strong> : {{ . }}</p>

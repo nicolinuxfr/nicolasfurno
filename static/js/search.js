@@ -39,6 +39,17 @@ function normalizeSearchTerm(term) {
     return term.replace(/(^|\s)(?:[cdjlmnst]|qu)['’](?=\p{L})/giu, "$1");
 }
 
+function personSearchPriority(data, term) {
+    if (data.meta.kind !== "person") return 0;
+    const normalize = (value) => value.normalize("NFKD").replace(/\p{M}/gu, "")
+        .toLocaleLowerCase("fr").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    const name = normalize(data.meta.title);
+    const query = normalize(term);
+    if (!query) return 0;
+    if (name === query) return 2;
+    return query.split(" ").every((part) => name.split(" ").some((word) => word.startsWith(part))) ? 1 : 0;
+}
+
 async function searchPagefind(term) {
     const normalizedTerm = normalizeSearchTerm(term);
     const terms = new Set([term, normalizedTerm]);
@@ -87,6 +98,8 @@ async function searchExec(term) {
             date: Number(data.meta.date) || 0
             };
         }));
+        currentResults = currentResults.filter(({ data }) =>
+            data.meta.kind !== "person" || personSearchPriority(data, term) > 0);
         termResults = currentResults;
 
     if (currentSearch === searchNumber) {
@@ -117,7 +130,11 @@ function renderResults() {
         ? currentResults.filter((result) => result.category === activeCategory)
         : [...currentResults];
 
-    if (sortMode !== "relevance") {
+    if (sortMode === "relevance") {
+        visibleResults.sort((a, b) =>
+            personSearchPriority(b.data, currentTerm) - personSearchPriority(a.data, currentTerm)
+            || a.relevance - b.relevance);
+    } else {
         const direction = sortMode === "newest" ? -1 : 1;
         visibleResults.sort((a, b) => direction * (a.date - b.date) || a.relevance - b.relevance);
     }

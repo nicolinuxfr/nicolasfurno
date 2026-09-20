@@ -1,0 +1,19 @@
+{{ $page := .page }}
+{{ $name := .name }}
+{{ $match := false }}
+{{ $type := cond (eq .role "network") "network" "person" }}
+{{ $prefix := cond (eq .role "network") "network" "tmdb" }}
+{{ with hugo.Data.discovery }}
+    {{ $data := . }}
+    {{ range index .byArticle $page.RelPermalink }}
+        {{ $person := index $data.people . }}
+        {{ if or (and $.id (eq $person.key (printf "%s:%v" $prefix $.id))) (and (not $.id) (eq $person.role ($.role | default "author")) (in $person.names $name)) }}
+            {{ $match = $person }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ if $match }}
+    <a href="{{ $match.url }}">{{ $name }}</a>
+{{ else if .id }}
+    <a href="https://www.themoviedb.org/{{ $type }}/{{ .id }}" target="_blank" rel="noopener noreferrer">{{ $name }}</a>
+{{ else }}{{ $name }}{{ end }}

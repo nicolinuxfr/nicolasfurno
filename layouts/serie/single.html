@@ -1,6 +1,7 @@
 {{ define "main" }}
 
 {{ $infos := newScratch }}
+{{ $infos.Set "page" . }}
 
 <section id="single">
     {{ partial "image.html" . }}

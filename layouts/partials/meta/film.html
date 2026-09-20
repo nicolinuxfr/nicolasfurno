@@ -1,3 +1,4 @@
+{{ $page := .Get "page" }}
 {{ $metadata := .Get "meta" }}
 {{ $cast := .Get "cast" }}
 {{ $countries := .Get "countries" }}
@@ -17,7 +18,7 @@
     <ul>
         <li>{{if gt (len (where $cast.crew ".job" "Director") ) 1}}<strong>Réalisateurs</strong>{{else}}<strong>Réalisateur</strong>{{end}} : </li>
         {{ range where $cast.crew ".job" "Director" }}
-            <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            <li>{{ partial "discovery-link.html" (dict "page" $page "name" .name "id" (string .id)) }}</li>
         {{ end }}
     </ul>
 
@@ -37,7 +38,7 @@
     <ul>
         <li><strong>Acteurs</strong> : </li>
         {{ range first 8 $cast.cast }}
-            <li><a href="https://www.themoviedb.org/person/{{ string .id  }}" target="_blank">{{ .name }}</a></li>
+            <li>{{ partial "discovery-link.html" (dict "page" $page "name" .name "id" (string .id)) }}</li>
         {{ end }}
     </ul>
     {{ end }}

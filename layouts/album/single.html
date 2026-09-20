@@ -11,6 +11,7 @@
         <div class="article">{{ .Content }}</div>
 
         {{ $infos := newScratch }}
+        {{ $infos.Set "page" . }}
         {{ with .Resources.GetMatch "meta.json" }}
             {{ $data := . | unmarshal }}
             {{ $infos.Set "meta" $data }}
