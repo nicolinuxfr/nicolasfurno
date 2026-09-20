@@ -1,8 +1,15 @@
 <script>
     document.addEventListener('keydown', function(event){
-        if(event.key === "Escape"){
-            console.log("Escape")
-            history.back()
+        if(event.key === "Escape" && !event.defaultPrevented && !event.isComposing){
+            // Search owns Escape when a result has focus. Its module is loaded
+            // after this listener, so do not depend on listener registration order.
+            if (document.querySelector('#search-results')?.contains(document.activeElement)) return;
+            event.preventDefault();
+            if (document.referrer && new URL(document.referrer).origin === location.origin) {
+                history.back();
+            } else {
+                location.assign('/');
+            }
         }
     });
 </script>

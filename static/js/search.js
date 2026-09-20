@@ -230,7 +230,7 @@ searchInput.addEventListener("input", () => scheduleSearch(searchInput.value));
 searchInput.addEventListener("search", () => searchImmediately(searchInput.value));
 
 document.addEventListener("keydown", (event) => {
-    if (!["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) return;
+    if (event.isComposing || !["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) return;
     const links = [...searchResults.querySelectorAll("a")];
     const currentIndex = links.indexOf(document.activeElement);
 
