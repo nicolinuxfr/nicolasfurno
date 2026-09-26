@@ -12,7 +12,10 @@
           {{ $metadata := . | transform.Unmarshal }}
           {{ with $metadata.name }}{{ $title = . }}{{ end }}
         {{ end }}
-        {{ $liste = $liste | append (dict "url" $term.Permalink "title" $title "page" .) }}
+        {{ $poster := resources.Get (printf "legacy/tmdb/%v.jpg" .Params.tmdb) }}
+        {{ if $poster }}
+          {{ $liste = $liste | append (dict "url" $term.Permalink "title" $title "poster" $poster) }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
@@ -22,7 +25,7 @@
     <section class="item">
       <div>
         <a href="{{ $item.url }}">
-          {{ partial "image-list.html" (dict "page" $item.page "eager" (eq $index 0)) }}
+          {{ partial "responsive-image.html" (dict "image" $item.poster "alt" $item.title "sizes" "(min-width: 1800px) calc((100vw - 1.5em) / 4), (min-width: 1200px) calc((100vw - 1em) / 3), (min-width: 800px) calc((100vw - 0.5em) / 2), 100vw" "loading" (cond (eq $index 0) "eager" "lazy")) }}
         </a>
       </div>
     </section>

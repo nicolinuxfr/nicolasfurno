@@ -13,8 +13,32 @@
         </section>
     </article>
 
-    <!-- Ranges through content/posts/*.md -->
+    {{/* One legacy review from the existing "avant" link. */}}
+    {{ $legacyURL := "" }}
+    {{ $poster := false }}
+    {{ $legacyTitle := partial "tmdb-term-title.html" . }}
+    {{ range .Pages.ByDate }}
+        {{ if not $legacyURL }}
+            {{ $candidate := .Params.avant | default "" }}
+            {{ if hasPrefix $candidate "https://voiretmanger.fr/" }}
+                {{ $legacyURL = replaceRE `#.*$` "" $candidate }}
+            {{ end }}
+        {{ end }}
+        {{ if not $poster }}
+            {{ with .Params.tmdb }}
+                {{ $poster = resources.Get (printf "legacy/serie/%v.jpg" .) }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
     <div class="articles">
+        {{ if and $legacyURL $poster }}
+        <section class="item legacy-review">
+            <a href="{{ $legacyURL }}">
+                {{ partial "responsive-image.html" (dict "image" $poster "alt" (printf "Affiche de %s" $legacyTitle) "sizes" "(min-width: 1800px) calc((100vw - 1.5em) / 4), (min-width: 1200px) calc((100vw - 1em) / 3), (min-width: 800px) calc((100vw - 0.5em) / 2), 100vw" "loading" "eager") }}
+            </a>
+        </section>
+        {{ end }}
         {{ range $index, $page := (.Paginate .Pages).Pages.ByDate }}
         <section class="item">
           <div >
