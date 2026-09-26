@@ -50,6 +50,11 @@ function personSearchPriority(data, term) {
     return query.split(" ").every((part) => name.split(" ").some((word) => word.startsWith(part))) ? 1 : 0;
 }
 
+function searchResultPriority(data, term) {
+    if (data.meta.kind === "series" || data.meta.kind === "saga") return 1;
+    return personSearchPriority(data, term);
+}
+
 async function searchPagefind(term) {
     const normalizedTerm = normalizeSearchTerm(term);
     const terms = new Set([term, normalizedTerm]);
@@ -132,7 +137,7 @@ function renderResults() {
 
     if (sortMode === "relevance") {
         visibleResults.sort((a, b) =>
-            personSearchPriority(b.data, currentTerm) - personSearchPriority(a.data, currentTerm)
+            searchResultPriority(b.data, currentTerm) - searchResultPriority(a.data, currentTerm)
             || a.relevance - b.relevance);
     } else {
         const direction = sortMode === "newest" ? -1 : 1;

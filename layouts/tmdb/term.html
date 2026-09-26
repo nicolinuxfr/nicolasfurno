@@ -1,8 +1,13 @@
 {{ define "main" }}
+{{ $title := partial "tmdb-term-title.html" . }}
+{{ $paginator := .Paginate .Pages }}
 <main>
     <article>
-        <header>
-            <h1><em>{{ partial "tmdb-term-title.html" . }}</em></h1>
+        <header{{ if eq $paginator.PageNumber 1 }} data-pagefind-body{{ end }}>
+            <span hidden data-pagefind-ignore data-pagefind-meta="title">📺 {{ $title }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="category" data-pagefind-filter="category">serie</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="kind">series</span>
+            <h1><em>{{ $title }}</em></h1>
         </header>
         <section id="single">
             <div class="content">
@@ -39,7 +44,7 @@
             </a>
         </section>
         {{ end }}
-        {{ range $index, $page := (.Paginate .Pages).Pages.ByDate }}
+        {{ range $index, $page := $paginator.Pages.ByDate }}
         <section class="item">
           <div >
             <a href='{{ $page.RelPermalink }}'>

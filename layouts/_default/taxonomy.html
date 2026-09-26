@@ -1,7 +1,15 @@
 {{ define "main" }}
+{{ $paginator := .Paginate .Pages }}
+{{ $category := "" }}
+{{ with index .Pages 0 }}{{ $category = .Section }}{{ end }}
 <main>
     <article>
-        <header>
+        <header{{ if and (eq .Section "sagas") (eq $paginator.PageNumber 1) }} data-pagefind-body{{ end }}>
+            {{ if eq .Section "sagas" }}
+            <span hidden data-pagefind-ignore data-pagefind-meta="title">{{ with index hugo.Data.catemoji 0 $category }}{{ . }} {{ end }}{{ .Title }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="category" data-pagefind-filter="category">{{ $category }}</span>
+            <span hidden data-pagefind-ignore data-pagefind-meta="kind">saga</span>
+            {{ end }}
             <h1><em>{{ .Title }}</em></h1>
         </header>
         <!-- "{{.Content}}" pulls from the markdown content of the corresponding _index.md -->
@@ -42,7 +50,7 @@
             </a>
         </section>
         {{ end }}
-        {{ range $index, $page := (.Paginate .Pages).Pages }}
+        {{ range $index, $page := $paginator.Pages }}
         <section class="item">
           <div >
             <a href='{{ $page.RelPermalink }}'>
