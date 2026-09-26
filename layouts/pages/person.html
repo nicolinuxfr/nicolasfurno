@@ -14,7 +14,8 @@
             {{ end }}
         {{ end }}
         {{ $releaseDate := (index (sort $group "releaseDate" "asc") 0).releaseDate }}
-        {{ $cards = $cards | append (dict "page" . "url" $url "date" $releaseDate) }}
+        {{ $date := cond (eq $person.role "network") .Date $releaseDate }}
+        {{ $cards = $cards | append (dict "page" . "url" $url "date" $date) }}
     {{ end }}
 {{ end }}
 {{ $orderedPages := slice }}
