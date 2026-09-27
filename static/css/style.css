@@ -869,6 +869,10 @@ h1 {
     padding-bottom: 4em;
 }
 
+.page-404 #content {
+    padding-bottom: 6rem;
+}
+
 #search-filters::-webkit-scrollbar {
     display: none;
 }
