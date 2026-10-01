@@ -3,7 +3,7 @@
 {{ $paginator := .Paginate .Pages }}
 <main>
     <article>
-        <header{{ if eq $paginator.PageNumber 1 }} data-pagefind-body{{ end }}>
+        <header{{ if and (gt (len .Pages) 1) (eq $paginator.PageNumber 1) }} data-pagefind-body{{ end }}>
             <span hidden data-pagefind-ignore data-pagefind-meta="title">📺 {{ $title }}</span>
             <span hidden data-pagefind-ignore data-pagefind-meta="category" data-pagefind-filter="category">serie</span>
             <span hidden data-pagefind-ignore data-pagefind-meta="kind">series</span>

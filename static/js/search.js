@@ -3,31 +3,68 @@ import * as pagefind from "/pagefind/pagefind.js";
 const searchInput = document.getElementById("search-input");
 const searchInputContainer = document.getElementById("search-input-container");
 const searchResults = document.getElementById("search-results");
-const searchFilters = document.getElementById("search-filters");
-const searchSort = document.getElementById("search-sort");
 const searchCategories = document.getElementById("search-categories");
-const searchTerm = new URL(document.location).searchParams.get("s");
-const searchDebounceDelay = 120;
+const searchFilters = document.getElementById("search-filters");
+const searchFilterToggle = document.getElementById("search-filter-toggle");
+const searchFilterPanel = document.getElementById("search-filter-panel");
+const searchMore = document.getElementById("search-more");
+const categoryFiltersPromise = pagefind.filters();
+const resultPageSize = 50;
+let visibleLimit = resultPageSize;
+const searchParams = new URL(document.location).searchParams;
+const searchTerm = searchParams.get("s");
+const sourceURLValues = { actuel: "current", archives: "legacy" };
+const sortURLValues = { recent: "newest", ancien: "oldest" };
+const requestedCategory = searchParams.get("categorie");
+const searchDebounceDelay = 60;
 let searchNumber = 0;
 let searchDebounceTimer = null;
 let currentResults = [];
-let termResults = [];
-let activeCategory = null;
-let sortMode = "relevance";
+let categoryCounts = {};
+let sourceCounts = {};
+let allCategoryCount = 0;
+let renderNumber = 0;
+let activeCategory = [...searchCategories.querySelectorAll("button[data-category]")]
+    .some(button => button.dataset.category === requestedCategory && requestedCategory)
+    ? requestedCategory : null;
+let sourceMode = Object.hasOwn(sourceURLValues, searchParams.get("blog"))
+    ? sourceURLValues[searchParams.get("blog")] : "all";
+let sortMode = Object.hasOwn(sortURLValues, searchParams.get("tri"))
+    ? sortURLValues[searchParams.get("tri")] : "relevance";
 let currentTerm = null;
+const savedSearchView = history.state?.searchView?.url === location.href
+    ? history.state.searchView : null;
+
+window.addEventListener("pagehide", () => {
+    history.replaceState({ ...history.state, searchView: {
+        url: location.href,
+        visibleLimit,
+        scrollY: window.scrollY,
+        focusedURL: searchResults.contains(document.activeElement) ? document.activeElement.href : null
+    } }, "");
+});
 
 if (searchTerm) {
     searchInput.value = searchTerm;
 }
 
-function updateSearchURL(term) {
+function updateSearchURL(term, searchView = null) {
     const url = new URL(document.location);
     if (term) {
         url.searchParams.set("s", term);
     } else {
         url.searchParams.delete("s");
     }
-    history.replaceState(null, "", url);
+    const settings = {
+        categorie: activeCategory,
+        blog: { current: "actuel", legacy: "archives" }[sourceMode],
+        tri: { newest: "recent", oldest: "ancien" }[sortMode]
+    };
+    for (const [name, value] of Object.entries(settings)) {
+        if (value) url.searchParams.set(name, value);
+        else url.searchParams.delete(name);
+    }
+    history.replaceState({ ...history.state, searchView }, "", url);
 }
 
 function focusResult(link) {
@@ -35,89 +72,64 @@ function focusResult(link) {
     link.scrollIntoView({ block: "center", inline: "nearest" });
 }
 
-function normalizeSearchTerm(term) {
-    return term.replace(/(^|\s)(?:[cdjlmnst]|qu)['’](?=\p{L})/giu, "$1");
-}
-
-function personSearchPriority(data, term) {
-    if (data.meta.kind !== "person") return 0;
-    const normalize = (value) => value.normalize("NFKD").replace(/\p{M}/gu, "")
-        .toLocaleLowerCase("fr").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
-    const name = normalize(data.meta.title);
-    const query = normalize(term);
-    if (!query) return 0;
-    if (name === query) return 2;
-    return query.split(" ").every((part) => name.split(" ").some((word) => word.startsWith(part))) ? 1 : 0;
-}
-
-function searchResultPriority(data, term) {
-    if (data.meta.kind === "series" || data.meta.kind === "saga") return 1;
-    return personSearchPriority(data, term);
-}
-
-async function searchPagefind(term) {
-    const normalizedTerm = normalizeSearchTerm(term);
-    const terms = new Set([term, normalizedTerm]);
-    if (/^\p{L}+$/u.test(normalizedTerm)) terms.add(`l’${normalizedTerm}`);
-
-    const searches = await Promise.all([...terms].map((searchTerm) => pagefind.search(searchTerm)));
-    const results = new Map();
-    searches.forEach((search) => {
-        search.results.forEach((result) => {
-            if (!results.has(result.id)) results.set(result.id, result);
-        });
-    });
-    return [...results.values()];
-}
-
 new ResizeObserver(() => {
     document.documentElement.style.setProperty("--search-input-height", `${searchInputContainer.offsetHeight}px`);
 }).observe(searchInputContainer);
 
-async function searchExec(term) {
+async function searchExec(term, restoreView = null) {
     term = term.trim();
-    updateSearchURL(term);
-    if (term === currentTerm) return;
+    updateSearchURL(term, restoreView);
     currentTerm = term;
-
     const currentSearch = ++searchNumber;
+    renderNumber += 1;
+    currentResults = [];
+    visibleLimit = restoreView?.visibleLimit || resultPageSize;
     searchResults.replaceChildren();
+    searchMore.hidden = true;
+    updateFilters();
 
-        if (!term) {
-            currentResults = [];
-            termResults = [];
-            activeCategory = null;
-            updateFilters();
-            return;
-    }
-
-    const results = await searchPagefind(term);
-    if (currentSearch !== searchNumber) return;
-
-        currentResults = await Promise.all(results.map(async (result, relevance) => {
-            const data = await result.data();
-        return {
-            data,
-            relevance,
-            category: data.meta.category,
-            date: Number(data.meta.date) || 0
-            };
-        }));
-        currentResults = currentResults.filter(({ data }) =>
-            data.meta.kind !== "person" || personSearchPriority(data, term) > 0);
-        termResults = currentResults;
-
-    if (currentSearch === searchNumber) {
-        activeCategory = null;
-        sortMode = "relevance";
-            updateFilters();
-            renderResults();
+    try {
+        await categoryFiltersPromise;
+        if (currentSearch !== searchNumber) return;
+        const source = sourceMode === "all" ? { any: ["current", "legacy"] } : sourceMode;
+        const options = { filters: { source } };
+        if (activeCategory) options.filters.category = activeCategory;
+        if ((term || activeCategory) && sortMode !== "relevance") options.sort = { date: sortMode === "newest" ? "desc" : "asc" };
+        const [search, counts, sources] = await Promise.all([
+            pagefind.search(term || null, options),
+            activeCategory
+                ? pagefind.search(term || null, { filters: { source } })
+                : Promise.resolve(null),
+            activeCategory || sourceMode !== "all"
+                ? pagefind.search(term || null, { filters: activeCategory ? { category: activeCategory } : {} })
+                : Promise.resolve(null)
+        ]);
+        if (currentSearch !== searchNumber) return;
+        currentResults = term || activeCategory ? search.results : [];
+        const countResults = counts || search;
+        categoryCounts = countResults.filters?.category || (sourceMode === "all" ? countResults.totalFilters?.category : null) || {};
+        allCategoryCount = countResults.results.length;
+        sourceCounts = (sources || search).filters?.source || {};
+        updateFilters();
+        await renderResults();
+        if (restoreView && currentSearch === searchNumber) {
+            requestAnimationFrame(() => {
+                if (currentSearch !== searchNumber) return;
+                [...searchResults.querySelectorAll("a")]
+                    .find(link => link.href === restoreView.focusedURL)?.focus({ preventScroll: true });
+                window.scrollTo({ top: restoreView.scrollY, behavior: "instant" });
+            });
+        }
+    } catch (error) {
+        if (currentSearch !== searchNumber) return;
+        console.error("Recherche Pagefind :", error);
     }
 }
 
 function scheduleSearch(term) {
     window.clearTimeout(searchDebounceTimer);
     searchNumber += 1;
+    renderNumber += 1;
     searchDebounceTimer = window.setTimeout(() => {
         searchDebounceTimer = null;
         searchExec(term);
@@ -130,24 +142,19 @@ function searchImmediately(term) {
     searchExec(term);
 }
 
-function renderResults() {
-    let visibleResults = activeCategory
-        ? currentResults.filter((result) => result.category === activeCategory)
-        : [...currentResults];
-
-    if (sortMode === "relevance") {
-        visibleResults.sort((a, b) =>
-            searchResultPriority(b.data, currentTerm) - searchResultPriority(a.data, currentTerm)
-            || a.relevance - b.relevance);
-    } else {
-        const direction = sortMode === "newest" ? -1 : 1;
-        visibleResults.sort((a, b) => direction * (a.date - b.date) || a.relevance - b.relevance);
-    }
+async function renderResults() {
+    const currentRender = ++renderNumber;
+    const total = currentResults.length;
+    searchMore.hidden = true;
+    const visibleResults = await Promise.all(currentResults.slice(0, visibleLimit).map(result => result.data()));
+    if (currentRender !== renderNumber) return;
+    searchMore.hidden = total <= visibleLimit;
 
     const items = [];
     let currentYear = null;
 
-    visibleResults.forEach(({ data, date }) => {
+    visibleResults.forEach(data => {
+        const date = Number(data.meta.date) || 0;
         if (sortMode !== "relevance") {
             const year = date ? String(new Date(date * 1000).getFullYear()) : "Sans date";
             if (year !== currentYear) {
@@ -173,77 +180,110 @@ function renderResults() {
 }
 
 function updateFilters() {
-    const sortLabels = {
-        relevance: ["Pertinence", "Trier par date, du plus récent au plus ancien"],
-        newest: ["Plus récents d’abord", "Trier par date, du plus ancien au plus récent"],
-        oldest: ["Plus anciens d’abord", "Revenir au tri par pertinence"]
-    };
-    const [title, label] = sortLabels[sortMode];
-    searchSort.title = title;
-    searchSort.setAttribute("aria-label", label);
-    searchSort.dataset.sort = sortMode;
-    searchSort.classList.toggle("active", sortMode !== "relevance");
-
-    const categoryCounts = termResults.reduce((counts, result) => {
-        if (result.category) counts[result.category] = (counts[result.category] || 0) + 1;
-        return counts;
-    }, {});
+    const changed = Boolean(activeCategory) || sourceMode !== "all" || sortMode !== "relevance";
+    document.getElementById("search-filter-reset").disabled = !changed;
+    searchFilterToggle.classList.toggle("active", changed);
+    searchFilterToggle.setAttribute("aria-label", changed ? "Options de recherche, réglages actifs" : "Options de recherche");
+    searchFilterPanel.querySelectorAll("button[data-source]").forEach(button => {
+        const active = sourceMode === "all" || sourceMode === button.dataset.source;
+        const count = sourceCounts[button.dataset.source] || 0;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+        button.querySelector(".search-filter-count").textContent = count;
+        const name = button.dataset.source === "current" ? "Nouveau blog" : "Archives";
+        button.setAttribute("aria-label", `${name}, ${count} résultat${count > 1 ? "s" : ""}`);
+    });
+    const sortButton = document.getElementById("search-sort");
+    const sortNames = { relevance: "Pertinence", newest: "Plus récents", oldest: "Plus anciens" };
+    const nextSort = { relevance: "newest", newest: "oldest", oldest: "relevance" }[sortMode];
+    sortButton.dataset.sort = sortMode;
+    sortButton.title = `${sortNames[sortMode]} → ${sortNames[nextSort]}`;
+    sortButton.setAttribute("aria-label", `Tri : ${sortNames[sortMode]}. Passer à ${sortNames[nextSort]}`);
+    document.getElementById("search-sort-status").textContent = sortNames[sortMode];
 
     searchCategories.querySelectorAll("button[data-category]").forEach((button) => {
-        const isActive = button.dataset.category === activeCategory;
-        const count = currentTerm
+        const isActive = (button.dataset.category || null) === activeCategory;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+        const count = !button.dataset.category ? allCategoryCount : currentTerm || sourceMode !== "all"
             ? categoryCounts[button.dataset.category] || 0
             : Number(button.dataset.totalCount);
         const title = button.dataset.categoryTitle;
-        button.hidden = Boolean(currentTerm) && count === 0;
+        button.hidden = false;
+        button.disabled = count === 0 && !isActive;
         button.querySelector(".search-filter-count").textContent = count;
         button.setAttribute("aria-label", `${title}, ${count} résultat${count > 1 ? "s" : ""}`);
-        button.classList.toggle("active", isActive);
-        button.setAttribute("aria-pressed", String(isActive));
     });
 }
 
-searchSort.addEventListener("click", () => {
-    sortMode = sortMode === "relevance" ? "newest" : sortMode === "newest" ? "oldest" : "relevance";
-    updateFilters();
-    renderResults();
-    requestAnimationFrame(() => searchResults.scrollIntoView({ block: "start" }));
+function closeFilters(restoreFocus = false) {
+    searchFilterPanel.hidden = true;
+    searchFilterToggle.setAttribute("aria-expanded", "false");
+    if (restoreFocus) searchFilterToggle.focus({ preventScroll: true });
+}
+
+searchFilterToggle.addEventListener("click", () => {
+    const open = searchFilterPanel.hidden;
+    searchFilterPanel.hidden = !open;
+    searchFilterToggle.setAttribute("aria-expanded", String(open));
+    if (open) searchCategories.querySelector("button").focus({ preventScroll: true });
 });
 
-searchCategories.addEventListener("click", async (event) => {
-    const button = event.target.closest("button[data-category]");
-    if (!button) return;
-
-    if (activeCategory === button.dataset.category) {
-        activeCategory = null;
-        currentResults = termResults;
-    } else if (currentTerm) {
-        activeCategory = button.dataset.category;
-        currentResults = termResults;
-    } else {
-        const currentSearch = ++searchNumber;
-        const category = button.dataset.category;
-        const results = await pagefind.search(null, { filters: { category } });
-        if (currentSearch !== searchNumber) return;
-
-        currentResults = await Promise.all(results.results.map(async (result, relevance) => {
-            const data = await result.data();
-            return {
-                data,
-                relevance,
-                category: data.meta.category,
-                date: Number(data.meta.date) || 0
-            };
-        }));
-        activeCategory = category;
+document.addEventListener("pointerdown", event => {
+    if (!searchFilters.contains(event.target)) closeFilters();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !searchFilterPanel.hidden) {
+        event.preventDefault();
+        closeFilters(true);
     }
+}, true);
 
-    updateFilters();
-    renderResults();
+searchCategories.addEventListener("click", event => {
+    const button = event.target.closest("button[data-category]");
+    if (!button || button.disabled) return;
+    window.clearTimeout(searchDebounceTimer);
+    activeCategory = button.dataset.category || null;
+    searchExec(searchInput.value);
 });
 
-if (searchTerm) {
-    searchExec(searchTerm);
+document.getElementById("search-sources").addEventListener("click", event => {
+    const button = event.target.closest("button[data-source]");
+    if (!button) return;
+    const source = button.dataset.source;
+    sourceMode = sourceMode === "all" ? (source === "current" ? "legacy" : "current")
+        : sourceMode === source ? (source === "current" ? "legacy" : "current") : "all";
+    searchImmediately(searchInput.value);
+});
+
+document.getElementById("search-sort").addEventListener("click", () => {
+    sortMode = { relevance: "newest", newest: "oldest", oldest: "relevance" }[sortMode];
+    searchImmediately(searchInput.value);
+});
+
+document.getElementById("search-filter-reset").addEventListener("click", () => {
+    window.clearTimeout(searchDebounceTimer);
+    activeCategory = null;
+    sourceMode = "all";
+    sortMode = "relevance";
+    searchExec(searchInput.value);
+});
+
+searchMore.addEventListener("click", async () => {
+    visibleLimit += resultPageSize;
+    try {
+        await renderResults();
+        const links = searchResults.querySelectorAll("a");
+        links[visibleLimit - resultPageSize]?.focus({ preventScroll: true });
+    } catch (error) {
+        console.error("Résultats Pagefind :", error);
+    }
+});
+
+if (searchTerm || activeCategory || sourceMode !== "all" || sortMode !== "relevance") {
+    searchExec(searchInput.value, savedSearchView);
+} else {
+    updateSearchURL("");
 }
 
 searchInput.addEventListener("input", () => scheduleSearch(searchInput.value));
@@ -253,6 +293,7 @@ searchInput.addEventListener("search", () => searchImmediately(searchInput.value
 
 document.addEventListener("keydown", (event) => {
     if (event.isComposing || !["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) return;
+    if (searchFilters.contains(event.target)) return;
     const links = [...searchResults.querySelectorAll("a")];
     const currentIndex = links.indexOf(document.activeElement);
 
@@ -298,4 +339,15 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateFilters();
-searchInput.focus();
+// Include series/saga landing pages in the initial category counts as well.
+categoryFiltersPromise.then(filters => {
+    if (currentTerm === null) {
+        sourceCounts = filters.source || {};
+        allCategoryCount = Object.values(sourceCounts).reduce((sum, count) => sum + count, 0);
+    }
+    searchCategories.querySelectorAll("button[data-category]").forEach(button => {
+        button.dataset.totalCount = filters.category?.[button.dataset.category] || 0;
+    });
+    updateFilters();
+}).catch(error => console.error("Catégories Pagefind :", error));
+if (!savedSearchView) searchInput.focus({ preventScroll: true });

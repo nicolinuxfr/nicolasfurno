@@ -4,7 +4,7 @@
 {{ with index .Pages 0 }}{{ $category = .Section }}{{ end }}
 <main>
     <article>
-        <header{{ if and (eq .Section "sagas") (eq $paginator.PageNumber 1) }} data-pagefind-body{{ end }}>
+        <header{{ if and (eq .Section "sagas") (gt (len .Pages) 1) (eq $paginator.PageNumber 1) }} data-pagefind-body{{ end }}>
             {{ if eq .Section "sagas" }}
             <span hidden data-pagefind-ignore data-pagefind-meta="title">{{ with index hugo.Data.catemoji 0 $category }}{{ . }} {{ end }}{{ .Title }}</span>
             <span hidden data-pagefind-ignore data-pagefind-meta="category" data-pagefind-filter="category">{{ $category }}</span>
