@@ -881,6 +881,8 @@ h1 {
 }
 
 #search-input {
+    color: var(--couleur-texte);
+    background: #fff;
     font-family: var(--police-texte);
     font-size: 1.5em;
     width: 100%;
@@ -895,6 +897,18 @@ h1 {
 @media (prefers-color-scheme: dark) {
     #search-input-container {
         background: rgba(13, 26, 8, 0.94);
+    }
+
+    #search-input {
+        color-scheme: dark;
+        color: var(--texte-sombre);
+        background: #1c2b17;
+        border-color: var(--vert-hover);
+    }
+
+    #search-input::placeholder {
+        color: var(--texte-sombre);
+        opacity: 0.75;
     }
 }
 
@@ -1110,10 +1124,27 @@ h1 {
 }
 
 @media (prefers-color-scheme: dark) {
+    #search-filters {
+        --couleur-texte: var(--texte-sombre);
+        --vert: #8bc34a;
+    }
+
     #search-filter-toggle,
     #search-filter-panel {
-        background: var(--fond-sombre);
+        background: #1c2b17;
         box-shadow: 0 0.15em 0.8em rgba(0, 0, 0, 0.35);
+    }
+
+    .search-filter-count {
+        opacity: 0.85;
+    }
+
+    #search-sources .search-filter:not(.active) .search-filter-count {
+        opacity: 0.8;
+    }
+
+    .search-filter:disabled {
+        opacity: 0.55;
     }
 }
 
@@ -1128,7 +1159,8 @@ h1 {
     display: none;
 }
 
-input:focus::placeholder {
+input:focus::placeholder,
+#search-input:focus::placeholder {
     color: transparent;
 }
 
