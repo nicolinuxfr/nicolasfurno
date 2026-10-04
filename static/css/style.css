@@ -246,6 +246,11 @@ sup {
     top: -0.5em;
 }
 
+sup .footnote-ref {
+    font-size: 0.65em;
+    position: relative;
+}
+
 @media (prefers-color-scheme: dark) {
     a {
         color: var(--texte-sombre);
