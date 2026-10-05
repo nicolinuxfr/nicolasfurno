@@ -362,17 +362,35 @@ h1 {
         margin:0;
     }
 
+    /* Moins de quatre articles : les colonnes vides s'effondrent
+       (auto-fit) et la grille se centre, sans changer la taille des affiches.
+       display: grid rétrograde le mode grid-lanes (Safari 26.4+), où
+       l'alignement justify-content n'est pas encore implémenté. */
+    .articles:has(.item):not(:has(.item:nth-child(4))) {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, calc((100% - 0.5em) / 2));
+        justify-content: center;
+    }
+
 }
 
 @media (min-width: 1200px) {
     .articles {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .articles:has(.item):not(:has(.item:nth-child(4))) {
+        grid-template-columns: repeat(auto-fit, calc((100% - 1em) / 3));
+    }
 }
 
 @media (min-width: 1800px) {
     .articles {
         grid-template-columns: repeat(4, 1fr);
+    }
+
+    .articles:has(.item):not(:has(.item:nth-child(4))) {
+        grid-template-columns: repeat(auto-fit, calc((100% - 1.5em) / 4));
     }
 }
 
