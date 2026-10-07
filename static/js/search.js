@@ -67,6 +67,36 @@ function updateSearchURL(term, searchView = null) {
     history.replaceState({ ...history.state, searchView }, "", url);
 }
 
+// Les titres sont indexés tels que chaque blog les enregistre, italique compris.
+const titleEntities = {
+    amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+    lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”', hellip: '…',
+    ndash: '–', mdash: '—', laquo: '«', raquo: '»'
+};
+
+function decodeTitle(text) {
+    return text
+        .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+        .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+        .replace(/&([a-z][a-z0-9]*);/gi, (match, name) => titleEntities[name.toLowerCase()] ?? match);
+}
+
+// Seules les italiques et les graisses sont rejouées, le reste reste du texte.
+function titleFragment(markup) {
+    const title = String(markup ?? '');
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+    for (const match of title.matchAll(/<(em|strong)>(.*?)<\/\1>/gi)) {
+        fragment.append(decodeTitle(title.slice(cursor, match.index)));
+        const emphasis = document.createElement(match[1].toLowerCase());
+        emphasis.textContent = decodeTitle(match[2]);
+        fragment.append(emphasis);
+        cursor = match.index + match[0].length;
+    }
+    fragment.append(decodeTitle(title.slice(cursor)));
+    return fragment;
+}
+
 function focusResult(link) {
     link.focus({ preventScroll: true });
     link.scrollIntoView({ block: "center", inline: "nearest" });
@@ -171,7 +201,7 @@ async function renderResults() {
         const item = document.createElement("li");
         const link = document.createElement("a");
         link.href = data.url;
-        link.textContent = data.meta.title;
+        link.append(titleFragment(data.meta.title));
         item.append(link);
         items.push(item);
     });
