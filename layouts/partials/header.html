@@ -1,5 +1,6 @@
 <header class="header">
-       <a href="{{ if in .Page "menu" }}javascript:onclick=history.back(){{ else }}/menu{{ end }}" aria-label="{{ if in .Page "menu" }}Retour à la page précédente{{ else }}Ouvrir le menu{{ end }}">
+       {{- $retourMenu := eq .RelPermalink "/menu/" -}}
+       <a href="{{ if $retourMenu }}/{{ else }}/menu{{ end }}"{{ if $retourMenu }} data-back{{ end }} aria-label="{{ if $retourMenu }}Retour à la page précédente{{ else }}Ouvrir le menu{{ end }}">
         <svg width="100%" height="100%" viewBox="0 0 359 213" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" class="logo" aria-hidden="true" focusable="false">
             <g transform="matrix(1,0,0,1,-95.3505,-80.8179)">
                 <path d="M120.35,105.818L428.553,105.818" style="fill:none;stroke-width:50px;"/>
@@ -26,7 +27,8 @@
         </svg>
     </a>
     
-    <a href="{{ if eq .Title "Recherche" }}javascript:onclick=history.back(){{ else }}/recherche{{ end }}" aria-label="{{ if eq .Title "Recherche" }}Retour à la page précédente{{ else }}Ouvrir la recherche{{ end }}">
+    {{- $retourRecherche := eq .RelPermalink "/recherche/" -}}
+    <a href="{{ if $retourRecherche }}/{{ else }}/recherche{{ end }}"{{ if $retourRecherche }} data-back{{ end }} aria-label="{{ if $retourRecherche }}Retour à la page précédente{{ else }}Ouvrir la recherche{{ end }}">
         <svg width="100%" height="100%" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" class="logo" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" aria-hidden="true" focusable="false">
         <g transform="matrix(1,0,0,1,165.571,-28.9503)">
             <circle cx="273.898" cy="278.399" r="173.201" style="fill:none;stroke-width:100px;"/>
@@ -36,4 +38,16 @@
         </g>
         </svg>
     </a>
+
+    {{- if or $retourMenu $retourRecherche }}
+    <script>
+        document.addEventListener('click', function(event){
+            var lien = event.target && event.target.closest ? event.target.closest('a[data-back]') : null;
+            if (!lien) return;
+            if (!document.referrer || new URL(document.referrer).origin !== location.origin) return;
+            event.preventDefault();
+            history.back();
+        }, false);
+    </script>
+    {{- end }}
 </header>

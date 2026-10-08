@@ -2,8 +2,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#487b00" />
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-    
+    {{- $feuille := resources.Get "css/style.css" | minify | fingerprint -}}
+    <link rel="stylesheet" type="text/css" href="{{ $feuille.RelPermalink }}">
+
     <link rel="icon" href="/img/favicon.ico" sizes="any">
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/manifest.json">
@@ -29,5 +30,6 @@
 
     {{ partial "preload.html" .}}
 
-    <script src="/js/instantpage.js" type="module" defer></script>
+    {{- $instantpage := resources.Get "js/instantpage.js" | fingerprint -}}
+    <script src="{{ $instantpage.RelPermalink }}" type="module" defer></script>
 </head>

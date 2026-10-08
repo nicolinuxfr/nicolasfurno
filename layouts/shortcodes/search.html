@@ -45,4 +45,6 @@
     </form>
 </div>
 
-<script type="module" src="/js/search.js"></script>
+{{- /* Pas de js.Build : cet import de /pagefind/pagefind.js n'existe qu'après la génération de l'index. */ -}}
+{{- $recherche := resources.Get "js/search.js" | minify | fingerprint -}}
+<script type="module" src="{{ $recherche.RelPermalink }}"></script>
