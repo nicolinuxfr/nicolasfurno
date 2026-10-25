@@ -15,6 +15,9 @@
         {{ if .Resources.GetMatch "meta.json" }}
             {{ $data := .Resources.GetMatch "meta.json" | unmarshal }}
             {{ $infos.Set "meta" $data }}
+            {{ with $data.originalTitle }}
+                {{ $infos.Set "original" . }}
+            {{ end }}
         {{ end }}
 
         {{ $infos.Set "countries" hugo.Data.countries }}
