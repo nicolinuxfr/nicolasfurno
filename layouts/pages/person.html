@@ -15,13 +15,16 @@
         {{ end }}
         {{ $releaseDate := (index (sort $group "releaseDate" "asc") 0).releaseDate }}
         {{ $date := cond (eq $person.role "network") .Date $releaseDate }}
-        {{ $cards = $cards | append (dict "page" . "url" $url "date" $date) }}
+        {{ $weight := float (.Params.sagas_weight | default 999999) }}
+        {{ $sortKey := printf "%v|%020.6f|%s|%s" $date $weight .LinkTitle .RelPermalink }}
+        {{ $cards = $cards | append (dict "page" . "url" $url "date" $date "sortkey" $sortKey) }}
     {{ end }}
 {{ end }}
 {{ $orderedPages := slice }}
 {{ $links := dict }}
 {{ $order := cond (eq $person.role "network") "desc" "asc" }}
-{{ range sort $cards "date" $order }}
+{{ $sortField := cond (eq $person.role "author") "sortkey" "date" }}
+{{ range sort $cards $sortField $order }}
     {{ $orderedPages = $orderedPages | append .page }}
     {{ $links = merge $links (dict .page.RelPermalink .url) }}
 {{ end }}
