@@ -11,33 +11,54 @@
         
         {{ $lenses := hugo.Data.lenses }}
         {{ with .Resources.ByType "image" }}
-        {{ range . }}
-            {{ $image := . }}
-            
-            <div class="image album">
-                {{ partial "responsive-image.html" (dict
-                    "image" $image
-                    "alt" $titre
-                    "sizes" "(min-width: 850px) 850px, 100vw"
-                    "maxWidth" 1700
-                    "maxHeight" 1700
-                    "widths" (slice 500 800 1000 1200 1500)
-                    "loading" "lazy"
-                ) }}
-
-            {{ with .Meta }}
-            <ul class="meta-photos">
+        <div class="photo-gallery-grid" id="photo-gallery">
+        {{ range $index, $image := . }}
+            {{ $full := partial "image-variant.html" (dict "image" $image "maxWidth" 1700 "maxHeight" 1700) }}
+            {{ $camera := "" }}
+            {{ $details := "" }}
+            {{ $date := "" }}
+            {{ with $image.Meta }}
                 {{ with .Exif }}
-                    <li>{{ .Model }} ({{ index $lenses 0 (string .FocalLengthIn35mmFormat ) }})</li>
-                    <li>ISO {{ .ISO }} | {{ .FocalLengthIn35mmFormat }} mm | {{ .ExposureTime }} s</li>
+                    {{ $camera = printf "%s (%s)" .Model (index $lenses 0 (string .FocalLengthIn35mmFormat)) }}
+                    {{ $details = printf "ISO %s | %s mm | %s s" (string .ISO) (string .FocalLengthIn35mmFormat) (string .ExposureTime) }}
                 {{ end }}
                 {{ with .Date }}
-                    <li>{{ . | time.Format ":date_long" }} à {{ . | time.Format ":time_short" }}</li>
+                    {{ $date = printf "%s à %s" (. | time.Format ":date_long") (. | time.Format ":time_short") }}
                 {{ end }}
-            </ul>
             {{ end }}
-            </div>
+            <figure class="photo-gallery-item">
+                <button class="photo-gallery-thumb" type="button"
+                    data-full-src="{{ $full.RelPermalink }}"
+                    data-alt="{{ $titre }}"
+                    data-camera="{{ $camera }}"
+                    data-details="{{ $details }}"
+                    data-date="{{ $date }}"
+                    aria-label="Afficher la photo {{ add $index 1 }} en grand">
+                    {{ partial "responsive-image.html" (dict
+                        "image" $image
+                        "alt" $titre
+                        "sizes" "(min-width: 850px) 275px, 50vw"
+                        "maxWidth" 600
+                        "maxHeight" 600
+                        "widths" (slice 250 400 500)
+                        "loading" "lazy"
+                    ) }}
+                </button>
+            </figure>
         {{ end }}
+        </div>
+
+        <dialog class="photo-lightbox" aria-label="Galerie photo">
+            <button class="photo-lightbox-close" type="button" aria-label="Fermer">×</button>
+            <figure>
+                <div class="photo-lightbox-stage">
+                    <img class="photo-lightbox-image" alt="">
+                </div>
+                <figcaption><ul class="meta-photos photo-lightbox-caption"></ul></figcaption>
+            </figure>
+            <button class="photo-lightbox-previous" type="button" aria-label="Photo précédente">‹</button>
+            <button class="photo-lightbox-next" type="button" aria-label="Photo suivante">›</button>
+        </dialog>
         {{ end }}
 
     {{ if .Params.image }}
@@ -63,5 +84,8 @@
     {{ end }}
     </div>
 </section>
+
+{{ $galleryJS := resources.Get "js/photo-gallery.js" | minify | fingerprint }}
+<script defer src="{{ $galleryJS.RelPermalink }}" integrity="{{ $galleryJS.Data.Integrity }}" crossorigin="anonymous"></script>
 
 {{ end }}
