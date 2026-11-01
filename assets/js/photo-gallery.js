@@ -36,12 +36,16 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
     stage.style.height = `${imageHeight}px`;
     legend.style.width = `${beside ? sideWidth : imageHeight * ratio}px`;
     const frame = lightbox.getBoundingClientRect();
-    const group = stage.parentElement.getBoundingClientRect();
     const photo = stage.getBoundingClientRect();
-    const outside = group.left - frame.left >= 52 && frame.right - group.right >= 52;
+    const legendBounds = legend.getBoundingClientRect();
+    const arrowCenter = photo.top + photo.height / 2;
+    const overlapsLegend = photo.right + 50 > legendBounds.left &&
+      photo.right + 6 < legendBounds.right &&
+      arrowCenter + 22 > legendBounds.top && arrowCenter - 22 < legendBounds.bottom;
+    const outside = photo.left - frame.left >= 52 && frame.right - photo.right >= 52 && !overlapsLegend;
     lightbox.dataset.controls = outside ? "outside" : "inset";
-    previous.style.left = `${(outside ? group.left - 50 : photo.left + 6) - frame.left}px`;
-    next.style.left = `${(outside ? group.right + 6 : photo.right - 50) - frame.left}px`;
+    previous.style.left = `${(outside ? photo.left - 50 : photo.left + 6) - frame.left}px`;
+    next.style.left = `${(outside ? photo.right + 6 : photo.right - 50) - frame.left}px`;
     previous.style.top = next.style.top = `${photo.top - frame.top + photo.height / 2}px`;
   }
 
