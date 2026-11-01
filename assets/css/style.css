@@ -896,7 +896,7 @@ h1 {
     max-width: none;
     max-height: none;
     margin: 0;
-    padding: calc(2.75rem + env(safe-area-inset-top)) max(0.35rem, env(safe-area-inset-right)) max(0.35rem, env(safe-area-inset-bottom)) max(0.35rem, env(safe-area-inset-left));
+    padding: calc(clamp(2.75rem, 31.25rem - 50vw, 8.5rem) + env(safe-area-inset-top)) max(0.35rem, env(safe-area-inset-right)) max(0.35rem, env(safe-area-inset-bottom)) max(0.35rem, env(safe-area-inset-left));
     border: 0;
     color: #fff;
     background: #111;
@@ -913,7 +913,7 @@ h1 {
 
 .photo-lightbox-map { display: none; }
 
-/* MapKit 5 positions its controls using the same padding as the map framing.
+/* MapKit positions its controls using the same padding as the map framing.
    Keep its original attribution controls together near the close button. */
 .photo-lightbox-map .mk-controls-container {
     inset: 12px 64px auto auto !important;
@@ -926,8 +926,8 @@ h1 {
     position: absolute;
     right: 0;
     top: 0;
-    width: clamp(18rem, 58vw, 60rem);
-    height: clamp(18rem, 58vw, 60rem);
+    width: clamp(18rem, 20rem + 36vw, 60rem);
+    height: clamp(18rem, 20rem + 36vw, 60rem);
     z-index: 0;
     /* Padding keeps the pin and Apple Maps credits in the opaque corner. */
     -webkit-mask-image: radial-gradient(circle farthest-side at 100% 0, #000 75%, transparent 100%);
@@ -945,6 +945,7 @@ h1 {
     min-width: 0;
     min-height: 0;
 }
+
 
 .photo-lightbox[data-caption-position="below"] figure {
     flex-direction: column;

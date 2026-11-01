@@ -1,4 +1,4 @@
-<script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"></script>
+<script src="https://cdn.apple-mapkit.com/mk/6/mapkit.js" crossorigin="anonymous"></script>
 
 <style>
 #map {
@@ -33,7 +33,7 @@
     });
 
     const map = new mapkit.Map("map", {
-        mapType: mapkit.Map.MapTypes.Hybrid
+        mapType: mapkit.MapType.Hybrid
     });
 
     let photoCalloutId = 0;

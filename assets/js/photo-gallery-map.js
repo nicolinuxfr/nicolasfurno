@@ -4,6 +4,7 @@
   const lightbox = document.querySelector(".photo-lightbox");
   const container = lightbox?.querySelector(".photo-lightbox-map");
   if (!container) return;
+  const stage = lightbox.querySelector(".photo-lightbox-stage");
   // Hugo's development server can show MapKit's grid and local annotations
   // without authorized tiles, which is useful for checking the design.
   const preview = container.dataset.preview === "true";
@@ -19,7 +20,7 @@
       (latitude !== 0 || longitude !== 0) ? { latitude, longitude } : null;
   });
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  const compact = matchMedia("(max-width: 800px)");
+  const compact = matchMedia("(max-width: 900px)");
   let activeIndex = 0;
   let map;
   let marker;
@@ -47,8 +48,8 @@
         const west = Math.min(...longitudes);
         const east = Math.max(...longitudes);
         map = new kit.Map(container, {
-          mapType: kit.Map.MapTypes.MutedStandard,
-          colorScheme: kit.Map.ColorSchemes.Dark,
+          mapType: kit.MapType.MutedStandard,
+          colorScheme: kit.ColorScheme.Dark,
           showsMapTypeControl: false,
           showsZoomControl: false,
           showsCompass: kit.FeatureVisibility.Hidden,
@@ -74,27 +75,32 @@
       }
 
       const size = container.clientWidth;
-      // Keep a fixed framing in the corner, even when the photo overlaps it.
-      const visibleWidth = size * 0.52;
+      const mapFrame = container.getBoundingClientRect();
+      const photoFrame = stage.getBoundingClientRect();
+      const photoRight = photoFrame.right;
+      const uncoveredLeft = Math.max(24, photoRight - mapFrame.left + 24);
+      // Center within the exposed strip, rather than behind the overlapping photo.
+      const defaultLeft = compact.matches ? 24 : size * 0.48;
+      const leftPadding = size - 24 - uncoveredLeft >= 48
+        ? Math.max(defaultLeft, uncoveredLeft) : defaultLeft;
       map.padding = compact.matches
-        ? new kit.Padding(48, 24, 48, 24)
-        : new kit.Padding(64, 24, size * 0.5, size - visibleWidth);
+        ? new kit.Padding(48, 24, 48, leftPadding)
+        : new kit.Padding(64, 24, size * 0.5, leftPadding);
+      if (compact.matches && photoFrame.top - mapFrame.top >= 96) {
+        const viewerFrame = lightbox.getBoundingClientRect();
+        const credits = container.querySelector(".mk-controls-container");
+        const top = Math.max(64, (credits?.getBoundingClientRect().bottom ?? mapFrame.top + 44) - mapFrame.top + 20);
+        const bottom = Math.max(top + 40, Math.min(photoFrame.top - mapFrame.top - 16, top + 80));
+        const left = Math.max(24, viewerFrame.left - mapFrame.left + 24);
+        map.padding = new kit.Padding(top, 24, Math.max(0, size - bottom), left);
+      }
       marker.coordinate = coordinate;
       if (firstPhoto) {
         map.showItems([marker], { animate: false, minimumSpan: routeSpan });
         return;
       }
-      if (compact.matches) {
-        map.setCenterAnimated(coordinate, false);
-        return;
-      }
-      const point = map.convertCoordinateToPointOnPage(coordinate);
-      const mapFrame = container.getBoundingClientRect();
-      const x = point.x - mapFrame.left - window.scrollX;
-      const y = point.y - mapFrame.top - window.scrollY;
-      if (x < size - visibleWidth || x > size - 24 || y < 64 || y > size * 0.5 - 24) {
-        map.setCenterAnimated(coordinate, !preview && !reducedMotion.matches);
-      }
+      // Follow every selected photo, including moves within the visible area.
+      map.setCenterAnimated(coordinate, !preview && !reducedMotion.matches && !compact.matches);
     } catch {
       // A map failure must never prevent the photo viewer from working.
       failed = true;
@@ -114,4 +120,5 @@
   });
   observer.observe(lightbox);
   observer.observe(container);
+  observer.observe(stage);
 })();
