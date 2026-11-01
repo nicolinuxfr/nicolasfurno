@@ -26,10 +26,22 @@
   let marker;
   let routeSpan;
   let failed = false;
+  let loading = false;
 
   function updateMap() {
     const location = locations[activeIndex];
-    container.hidden = !lightbox.open || !location || failed || !window.mapkit ||
+    if (lightbox.open && location && !failed && !window.mapkit?.MarkerAnnotation &&
+      !loading && window.loadPhotoMapKit) {
+      loading = true;
+      window.loadPhotoMapKit().then(() => {
+        loading = false;
+        updateMap();
+      }).catch(() => {
+        failed = true;
+        container.hidden = true;
+      });
+    }
+    container.hidden = !lightbox.open || !location || failed || !window.mapkit?.MarkerAnnotation ||
       (!preview && document.getElementById("map")?.dataset.mapkitState !== "ready");
     if (container.hidden) return;
 

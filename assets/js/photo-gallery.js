@@ -13,6 +13,27 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
   let activeIndex = 0;
   let touchStart = null;
   let ratio = 0.75;
+  let scrollPosition = null;
+
+  function lockPageScroll() {
+    if (scrollPosition) return;
+    scrollPosition = { left: window.scrollX, top: window.scrollY };
+    const root = document.documentElement;
+    root.style.setProperty("--photo-gallery-scroll-top", `${-scrollPosition.top}px`);
+    root.style.setProperty("--photo-gallery-scrollbar", `${window.innerWidth - root.clientWidth}px`);
+    root.classList.add("photo-gallery-open");
+  }
+
+  function unlockPageScroll() {
+    if (!scrollPosition) return;
+    const position = scrollPosition;
+    scrollPosition = null;
+    const root = document.documentElement;
+    root.classList.remove("photo-gallery-open");
+    root.style.removeProperty("--photo-gallery-scroll-top");
+    root.style.removeProperty("--photo-gallery-scrollbar");
+    window.scrollTo({ ...position, behavior: "instant" });
+  }
 
   function layoutPhoto() {
     if (!lightbox.open) return;
@@ -83,7 +104,15 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
         caption.append(item);
       });
 
-    if (!lightbox.open) lightbox.showModal();
+    if (!lightbox.open) {
+      lockPageScroll();
+      try {
+        lightbox.showModal();
+      } catch (error) {
+        unlockPageScroll();
+        throw error;
+      }
+    }
     layoutPhoto();
     // Set sizes before sources so the browser does not first request a desktop image.
     image.srcset = thumbnail.dataset.candidates;
@@ -99,6 +128,9 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
   });
 
   lightbox.querySelector(".photo-lightbox-close").addEventListener("click", () => lightbox.close());
+  lightbox.addEventListener("close", () => {
+    if (!lightbox.open) unlockPageScroll();
+  });
   previous.addEventListener("click", () => showPhoto(activeIndex - 1));
   next.addEventListener("click", () => showPhoto(activeIndex + 1));
 
