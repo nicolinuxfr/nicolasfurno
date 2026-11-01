@@ -27,14 +27,71 @@
         mapType: mapkit.Map.MapTypes.Hybrid
     });
 
+    let photoCalloutId = 0;
+    const photoCallout = {
+        calloutElementForAnnotation(annotation) {
+            const photo = annotation.data;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "map-photo-callout";
+            button.setAttribute("aria-label", "Ouvrir la photo dans la galerie");
+            // MapKit measures the callout before the image has loaded.
+            const scale = Math.min(108 / photo.previewWidth, 144 / photo.previewHeight, 1);
+            const width = photo.previewWidth * scale;
+            const height = photo.previewHeight * scale;
+            button.style.width = `${width}px`;
+            button.style.height = `${height}px`;
+
+            const svgElement = tag => document.createElementNS("http://www.w3.org/2000/svg", tag);
+            const preview = svgElement("svg");
+            preview.setAttribute("viewBox", `0 0 ${width} ${height}`);
+            preview.setAttribute("aria-hidden", "true");
+            const defs = svgElement("defs");
+            const clip = svgElement("clipPath");
+            const clipId = `map-photo-clip-${++photoCalloutId}`;
+            clip.id = clipId;
+            clip.setAttribute("clipPathUnits", "userSpaceOnUse");
+            const shape = svgElement("path");
+            const radius = Math.min(10, width / 4, height / 4);
+            const center = width / 2;
+            const tail = Math.min(12, width / 6, height / 6);
+            const body = height - tail;
+            shape.setAttribute("d", `M ${radius} 0 H ${width - radius}
+                Q ${width} 0 ${width} ${radius} V ${body - radius}
+                Q ${width} ${body} ${width - radius} ${body} H ${center + tail}
+                C ${center + tail / 2} ${body} ${center + tail / 2} ${height} ${center} ${height}
+                C ${center - tail / 2} ${height} ${center - tail / 2} ${body} ${center - tail} ${body}
+                H ${radius} Q 0 ${body} 0 ${body - radius} V ${radius} Q 0 0 ${radius} 0 Z`);
+            clip.append(shape);
+            defs.append(clip);
+            const image = svgElement("image");
+            image.setAttribute("href", photo.preview);
+            image.setAttribute("width", width);
+            image.setAttribute("height", height);
+            image.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            image.setAttribute("clip-path", `url(#${clipId})`);
+            preview.append(defs, image);
+            button.append(preview);
+            button.addEventListener("click", () => {
+                const thumbnails = document.querySelectorAll("#photo-gallery .photo-gallery-thumb");
+                thumbnails[photo.photoIndex]?.click();
+            });
+            return button;
+        }
+    };
+
     const annotations = coordonnees.map((location) => {
         const coordinate = new mapkit.Coordinate(location.lat, location.long);
-        const pinOptions = {
+        return new mapkit.MarkerAnnotation(coordinate, {
             glyphImage: { 1: "/img/pin.png", 2: "/img/pin@2x.png" },
-            selectedGlyphImage: { 1: "/img/icon-192.png", 2: "/img/icon-512.png"},
-            color: "#487b00"
-        };
-        return new mapkit.MarkerAnnotation(coordinate, pinOptions);
+            color: "#487b00",
+            titleVisibility: mapkit.FeatureVisibility.Hidden,
+            subtitleVisibility: mapkit.FeatureVisibility.Hidden,
+            accessibilityLabel: "Afficher l’aperçu de la photo",
+            data: location,
+            calloutEnabled: true,
+            callout: photoCallout
+        });
     });
 
     map.showItems(annotations, {

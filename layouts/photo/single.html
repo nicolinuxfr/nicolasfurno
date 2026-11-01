@@ -56,20 +56,21 @@
                 </div>
                 <figcaption><ul class="meta-photos photo-lightbox-caption"></ul></figcaption>
             </figure>
-            <button class="photo-lightbox-previous" type="button" aria-label="Photo précédente">‹</button>
-            <button class="photo-lightbox-next" type="button" aria-label="Photo suivante">›</button>
+            <button class="photo-lightbox-previous" type="button" aria-label="Photo précédente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+            <button class="photo-lightbox-next" type="button" aria-label="Photo suivante"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg></button>
         </dialog>
         {{ end }}
 
     {{ if .Params.image }}
         {{- $photos := slice -}}
         {{- with .Resources.ByType "image" -}}
-            {{- range . -}}
+            {{- range $index, $image := . -}}
                 {{- with .Meta -}}
                     {{- $lat := float .Lat -}}
                     {{- $long := float .Long -}}
                     {{- if and (not (and (eq $lat 0.0) (eq $long 0.0))) (ge $lat -90.0) (le $lat 90.0) (ge $long -180.0) (le $long 180.0) -}}
-                        {{- $photos = $photos | append (dict "long" $long "lat" $lat) -}}
+                        {{- $preview := $image.Fit "300x300 jpeg" -}}
+                        {{- $photos = $photos | append (dict "long" $long "lat" $lat "photoIndex" $index "preview" $preview.RelPermalink "previewWidth" $preview.Width "previewHeight" $preview.Height) -}}
                     {{- end -}}
                 {{- end -}}
             {{- end -}}

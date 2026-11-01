@@ -867,6 +867,25 @@ h1 {
     height: auto;
 }
 
+.map-photo-callout {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.map-photo-callout svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.map-photo-callout:focus-visible {
+    outline: 2px solid var(--vert-hover);
+    outline-offset: 2px;
+}
+
 .photo-lightbox {
     position: fixed;
     inset: 0;
