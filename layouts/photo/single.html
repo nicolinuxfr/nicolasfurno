@@ -13,7 +13,7 @@
         {{ with .Resources.ByType "image" }}
         <div class="photo-gallery-grid" id="photo-gallery">
         {{ range $index, $image := . }}
-            {{ $full := partial "image-variant.html" (dict "image" $image "maxWidth" 1700 "maxHeight" 1700) }}
+            {{ $full := partial "responsive-image-sources.html" (dict "image" $image "maxWidth" 2000 "maxHeight" 2000) }}
             {{ $camera := "" }}
             {{ $details := "" }}
             {{ $date := "" }}
@@ -28,7 +28,8 @@
             {{ end }}
             <figure class="photo-gallery-item">
                 <button class="photo-gallery-thumb" type="button"
-                    data-full-src="{{ $full.RelPermalink }}"
+                    data-full-src="{{ $full.src }}"
+                    data-candidates="{{ $full.srcset }}"
                     data-alt="{{ $titre }}"
                     data-camera="{{ $camera }}"
                     data-details="{{ $details }}"
@@ -37,7 +38,7 @@
                     {{ partial "responsive-image.html" (dict
                         "image" $image
                         "alt" $titre
-                        "sizes" "(min-width: 850px) 275px, 50vw"
+                        "sizes" "auto, (max-width: 600px) calc((100vw - 1.4rem) / 2), (max-width: 850px) calc((100vw - 2.2rem) / 3), calc((850px - 2.2rem) / 3)"
                         "maxWidth" 600
                         "maxHeight" 600
                         "widths" (slice 250 400 500)
@@ -52,6 +53,7 @@
             <button class="photo-lightbox-close" type="button" aria-label="Fermer">×</button>
             <figure>
                 <div class="photo-lightbox-stage">
+                    <img class="photo-lightbox-preview" alt="" aria-hidden="true">
                     <img class="photo-lightbox-image" alt="">
                 </div>
                 <figcaption><ul class="meta-photos photo-lightbox-caption"></ul></figcaption>

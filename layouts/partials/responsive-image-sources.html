@@ -1,0 +1,25 @@
+{{- $image := .image -}}
+{{- $maxWidth := default 2000 .maxWidth -}}
+{{- $maxHeight := .maxHeight -}}
+{{- $widths := default (slice 500 800 1000 1200 1500 2000) .widths -}}
+{{- $final := partial "image-variant.html" (dict "image" $image "maxWidth" $maxWidth "maxHeight" $maxHeight) -}}
+{{- $finalWidth := $final.Width -}}
+
+{{- $srcset := slice -}}
+{{- $fallback := false -}}
+{{- range $widths -}}
+    {{- if lt . $finalWidth -}}
+        {{- $candidate := $image.Resize (printf "%dx jpeg" .) -}}
+        {{- $srcset = $srcset | append (printf "%s %dw" $candidate.RelPermalink $candidate.Width) -}}
+        {{- if eq . 1000 -}}
+            {{- $fallback = $candidate -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $srcset = $srcset | append (printf "%s %dw" $final.RelPermalink $final.Width) -}}
+{{- if not $fallback -}}
+    {{- $fallback = $final -}}
+{{- end -}}
+
+{{- return (dict "src" $fallback.RelPermalink "srcset" (delimit $srcset ", ")) -}}

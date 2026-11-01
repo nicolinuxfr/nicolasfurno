@@ -3,7 +3,8 @@ const lightbox = document.querySelector(".photo-lightbox");
 
 if (gallery && lightbox && typeof lightbox.showModal === "function") {
   const thumbnails = Array.from(gallery.querySelectorAll(".photo-gallery-thumb"));
-  const image = lightbox.querySelector(".photo-lightbox-image");
+  let image = lightbox.querySelector(".photo-lightbox-image");
+  const placeholder = lightbox.querySelector(".photo-lightbox-preview");
   const caption = lightbox.querySelector(".photo-lightbox-caption");
   const stage = lightbox.querySelector(".photo-lightbox-stage");
   const legend = lightbox.querySelector("figcaption");
@@ -34,6 +35,8 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
     lightbox.dataset.captionPosition = beside ? "beside" : "below";
     stage.style.width = `${imageHeight * ratio}px`;
     stage.style.height = `${imageHeight}px`;
+    // Use the fitted photo width, including the space taken by its caption.
+    image.sizes = `${Math.ceil(imageHeight * ratio)}px`;
     legend.style.width = `${beside ? sideWidth : imageHeight * ratio}px`;
     const frame = lightbox.getBoundingClientRect();
     const photo = stage.getBoundingClientRect();
@@ -55,8 +58,22 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
     const preview = thumbnail.querySelector("img");
     ratio = Number(preview.getAttribute("width")) / Number(preview.getAttribute("height"));
 
-    image.alt = thumbnail.dataset.alt || "";
-    image.src = thumbnail.dataset.fullSrc;
+    // Keep the already downloaded thumbnail visible until the new photo is decoded.
+    placeholder.src = preview.currentSrc || preview.src;
+    const fullImage = new Image();
+    fullImage.className = "photo-lightbox-image";
+    fullImage.alt = thumbnail.dataset.alt || "";
+    fullImage.decoding = "async";
+    fullImage.addEventListener("load", async () => {
+      try {
+        await fullImage.decode();
+        if (image === fullImage) fullImage.classList.add("is-ready");
+      } catch {
+        // Retain the preview if loading or decoding fails.
+      }
+    });
+    image.replaceWith(fullImage);
+    image = fullImage;
     caption.replaceChildren();
     [thumbnail.dataset.camera, thumbnail.dataset.details, thumbnail.dataset.date]
       .filter(Boolean)
@@ -68,12 +85,11 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
 
     if (!lightbox.open) lightbox.showModal();
     layoutPhoto();
+    // Set sizes before sources so the browser does not first request a desktop image.
+    image.srcset = thumbnail.dataset.candidates;
+    image.src = thumbnail.dataset.fullSrc;
   }
 
-  image.addEventListener("load", () => {
-    ratio = image.naturalWidth / image.naturalHeight;
-    layoutPhoto();
-  });
   new ResizeObserver(() => requestAnimationFrame(layoutPhoto)).observe(lightbox);
   document.fonts.ready.then(layoutPhoto);
 
