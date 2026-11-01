@@ -88,6 +88,7 @@ if (gallery && lightbox && typeof lightbox.showModal === "function") {
     // Set sizes before sources so the browser does not first request a desktop image.
     image.srcset = thumbnail.dataset.candidates;
     image.src = thumbnail.dataset.fullSrc;
+    lightbox.dispatchEvent(new CustomEvent("photochange", { detail: { index: activeIndex } }));
   }
 
   new ResizeObserver(() => requestAnimationFrame(layoutPhoto)).observe(lightbox);

@@ -17,7 +17,13 @@
             {{ $camera := "" }}
             {{ $details := "" }}
             {{ $date := "" }}
+            {{ $location := dict }}
             {{ with $image.Meta }}
+                {{ $lat := float .Lat }}
+                {{ $long := float .Long }}
+                {{ if and (not (and (eq $lat 0.0) (eq $long 0.0))) (ge $lat -90.0) (le $lat 90.0) (ge $long -180.0) (le $long 180.0) }}
+                    {{ $location = dict "lat" $lat "long" $long }}
+                {{ end }}
                 {{ with .Exif }}
                     {{ $camera = printf "%s (%s)" .Model (index $lenses 0 (string .FocalLengthIn35mmFormat)) }}
                     {{ $details = printf "ISO %s | %s mm | %s s" (string .ISO) (string .FocalLengthIn35mmFormat) (string .ExposureTime) }}
@@ -34,6 +40,7 @@
                     data-camera="{{ $camera }}"
                     data-details="{{ $details }}"
                     data-date="{{ $date }}"
+                    {{ with $location }}data-lat="{{ .lat }}" data-long="{{ .long }}"{{ end }}
                     aria-label="Afficher la photo {{ add $index 1 }} en grand">
                     {{ partial "responsive-image.html" (dict
                         "image" $image
@@ -50,6 +57,7 @@
         </div>
 
         <dialog class="photo-lightbox" aria-label="Galerie photo">
+            <div class="photo-lightbox-map" role="group" aria-label="Lieu de prise de vue" data-preview="{{ hugo.IsDevelopment }}" hidden></div>
             <button class="photo-lightbox-close" type="button" aria-label="Fermer">×</button>
             <figure>
                 <div class="photo-lightbox-stage">
@@ -88,6 +96,8 @@
     </div>
 </section>
 
+{{ $galleryMapJS := resources.Get "js/photo-gallery-map.js" | minify | fingerprint }}
+<script defer src="{{ $galleryMapJS.RelPermalink }}" integrity="{{ $galleryMapJS.Data.Integrity }}" crossorigin="anonymous"></script>
 {{ $galleryJS := resources.Get "js/photo-gallery.js" | minify | fingerprint }}
 <script defer src="{{ $galleryJS.RelPermalink }}" integrity="{{ $galleryJS.Data.Integrity }}" crossorigin="anonymous"></script>
 

@@ -7,7 +7,7 @@
 }
 </style>
 
-<div id="map"></div>
+<div id="map" data-mapkit-state="loading"></div>
 
 {{ $token := getenv "HUGO_MAPKIT" }}
 
@@ -15,12 +15,21 @@
     const tokenID = {{ $token | jsonify | safeJS }};
     const coordonnees = {{ . | jsonify | safeJS }};
 
+    const pageMapElement = document.getElementById("map");
+    mapkit.addEventListener("configuration-change", () => {
+        pageMapElement.dataset.mapkitState = "ready";
+        document.dispatchEvent(new Event("photo-map-statechange"));
+    });
+    mapkit.addEventListener("error", () => {
+        pageMapElement.dataset.mapkitState = "error";
+        document.dispatchEvent(new Event("photo-map-statechange"));
+    });
+
     mapkit.init({
         authorizationCallback: function(done) {
             done(tokenID);
         },
-        language:"fr",
-        mapType: "Hybrid"
+        language:"fr"
     });
 
     const map = new mapkit.Map("map", {

@@ -911,7 +911,32 @@ h1 {
 
 .photo-lightbox::backdrop { background: rgb(0 0 0 / 88%); }
 
+.photo-lightbox-map { display: none; }
+
+/* MapKit 5 positions its controls using the same padding as the map framing.
+   Keep its original attribution controls together near the close button. */
+.photo-lightbox-map .mk-controls-container {
+    inset: 12px 64px auto auto !important;
+    width: 180px;
+    height: 32px;
+}
+
+.photo-lightbox-map:not([hidden]) {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: clamp(18rem, 58vw, 60rem);
+    height: clamp(18rem, 58vw, 60rem);
+    z-index: 0;
+    /* Padding keeps the pin and Apple Maps credits in the opaque corner. */
+    -webkit-mask-image: radial-gradient(circle farthest-side at 100% 0, #000 75%, transparent 100%);
+    mask-image: radial-gradient(circle farthest-side at 100% 0, #000 75%, transparent 100%);
+}
+
 .photo-lightbox figure {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex: 0 0 auto;
     align-items: flex-end;
@@ -1007,6 +1032,7 @@ h1 {
 }
 
 .photo-lightbox-close {
+    z-index: 2;
     position: absolute;
     top: max(0.1rem, env(safe-area-inset-top));
     right: max(0.3rem, env(safe-area-inset-right));
