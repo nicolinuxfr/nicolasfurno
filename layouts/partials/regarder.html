@@ -1,0 +1,5 @@
+{{ with .id }}
+<p hidden data-regarder data-type="{{ $.type }}" data-id="{{ . }}" data-saisons="{{ with $.saisons }}{{ delimit . "," }}{{ end }}"><strong>Regarder</strong> : <span></span> <small>— Disponibilités fournies par <a href="https://www.movieofthenight.com/about/api">Streaming Availability API par Movie of the Night</a></small></p>
+{{ $script := resources.Get "js/regarder.js" | minify | fingerprint }}
+<script src="{{ $script.RelPermalink }}" defer></script>
+{{ end }}

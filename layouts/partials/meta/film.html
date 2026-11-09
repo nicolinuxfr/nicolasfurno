@@ -53,4 +53,5 @@
     {{ $heures := math.Floor (div $metadata.runtime 60) }}
     {{ $minutes := mod $metadata.runtime 60 }}
     <p><strong>Durée</strong> : {{ $heures }}h{{ if lt $minutes 10 }}0{{ end }}{{  $minutes }}</p>
+    {{ partial "regarder.html" (dict "type" "movie" "id" $metadata.id) }}
 </div>
