@@ -1,5 +1,5 @@
 document.querySelectorAll("[data-regarder]").forEach(async (element) => {
-  const params = new URLSearchParams({ type: element.dataset.type, id: element.dataset.id });
+  const params = new URLSearchParams({ source: element.dataset.source });
   if (element.dataset.saisons) params.set("saisons", element.dataset.saisons);
   try {
     const response = await fetch(`/api/regarder?${params}`);

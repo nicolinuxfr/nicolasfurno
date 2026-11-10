@@ -169,5 +169,5 @@
             {{ if gt $runtimeMin 0 }} de {{ $runtimeMin }}{{ if ne $runtimeMin $runtimeMax }} à {{ $runtimeMax }}{{ end }} minutes{{ end }}
         {{ end }}
     </p>
-    {{ partial "regarder.html" (dict "type" "tv" "id" $metadata.id "saisons" $saison) }}
+    {{ partial "regarder.html" (dict "page" $page "type" "tv" "id" $metadata.id "saisons" $saison) }}
 </div>

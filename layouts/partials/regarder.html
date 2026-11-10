@@ -1,5 +1,5 @@
-{{ with .id }}
-<p hidden data-regarder data-type="{{ $.type }}" data-id="{{ int . }}" data-saisons="{{ with $.saisons }}{{ delimit . "," }}{{ end }}"><strong>Regarder</strong> : <span></span></p>
+{{ with .page.Resources.GetMatch "regarder.json" }}
+<p hidden data-regarder data-source="{{ .RelPermalink }}" data-saisons="{{ with $.saisons }}{{ delimit . "," }}{{ end }}"><strong>Regarder</strong> : <span></span> <small>(<a href="https://www.movieofthenight.com/about/api">Movie of the Night</a>)</small></p>
 {{ $script := resources.Get "js/regarder.js" | minify | fingerprint }}
 <script src="{{ $script.RelPermalink }}" defer></script>
 {{ end }}
