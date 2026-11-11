@@ -1,5 +1,5 @@
 {{ with .page.Resources.GetMatch "regarder.json" }}
 <p hidden data-regarder data-source="{{ .RelPermalink }}" data-saisons="{{ with $.saisons }}{{ delimit . "," }}{{ end }}"><strong>Regarder</strong> : <span></span></p>
-{{ $script := resources.Get "js/regarder.js" | minify | fingerprint }}
+{{ $script := resources.Get "js/regarder.js" | js.Build (dict "minify" true) | fingerprint }}
 <script src="{{ $script.RelPermalink }}" defer></script>
 {{ end }}
