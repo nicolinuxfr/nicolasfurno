@@ -656,6 +656,12 @@ h1 {
     text-align: center;
 }
 
+@media (max-width: 899px) {
+    #single .image img {
+        width: 100%;
+    }
+}
+
 .meta-top {
     text-align: right;
     font-family: var(--police-meta);
